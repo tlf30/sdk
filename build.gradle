@@ -349,7 +349,6 @@ task createProjectXml(dependsOn: configurations.corelibs) <<{
 
         j2seLibraries.add(dep.name+".xml")
         project.configurations.corelibs.files{ d -> return d.name == dep.name}.each{ file ->
-            println(file.name)
             if(isSource(file.name)){
                 if(!jmeSourceFiles.contains(file.name)){
                     jmeSourceFiles.add(file.name)
@@ -370,7 +369,7 @@ task createProjectXml(dependsOn: configurations.corelibs) <<{
         }
 
         project.configurations.optlibs.files{ d -> return d.name == dep.name}.each{ file ->
-            println(file.name)
+
             if(isSource(file.name)){
                 if(!jmeSourceFiles.contains(file.name)){
                     jmeSourceFiles.add(file.name)
