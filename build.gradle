@@ -347,7 +347,6 @@ task createProjectXml(dependsOn: configurations.corelibs) <<{
             return;
         }
         j2seLibraries.add(dep.name+".xml")
-        println("--------------"+dep.name+"-----------")
         project.configurations.corelibs.files{ d -> return d.name == dep.name}.each{ file ->
             if(isSource(file.name)){
                 if(!jmeSourceFiles.contains(file.name)){
@@ -360,7 +359,6 @@ task createProjectXml(dependsOn: configurations.corelibs) <<{
             } else if(isJmeDep(file.name)){
                 if(!jmeJarFiles.contains(file.name)){
                     jmeJarFiles.add(file.name)
-                    println("adding jar")
                 }
             }else{
                 if(!externalJarFiles.contains(file.name)){
@@ -368,12 +366,6 @@ task createProjectXml(dependsOn: configurations.corelibs) <<{
                 }
             }
         }
-        
-
-        println("sources : " + jmeSourceFiles);
-        println("javadoc : " + jmeJavadocFiles);
-        println("jars : " + jmeJarFiles);
-        println("external : " + externalJarFiles);
 
         
         

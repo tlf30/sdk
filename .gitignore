@@ -11,3 +11,5 @@ platform-private.properties
 BasicGameProject.zip
 JME3TestsTemplate/src/META-INF
 JME3TestsTemplateAndroid/src/META-INF
+*.iml
+.idea
