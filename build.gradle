@@ -346,8 +346,31 @@ task createProjectXml(dependsOn: configurations.corelibs) <<{
         if(j2seLibraries.contains(dep.name+".xml")){
             return;
         }
+
         j2seLibraries.add(dep.name+".xml")
         project.configurations.corelibs.files{ d -> return d.name == dep.name}.each{ file ->
+            println(file.name)
+            if(isSource(file.name)){
+                if(!jmeSourceFiles.contains(file.name)){
+                    jmeSourceFiles.add(file.name)
+                }
+            } else if(isJavadoc(file.name)){
+                if(!jmeJavadocFiles.contains(file.name)){
+                    jmeJavadocFiles.add(file.name)
+                }
+            } else if(isJmeDep(file.name)){
+                if(!jmeJarFiles.contains(file.name)){
+                    jmeJarFiles.add(file.name)
+                }
+            }else{
+                if(!externalJarFiles.contains(file.name)){
+                    externalJarFiles.add(file.name)
+                }
+            }
+        }
+
+        project.configurations.optlibs.files{ d -> return d.name == dep.name}.each{ file ->
+            println(file.name)
             if(isSource(file.name)){
                 if(!jmeSourceFiles.contains(file.name)){
                     jmeSourceFiles.add(file.name)
