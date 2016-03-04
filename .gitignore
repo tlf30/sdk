@@ -13,3 +13,6 @@ JME3TestsTemplate/src/META-INF
 JME3TestsTemplateAndroid/src/META-INF
 *.iml
 .idea
+jme3-project-baselibs/src/com/jme3/gde/project/baselibs
+jme3-core-baselibs/nbproject/project.xml
+jme3-core-libraries/nbproject/project.xml
