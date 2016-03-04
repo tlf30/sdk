@@ -1,0 +1,13 @@
+jme3-core-baselibs/release/modules/ext
+jme3-core-libraries/release/modules/ext
+jme3-project-baselibs/release/libs
+io_export_ogreDotScene.py
+jme3-project-libraries/release/libs
+jme3-project-testdata/release/libs
+jme3-tests-template/src/com/jme3/gde/templates/tests
+JME3TestsTemplate/src/jme3test
+JME3TestsTemplateAndroid/src/jme3test
+platform-private.properties
+BasicGameProject.zip
+JME3TestsTemplate/src/META-INF
+JME3TestsTemplateAndroid/src/META-INF
