@@ -20,7 +20,7 @@ repositories {
 
 }
 
-ext.jmeFullVersion = "3.1.0-SNAPSHOT"
+ext.jmeFullVersion = "3.1.0-alpha2"
 ext.jmeNbmRevision = 0
 
 configurations {
