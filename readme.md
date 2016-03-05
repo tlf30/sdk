@@ -3,27 +3,28 @@
 This repo holds the Legacy SDK of jMonkeyEngine, based on Netbeans platform.
 
 ## Getting started
-You'll need several things to have the SDK build and run :
+You'll need several things to have the SDK build and run:
 - java, if you don't know what it is or how to install it... you'd better run from here.
-- [gradle](http://gradle.org/gradle-download/) to build the project.
-- [NetBeans](https://netbeans.org/downloads/) to edit and run the project (javaSE distrib should be enough).
+- [gradle](http://gradle.org/gradle-download/) to build the project. (Included in the repo)
+- [NetBeans](https://netbeans.org/downloads/) to edit and run the project (First build will download it to ```netbeans/```).
 - Then you need to read this [documentation](http://wiki.jmonkeyengine.org/doku.php/sdk:development) thoroughly.
 
-Before hopping into Netbeans plugin development you'll need to build the project using gradle command :
+Before hopping into Netbeans plugin development you'll need to build the project using gradle command:
 ```
-gradlew buildSdk
+gradlew(.bat) buildSdk
 ```
 
-Then you'll be able to open the project in netbeans and start your devs.
+Then you'll be able to open the project in the bundled netbeans and start your devs.
 
 ## Creating a distribution of the SDK
 When in Netbeans right click on the SDK project and choose : **package as...**
 then choose whatever distribution you fancy.
 ![Package as...](http://i.imgur.com/5V2uBHf.png)
 
+If you however want to Debug an SDK Issue you click on Run/Debug instead
 ## jMonkeyEngine3 version
 The sdk uses jME published artifacts.
-You can change the version of these artifacts by editing the build.gradle file and changinf the ext.jmeFullVersion variable to a proper version.
+You can change the version of these artifacts by editing the build.gradle file and changing the ext.jmeFullVersion variable to a proper version.
 
 ### Using jME official release
 jME official release are published on [jcenter](https://bintray.com/bintray/jcenter). You'll find there all the releases listed [here](https://github.com/jMonkeyEngine/jmonkeyengine/releases) since jME 3.1.0-alpha2
