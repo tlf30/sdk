@@ -17,11 +17,12 @@ repositories {
     maven {
         url 'http://nifty-gui.sourceforge.net/nifty-maven-repo/'
     }
-
+    maven { url "https://jitpack.io" }
 }
 
-ext.jmeFullVersion = "3.1.0-alpha2"
+ext.jmeFullVersion = "PBRisComing-SNAPSHOT"
 ext.jmeNbmRevision = 0
+
 
 configurations {
     corelibs
