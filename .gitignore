@@ -18,3 +18,5 @@ jme3-core-baselibs/nbproject/project.xml
 jme3-core-libraries/nbproject/project.xml
 build
 .gradle
+netbeans
+*/nbproject/private/*
