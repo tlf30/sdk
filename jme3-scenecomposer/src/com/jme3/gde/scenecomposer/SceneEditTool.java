@@ -89,10 +89,7 @@ public abstract class SceneEditTool {
         this.onTopToolNode.attachChild(axisMarker);
         setDefaultAxisMarkerColors();
 
-
-        if (toolController.getSelectionShape() != null) {
-            axisMarker.setLocalTranslation(toolController.getSelectedSpatial().getWorldTranslation());
-        }
+        doUpdateToolsTransformation();
 
     }
 
@@ -134,7 +131,7 @@ public abstract class SceneEditTool {
             axisMarker.setLocalTranslation(toolController.getSelectedSpatial().getWorldTranslation());
             switch (transformType) {
                 case local:
-                    axisMarker.setLocalRotation(toolController.getSelectedSpatial().getLocalRotation());
+                    axisMarker.setLocalRotation(toolController.getSelectedSpatial().getWorldRotation());
                     break;
                 case global:
                     axisMarker.setLocalRotation(Quaternion.IDENTITY);

@@ -66,22 +66,30 @@ public class PickManager {
     public void setTransformation(Quaternion planeRotation, SceneComposerToolController.TransformationType type, Camera camera) {
         Quaternion rot = new Quaternion();
         transformationType = type;
-        if (transformationType == SceneComposerToolController.TransformationType.local) {
-            rot.set(spatial.getWorldRotation());
-            rot.multLocal(planeRotation);
-            origineRotation = spatial.getWorldRotation().clone();
-        } else if (transformationType == SceneComposerToolController.TransformationType.global) {
-            rot.set(planeRotation);
-            origineRotation = new Quaternion(Quaternion.IDENTITY);
-        } else if (transformationType == SceneComposerToolController.TransformationType.camera) {
-            rot.set(camera.getRotation());  
-            origineRotation = camera.getRotation();
+        if (null != transformationType) {
+            switch (transformationType) {
+                case local:
+                    rot.set(spatial.getWorldRotation());
+                    rot.multLocal(planeRotation);
+                    origineRotation = spatial.getWorldRotation().clone();
+                    break;
+                case global:
+                    rot.set(planeRotation);
+                    origineRotation = new Quaternion(Quaternion.IDENTITY);
+                    break;
+                case camera:
+                    rot.set(camera.getRotation());
+                    origineRotation = camera.getRotation();
+                    break;
+                default:
+                    break;
+            }
         }
         plane.setLocalRotation(rot);
     }
     
     /**
-     * 
+     *
      * @param camera
      * @param screenCoord
      * @return true if the the new picked location is set, else return false.
@@ -146,7 +154,9 @@ public class PickManager {
 
     /**
      * Get the Rotation into a specific custom space.
-     * @param transforme the rotation to the custom space (World to Custom space)
+     *
+     * @param transforme the rotation to the custom space (World to Custom
+     * space)
      * @return the Rotation in the custom space
      */
     public Quaternion getRotation(Quaternion transforme) {
@@ -185,5 +195,5 @@ public class PickManager {
     public Vector3f getLocalTranslation(Vector3f axisConstrainte) {
         return getTranslation(origineRotation.inverse().mult(axisConstrainte));
     }
-    
+
 }

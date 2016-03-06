@@ -145,9 +145,9 @@ public class ScaleShortcut extends ShortcutTool {
             Vector3f scale = startScale;
             if (currentAxis.equals(Vector3f.UNIT_XYZ)) {
                 Vector3f constraintAxis = pickManager.getStartOffset().normalize();
-                float diff = pickManager.getTranslation(constraintAxis).dot(constraintAxis);
-                diff *= 0.5f;
-                scale = startScale.add(new Vector3f(diff, diff, diff));
+                float diff = pickManager.getLocalTranslation(constraintAxis).dot(constraintAxis);
+                diff += 1f;
+                scale = startScale.mult(diff);
             } else {
                 // Get the translation in the spatial Space
                 Quaternion worldToSpatial = toolController.getSelectedSpatial().getWorldRotation().inverse();
