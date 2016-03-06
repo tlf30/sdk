@@ -159,7 +159,13 @@ public class MoveShortcut extends ShortcutTool {
             } else {
                 diff = pickManager.getTranslation(currentAxis);
             }
-            Vector3f position = startPosition.add(diff);
+            Vector3f position;
+            Spatial parent = toolController.getSelectedSpatial().getParent();
+            if (parent != null) {
+                position = startPosition.add(parent.getWorldRotation().inverse().mult(diff));
+            } else {
+                position = startPosition.add(diff);
+            }
             finalPosition = position;
             toolController.getSelectedSpatial().setLocalTranslation(position);
             updateToolsTransformation();

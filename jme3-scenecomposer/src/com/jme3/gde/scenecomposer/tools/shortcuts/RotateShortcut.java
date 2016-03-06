@@ -34,6 +34,7 @@ public class RotateShortcut extends ShortcutTool {
     private boolean pickEnabled;
     private Quaternion startRotation;
     private Quaternion finalRotation;
+    private Quaternion startWorldRotate;
 
     @Override
 
@@ -55,6 +56,7 @@ public class RotateShortcut extends ShortcutTool {
     private void init(Spatial selectedSpatial) {
         spatial = selectedSpatial;
         startRotation = spatial.getLocalRotation().clone();
+        startWorldRotate = spatial.getWorldRotation().clone();
         currentAxis = Vector3f.UNIT_XYZ;
         pickManager = Lookup.getDefault().lookup(PickManager.class);
         pickEnabled = false;
@@ -143,8 +145,8 @@ public class RotateShortcut extends ShortcutTool {
         }
 
         if (pickManager.updatePick(camera, screenCoord)) {
-
-            Quaternion rotation = startRotation.mult(pickManager.getRotation(startRotation.inverse()));
+            
+            Quaternion rotation = startRotation.mult(pickManager.getRotation(startWorldRotate.inverse()));           
             toolController.getSelectedSpatial().setLocalRotation(rotation);
             finalRotation = rotation;
             updateToolsTransformation();
