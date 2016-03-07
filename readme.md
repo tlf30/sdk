@@ -1,4 +1,4 @@
-# jMonkeyEngine SDK
+# jMonkeyEngine SDK [![Build Status](https://travis-ci.org/jMonkeyEngine/sdk.svg?branch=master)](https://travis-ci.org/jMonkeyEngine/sdk)
 
 This repo holds the Legacy SDK of jMonkeyEngine, based on Netbeans platform.
 

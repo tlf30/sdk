@@ -122,7 +122,7 @@ do
         # rm -f local/$jdk_version-$jdk_build_version/jdk-$platform
         echo "< Already existing, SKIPPING."
     else
-        curl -L --progress-bar -o local/$jdk_version-$jdk_build_version/jdk-$platform http://download.oracle.com/otn-pub/java/jdk/$jdk_version-$jdk_build_version/jdk-$jdk_version-$platform --cookie "gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
+        curl -L  -o local/$jdk_version-$jdk_build_version/jdk-$platform http://download.oracle.com/otn-pub/java/jdk/$jdk_version-$jdk_build_version/jdk-$jdk_version-$platform --cookie "gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" #--progress-bar
     fi
 done
 
