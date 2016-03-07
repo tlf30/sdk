@@ -9,6 +9,10 @@ cache:
    - gradle-cache
    - netbeans
    - jdks/local
+   files:
+   - jdks/*.bin
+   - jdks/*.exe
+   - jdks/*.zip
    
 addons:
   apt:
@@ -29,12 +33,6 @@ notifications:
 
 install:
   -  ./gradlew buildSdk
-  - cd jdks
-  - ./download-jdks.sh
-  - cd ../
-  - ant build-installers | awk '{printf("."); fflush(stdout)}'
-  - export RELEASE_DIST=$(ls dist/*)
-
   
 #script:
 #  - ./gradlew check
@@ -50,7 +48,8 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: PuEsJd6juXBH29ByITW3ntSAyrwWs0IeFvXJ5Y2YlhojhSMtTwkoWeB6YmDJWP4fhzbajk4TQ1HlOX2IxJXSW/8ShOEIUlGXz9fHiST0dkSM+iRAUgC5enCLW5ITPTiem7eY9ZhS9miIam7ngce9jHNMh75PTzZrEJtezoALT9w=
+    secure: IoGNk8dOmBIB/lXqgd7we7UjyFULww6y43F/Dwx2KZZ6NqC4tvDfBpqEyYhhLC0Ltgpm6vO/+0EepnqmBO5CkDYBECcwpIQX+ndgIOZQLMonXQ3glcjM5yoNtoUbFEn7xvI2ntAKbUkKmWnjNVquHF7t7jT8QfUPymUdV+f1eHapQFtcx2VuDoGF4/1fZuygS5pNPgkw7bduQo8foxlDdzSicNJ8smV0QBUZE/dVlbK1ycitZZrGkkRW/uKvsN/FX+lkl6ANb4y8AE2kcn0EarY6FH5NrQgGp5QNbGdQw1/4voFsR8Bji2UHUYuhjCuV14cgenfSQXrW4rVV/YMGaxxR/BbFB5XfZPCBfIsqfVAGH+Rkvy8/ZTBot+v9L1Pp99RZSCCtJoGPYBQagjzEOOAJplnqNHJ1D8bQo+1XElcuki/qxlO3XvXGQwTs2HMyqrnmlfdRjD5JClxx06Wke4y+KjLWtiQfjihCaQK68ixkCF4U8B2lg8nsuFNmUxUMfPCkKir4XfjuZ27y9ZNBnZQNTKOjW1cjU2GhvGyDWfK5xgfSMP/uKpAopSkWYOMaQVeUlFvMI2NtKdkb7lko6bRizEj/EWlUjhTP7TzvVGE76PJh+XeUkcNQmoFBRYOY2L+TYVs9LlKl+DQbcAHOeMYlxfq/zN7OIAh7T5AsgZk=
+    # Use travis setup releases --force (gem install travis) and then anyone with push access can create the token
   file_glob: true
   file: "${RELEASE_DIST}"
   skip_cleanup: true

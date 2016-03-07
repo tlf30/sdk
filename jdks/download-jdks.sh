@@ -8,12 +8,13 @@ jdk_build_version="b02"
 platforms=( "linux-x64.tar.gz" "linux-i586.tar.gz" "windows-i586.exe" "windows-x64.exe" "macosx-x64.dmg" )
 
 function install_xar {
-    # This is needed to open Mac OS .pkg files on Linux... NEED: apt-get install xml2-dev
+    # This is needed to open Mac OS .pkg files on Linux...
+    echo "> Compiling xar, just for you..."
     wget -q https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/xar/xar-1.5.2.tar.gz
     tar xf xar-1.5.2.tar.gz
     cd xar-1.5.2
-    ./configure -q
-    make -s
+    ./configure -q > /dev/null
+    make -s > /dev/null
     cd ../
 }
 
