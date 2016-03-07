@@ -38,7 +38,7 @@ function unpack_mac_jdk {
         hdiutil detach /Volumes/JDK*
     else # Linux (Requires LOOPFS)
         mkdir mnt
-        7z x ../jdk-macosx-x64.dmg
+        7z x ../jdk-macosx-x64.dmg > /dev/null
         sudo mount -t hfsplus -o loop 4.hfs mnt
         install_xar
         ./xar-1.5.2/src/xar -xf mnt/JDK*.pkg
@@ -69,8 +69,8 @@ function unpack_windows {
     fi
 
     mkdir -p $1
-    7z x -o$1 "jdk-$1.exe"
-    unzip $1/tools.zip -d $1/
+    7z x -o$1 "jdk-$1.exe" > /dev/null
+    unzip -qq $1/tools.zip -d $1/
     rm $1/tools.zip
 
     find $1 -type f \( -name "*.exe" -o -name "*.dll" \) -exec chmod u+rwx {} \; # Make them executable
@@ -119,7 +119,7 @@ function exec_build_package {
     if [ -f "jdk-$1.$3" ]; then
         echo "< Already existing, SKIPPING."
     else
-        sh build-package.sh $1 $2
+        ./build-package.sh $1 $2
     fi
 }
 
