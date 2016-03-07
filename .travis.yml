@@ -3,22 +3,20 @@ sudo: false
 jdk: oraclejdk8
 env:
  - GRADLE_USER_HOME=gradle-cache
- 
+
 cache:
   directories:
    - gradle-cache
    - netbeans
    - jdks/local
-   files:
    - jdks/*.bin
    - jdks/*.exe
    - jdks/*.zip
-   
+
 addons:
   apt:
     packages:
     - p7zip-full
-
 
 # branches:
 #   only:
