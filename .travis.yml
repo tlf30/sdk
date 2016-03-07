@@ -29,7 +29,7 @@ install:
   - ./download-jdks.sh
   - cd ../
   #- ant -q build-installers
-  - ant build-installers
+  - ant build-installers | awk '{printf("."); fflush(stdout)}'
 
 #script:
 #  - ./gradlew check
