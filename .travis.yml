@@ -1,4 +1,6 @@
 language: java
+# Because loopfs isn't allowed...
+os: osx
 sudo: required
 env:
  - GRADLE_USER_HOME=gradle-cache
