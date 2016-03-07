@@ -7,6 +7,16 @@ jdk_version="8u74"
 jdk_build_version="b02"
 platforms=( "linux-x64.tar.gz" "linux-i586.tar.gz" "windows-i586.exe" "windows-x64.exe" "macosx-x64.dmg" )
 
+function install_xar {
+    # This is needed to open Mac OS .pkg files on Linux... NEED: apt-get install xml2-dev
+    wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/xar/xar-1.5.2.tar.gz
+    tar xvf xar-1.5.2.tar.gz
+    cd xar-1.5.2
+    ./configure
+    make
+    cd ../
+}
+
 function unpack_mac_jdk {
     echo "> Extracting the Mac JDK..."
     cd local/$jdk_version-$jdk_build_version/
@@ -26,10 +36,12 @@ function unpack_mac_jdk {
         hdiutil attach ../jdk-macosx-x64.dmg
         xar -xf /Volumes/JDK*/JDK*.pkg
         hdiutil detach /Volumes/JDK*
-    else # Linux (NOT TESTED!)
+    else # Linux (Requires LOOPFS)
         mkdir mnt
-        sudo mount -t hfsplus -o loop ../jdk-macosx-x64.dmg mnt
-        xar -xf mnt/JDK*.pkg
+        7z x ../jdk-macosx-x64.dmg
+        sudo mount -t hfsplus -o loop 4.hfs mnt
+        install_xar
+        ./xar-1.5.2/src/xar -xf mnt/JDK*.pkg
         sudo umount mnt
     fi
 
