@@ -28,7 +28,8 @@ install:
   - cd jdks
   - ./download-jdks.sh
   - cd ../
-  - ant -q build-installers
+  #- ant -q build-installers
+  - ant build-installers
 
 #script:
 #  - ./gradlew check
