@@ -24,23 +24,29 @@ function install_seven_zip {
     fi
 
     echo "> Installing 7zip"
-    mkdir -p 7zip
-    #cd 7zip/build
-    #apt-get source p7zip-full
-    #wget http://downloads.sourceforge.net/project/p7zip/p7zip/15.09/p7zip_15.09_src_all.tar.bz2
-    #tar xf p7zip*
-    #cd p7zip*
-    #make
-    #mv bin/7za ../../bin/
-    #cd ../../
-    #rm -rf build/
+
+    if [ -x "7zip/bin/7z" ]; then
+        echo ">> Found cached 7zip, adjusting path"
+        cd 7zip/bin
+        PATH=`pwd`:$PATH
+        cd ../../
+        return 0
+    fi
+
+    echo ">> Compiling 7zip from source"
+    mkdir -p 7zip/bin
     cd 7zip
-    wget http://downloads.sourceforge.net/project/p7zip/p7zip/15.09/p7zip_15.09_x86_linux_bin.tar.bz2
-    tar xf p7zip_*
+    wget http://downloads.sourceforge.net/project/p7zip/p7zip/15.09/p7zip_15.09_src_all.tar.bz2
+    tar xf p7zip*
+    rm *.bz2
     cd p7zip*
-    ./install.sh
+    make all3 > /dev/null
+    mv -v bin/ ../
+    cd ../
+    rm -rf p7zip*
+    cd bin
+    PATH=`pwd`:$PATH
     cd ../../
-    rm -rf 7zip
 }
 
 function unpack_mac_jdk {
