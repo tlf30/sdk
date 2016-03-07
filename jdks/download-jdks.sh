@@ -9,11 +9,11 @@ platforms=( "linux-x64.tar.gz" "linux-i586.tar.gz" "windows-i586.exe" "windows-x
 
 function install_xar {
     # This is needed to open Mac OS .pkg files on Linux... NEED: apt-get install xml2-dev
-    wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/xar/xar-1.5.2.tar.gz
-    tar xvf xar-1.5.2.tar.gz
+    wget -q https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/xar/xar-1.5.2.tar.gz
+    tar xf xar-1.5.2.tar.gz
     cd xar-1.5.2
-    ./configure
-    make
+    ./configure -q
+    make -s
     cd ../
 }
 
@@ -51,7 +51,7 @@ function unpack_mac_jdk {
     cd Contents/Home
     # FROM HERE: build-osx-zip.sh by normen
     cp -r . ../jdk
-    zip -9 -r -y ../../../../jdk-macosx.zip ../jdk
+    zip -9 -r -y -q ../../../../jdk-macosx.zip ../jdk
     cd ../../../../
     rm -rf MacOS/
     cd ../../
@@ -97,7 +97,7 @@ function unpack_linux {
 
     mkdir -p $1
     cd $1
-    tar -xvf "../jdk-$1.tar.gz"
+    tar -xf "../jdk-$1.tar.gz"
     cd jdk1*
     mv * ../
     cd ../
@@ -134,7 +134,7 @@ do
         # rm -f local/$jdk_version-$jdk_build_version/jdk-$platform
         echo "< Already existing, SKIPPING."
     else
-        curl -L  -o local/$jdk_version-$jdk_build_version/jdk-$platform http://download.oracle.com/otn-pub/java/jdk/$jdk_version-$jdk_build_version/jdk-$jdk_version-$platform --cookie "gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" #--progress-bar
+        curl -L  -s -o local/$jdk_version-$jdk_build_version/jdk-$platform http://download.oracle.com/otn-pub/java/jdk/$jdk_version-$jdk_build_version/jdk-$jdk_version-$platform --cookie "gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" #--progress-bar
     fi
 done
 
