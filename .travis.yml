@@ -1,6 +1,4 @@
 language: java
-# Because loopfs isn't allowed...
-# os: osx
 sudo: required
 jdk: oraclejdk8
 env:
@@ -25,34 +23,31 @@ notifications:
 
 install:
   -  ./gradlew buildSdk
-  - cd jdks
-  - ./download-jdks.sh
-  - cd ../
-  #- ant -q build-installers
-  - ant build-installers | awk '{printf("."); fflush(stdout)}'
-
+  
 #script:
 #  - ./gradlew check
 #  - ./gradlew createZipDistribution
 
-#before_deploy:
-#  - export RELEASE_DIST=$(ls build/distributions/*.zip)
+before_deploy:
+  - cd jdks
+  - ./download-jdks.sh
+  - cd ../
+  - ant build-installers | awk '{printf("."); fflush(stdout)}'
+  - export RELEASE_DIST=$(ls dist/*)
 
-#deploy:
-#  provider: releases
-#  api_key:
-#    secure: PuEsJd6juXBH29ByITW3ntSAyrwWs0IeFvXJ5Y2YlhojhSMtTwkoWeB6YmDJWP4fhzbajk4TQ1HlOX2IxJXSW/8ShOEIUlGXz9fHiST0dkSM+iRAUgC5enCLW5ITPTiem7eY9ZhS9miIam7ngce9jHNMh75PTzZrEJtezoALT9w=
-#  file_glob: true
-#  file: "${RELEASE_DIST}"
-#  skip_cleanup: true
-#  on:
-#    repo: jMonkeyEngine/jmonkeyengine
-#    tags: true
+deploy:
+  provider: releases
+  api_key:
+    secure: PuEsJd6juXBH29ByITW3ntSAyrwWs0IeFvXJ5Y2YlhojhSMtTwkoWeB6YmDJWP4fhzbajk4TQ1HlOX2IxJXSW/8ShOEIUlGXz9fHiST0dkSM+iRAUgC5enCLW5ITPTiem7eY9ZhS9miIam7ngce9jHNMh75PTzZrEJtezoALT9w=
+  file_glob: true
+  file: "${RELEASE_DIST}"
+  skip_cleanup: true
+  on:
+    repo: jMonkeyEngine/sdk
+    tags: true
 
 before_install:
-  # - sudo apt-get update # Already done for us
   - sudo apt-get install -qq p7zip-full hfsplus libxml2-dev zip
-  # - brew install p7zip
   - git fetch --unshallow
   - "[ $TRAVIS_PULL_REQUEST == 'false' ] && openssl aes-256-cbc -K $encrypted_a1949b55824a_key -iv $encrypted_a1949b55824a_iv -in private/www-updater.key.enc -out private/www-updater.key -d || :"
 
