@@ -28,9 +28,9 @@ function unpack_mac_jdk {
         hdiutil detach /Volumes/JDK*
     else # Linux (NOT TESTED!)
         mkdir mnt
-        mount -t hfsplus -o loop ../jdk-macosx-x64.dmg mnt
+        sudo mount -t hfsplus -o loop ../jdk-macosx-x64.dmg mnt
         xar -xf mnt/JDK*.pkg
-        umount mnt
+        sudo umount mnt
     fi
 
     cd jdk1*.pkg
