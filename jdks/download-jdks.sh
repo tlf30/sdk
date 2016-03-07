@@ -17,6 +17,32 @@ function install_xar {
     cd ../
 }
 
+function install_seven_zip {
+    # This is due to not having root privilegs for apt-get
+    if [ -x "$(command -v 7z)" ]; then
+        return 0
+    fi
+
+    echo "> Installing 7zip"
+    mkdir -p 7zip
+    #cd 7zip/build
+    #apt-get source p7zip-full
+    #wget http://downloads.sourceforge.net/project/p7zip/p7zip/15.09/p7zip_15.09_src_all.tar.bz2
+    #tar xf p7zip*
+    #cd p7zip*
+    #make
+    #mv bin/7za ../../bin/
+    #cd ../../
+    #rm -rf build/
+    cd 7zip
+    wget http://downloads.sourceforge.net/project/p7zip/p7zip/15.09/p7zip_15.09_x86_linux_bin.tar.bz2
+    tar xf p7zip_*
+    cd p7zip*
+    ./install.sh
+    cd ../../
+    rm -rf 7zip
+}
+
 function unpack_mac_jdk {
     echo "> Extracting the Mac JDK..."
     cd local/$jdk_version-$jdk_build_version/
@@ -160,6 +186,9 @@ do
     fi
 done
 
+cd local/$jdk_version-$jdk_build_version
+install_seven_zip
+cd ../../
 unpack_mac_jdk
 build_mac_jdk
 unpack_windows windows-i586
