@@ -8,7 +8,7 @@ cache:
   directories:
    - gradle-cache
    - netbeans
-   - jdks
+   - jdks/local
 
 # branches:
 #   only:
@@ -23,6 +23,12 @@ notifications:
 
 install:
   -  ./gradlew buildSdk
+  - cd jdks
+  - ./download-jdks.sh
+  - cd ../
+  - ant build-installers | awk '{printf("."); fflush(stdout)}'
+  - export RELEASE_DIST=$(ls dist/*)
+
   
 #script:
 #  - ./gradlew check

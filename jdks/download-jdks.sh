@@ -36,7 +36,7 @@ function install_seven_zip {
     echo ">> Compiling 7zip from source"
     mkdir -p 7zip/bin
     cd 7zip
-    wget http://downloads.sourceforge.net/project/p7zip/p7zip/15.09/p7zip_15.09_src_all.tar.bz2
+    wget -q http://downloads.sourceforge.net/project/p7zip/p7zip/15.09/p7zip_15.09_src_all.tar.bz2
     tar xf p7zip*
     rm *.bz2
     cd p7zip*
