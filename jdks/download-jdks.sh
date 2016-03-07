@@ -36,13 +36,14 @@ function unpack_mac_jdk {
         hdiutil attach ../jdk-macosx-x64.dmg
         xar -xf /Volumes/JDK*/JDK*.pkg
         hdiutil detach /Volumes/JDK*
-    else # Linux (Requires LOOPFS)
-        mkdir mnt
+    else # Linux
+        #mkdir mnt
         7z x ../jdk-macosx-x64.dmg > /dev/null
-        sudo mount -t hfsplus -o loop 4.hfs mnt
+        7z x 4.hfs > /dev/null
+        #sudo mount -t hfsplus -o loop 4.hfs mnt
         install_xar
-        ./xar-1.5.2/src/xar -xf mnt/JDK*.pkg
-        sudo umount mnt
+        ./xar-1.5.2/src/xar -xf JDK*/JDK*.pkg
+        #sudo umount mnt
     fi
 
     cd jdk1*.pkg
@@ -115,11 +116,32 @@ function build_mac_jdk {
 
 function exec_build_package {
     echo "> Building Package for $1"
+    name="jdk-$1.$3"
 
-    if [ -f "jdk-$1.$3" ]; then
+    if [ -f "$name" ]; then
         echo "< Already existing, SKIPPING."
     else
-        ./build-package.sh $1 $2
+        # ./build-package.sh $1 $2 # We do it manually now
+        unzipsfxname="unzipsfx/unzipsfx-$1"
+        if [ ! -f "$unzipsfxname" ]; then
+            echo "No unzipsfx for platform $1 found at $unzipsfxname, cannot continue"
+            exit 1
+        fi
+
+
+        echo ">> Creating SFX JDK package $name for $1 with source $2."
+
+        if [ -f "$2jre/lib/rt.jar" ]; then # Already packed?
+            pack200 -J-Xmx1024m $2jre/lib/rt.jar.pack.gz $2jre/lib/rt.jar
+            rm -rf $2jre/lib/rt.jar
+        fi
+
+        echo ">>> Zipping JDK"
+        zip -9 -qry jdk_tmp_sfx.zip $2
+        echo ">>> Building SFX"
+        cat $unzipsfxname jdk_tmp_sfx.zip > $name
+        chmod +x $name
+        rm -rf jdk_tmp_sfx.zip
     fi
 }
 
