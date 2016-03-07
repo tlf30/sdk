@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 #(c) jmonkeyengine.org
 #Author MeFisto94
 set -e # Quit on Error
 
 jdk_version="8u74"
 jdk_build_version="b02"
-platforms=("linux-x64.tar.gz" "linux-i586.tar.gz" "windows-i586.exe" "windows-x64.exe" "macosx-x64.dmg")
+platforms=( "linux-x64.tar.gz" "linux-i586.tar.gz" "windows-i586.exe" "windows-x64.exe" "macosx-x64.dmg" )
 
 function unpack_mac_jdk {
     echo "> Extracting the Mac JDK..."
