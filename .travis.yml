@@ -9,6 +9,12 @@ cache:
    - gradle-cache
    - netbeans
    - jdks/local
+   
+addons:
+  apt:
+    packages:
+    - p7zip-full
+
 
 # branches:
 #   only:

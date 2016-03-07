@@ -196,9 +196,9 @@ do
     fi
 done
 
-cd local/$jdk_version-$jdk_build_version
-install_seven_zip
-cd ../../
+#cd local/$jdk_version-$jdk_build_version
+#install_seven_zip # see travis' apt addon
+#cd ../../
 unpack_mac_jdk
 build_mac_jdk
 unpack_windows windows-i586
