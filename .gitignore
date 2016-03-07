@@ -20,3 +20,9 @@ build
 .gradle
 netbeans
 */nbproject/private/*
+ant-jme/dist
+jdks/local/*
+jdks/*.bin
+jdks/*.exe
+jdks/*.zip
+dist/
