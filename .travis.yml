@@ -9,9 +9,6 @@ cache:
    - gradle-cache
    - netbeans
    - jdks/local
-   - jdks/*.bin
-   - jdks/*.exe
-   - jdks/*.zip
 
 addons:
   apt:
@@ -41,6 +38,7 @@ before_deploy:
   - ./download-jdks.sh
   - cd ../
   - ant build-installers | awk '{printf("."); fflush(stdout)}'
+  - rm -rf build/
   - export RELEASE_DIST=$(ls dist/*)
 
 deploy:
@@ -50,7 +48,7 @@ deploy:
     # Use travis setup releases --force (gem install travis) and then anyone with push access can create the token
   file_glob: true
   file: "${RELEASE_DIST}"
-  skip_cleanup: false
+  skip_cleanup: true
   on:
     repo: jMonkeyEngine/sdk
     tags: true
