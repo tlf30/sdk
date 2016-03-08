@@ -37,14 +37,15 @@ install:
 #  - ./gradlew createZipDistribution
 
 before_deploy:
-#  - cd jdks
+  - cd jdks
 #  - ./download-jdks.sh
-#  - mv local/*/compiled/* .
-#  - cd ../
+  - mv local/*/compiled/* .
+  - cd ../
   - ant build-installers | awk '{printf("."); fflush(stdout)}'
   - rm -rf build/
-#  - cd jdks
-#  - mv *.bin *.zip *.exe local/*/compiled/
+  - cd jdks
+  - mv *.bin *.zip *.exe local/*/compiled/
+  - cd ../
 
 deploy:
   provider: releases
