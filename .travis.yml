@@ -28,20 +28,22 @@ notifications:
 
 install:
   -  ./gradlew buildSdk
+  - cd jdks
+  - ./download-jdks.sh
   
 #script:
 #  - ./gradlew check
 #  - ./gradlew createZipDistribution
 
 before_deploy:
-  - cd jdks
-  - ./download-jdks.sh
-  - mv local/*/compiled/* .
-  - cd ../
+#  - cd jdks
+#  - ./download-jdks.sh
+#  - mv local/*/compiled/* .
+#  - cd ../
   - ant build-installers | awk '{printf("."); fflush(stdout)}'
   - rm -rf build/
-  - cd jdks
-  - mv *.bin *.zip *.exe local/*/compiled/
+#  - cd jdks
+#  - mv *.bin *.zip *.exe local/*/compiled/
 
 deploy:
   provider: releases
