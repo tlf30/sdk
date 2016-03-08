@@ -8,7 +8,7 @@ cache:
   directories:
    - gradle-cache
    - netbeans
-   - jdks/local/*/compiled
+   - jdks/local/8u74-b02/compiled
 
 addons:
   apt:
