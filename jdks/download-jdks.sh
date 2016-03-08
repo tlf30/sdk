@@ -9,13 +9,14 @@ platforms=( "linux-x64.tar.gz" "linux-i586.tar.gz" "windows-i586.exe" "windows-x
 
 function install_xar {
     # This is needed to open Mac OS .pkg files on Linux...
-    echo "> Compiling xar, just for you..."
+    echo ">> Compiling xar, just for you..."
     wget -q https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/xar/xar-1.5.2.tar.gz
     tar xf xar-1.5.2.tar.gz
     cd xar-1.5.2
     ./configure -q > /dev/null
     make -s > /dev/null
     cd ../
+    echo "<< OK!"
 }
 
 function install_seven_zip {
@@ -54,60 +55,92 @@ function install_seven_zip {
     cd ../../
 }
 
-function unpack_mac_jdk {
-    echo "> Extracting the Mac JDK..."
-    cd local/$jdk_version-$jdk_build_version/
+function download_jdk {
+    echo ">>> Downloading the JDK for $1"
 
-    if [ -f ../../jdk-macosx.zip ];
+    if [ -f downloads/jdk-$1 ];
+    then
+        echo "<<< Already existing, SKIPPING."
+    else
+        curl -L  -s -o downloads/jdk-$1 http://download.oracle.com/otn-pub/java/jdk/$jdk_version-$jdk_build_version/jdk-$jdk_version-$1 --cookie "gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" #--progress-bar
+        echo "<<< OK!"
+    fi
+}
+
+function unpack_mac_jdk {
+    echo ">> Extracting the Mac JDK..."
+    #cd local/$jdk_version-$jdk_build_version/
+
+    if [ -f "compiled/jdk-macosx.zip" ];
     then
         echo "< Already existing, SKIPPING."
-        cd ../../
+        #cd ../../
         return 0
     fi
+
+    download_jdk macosx-x64.dmg
 
     mkdir -p MacOS
     cd MacOS
 
     # MacOS
     if [ "$(uname)" == "Darwin" ]; then
-        hdiutil attach ../jdk-macosx-x64.dmg
+        hdiutil attach ../downloads/jdk-macosx-x64.dmg
         xar -xf /Volumes/JDK*/JDK*.pkg
         hdiutil detach /Volumes/JDK*
     else # Linux
-        #mkdir mnt
-        7z x ../jdk-macosx-x64.dmg > /dev/null
+        7z x ../downloads/jdk-macosx-x64.dmg > /dev/null
         7z x 4.hfs > /dev/null
-        #sudo mount -t hfsplus -o loop 4.hfs mnt
         install_xar
         ./xar-1.5.2/src/xar -xf JDK*/JDK*.pkg
-        #sudo umount mnt
     fi
 
     cd jdk1*.pkg
     cat Payload | gunzip -dc | cpio -i
-    mkdir -p Contents/jdk/
-    cd Contents/Home
-    # FROM HERE: build-osx-zip.sh by normen
-    cp -r . ../jdk
-    zip -9 -r -y -q ../../../../jdk-macosx.zip ../jdk
-    cd ../../../../
+    #mkdir -p Contents/jdk/
+    cd Contents/
+    # FROM HERE: build-osx-zip.sh by normen (with changes)
+    mv Home jdk # rename folder
+    zip -9 -r -y -q ../../../compiled/jdk-macosx.zip jdk
+    cd ../../../
     rm -rf MacOS/
-    cd ../../
+
+    if [ "$TRAVIS" == "true" ]; then
+        rm -rf downloads/jdk-macosx-x64.dmg
+    fi
+    #cd ../../
+
+    echo "<< OK!"
 }
 
+function build_mac_jdk {
+    echo "> Building the Mac JDK"
+    if ! [ -f "compiled/jdk-macosx.zip" ];
+    then
+        unpack_mac_jdk # Depends on "unpack" which depends on "download" (Unpack includes what compile is to other archs)
+    fi
+
+    rm -rf ../../jdk-macosx.zip
+    ln -s ./local/$jdk_version-$jdk_build_version/compiled/jdk-macosx.zip ../../ # Note that the first part is seen relative to the second one.
+    echo "< OK!"
+}
+
+# PARAMS arch_oracle
 function unpack_windows {
-    echo "> Extracting the JDK for $1"
-    cd local/$jdk_version-$jdk_build_version/
+    echo ">> Extracting the JDK for $1"
+    #cd local/$jdk_version-$jdk_build_version/
 
     if [ -d $1 ];
     then
-        echo "< Already existing, SKIPPING."
-        cd ../../
-    return 0
+        echo "<< Already existing, SKIPPING."
+        # cd ../../
+        return 0
     fi
 
+    download_jdk $1.exe
+
     mkdir -p $1
-    7z x -o$1 "jdk-$1.exe" > /dev/null
+    7z x -o$1 "downloads/jdk-$1.exe" > /dev/null
     unzip -qq $1/tools.zip -d $1/
     rm $1/tools.zip
 
@@ -119,94 +152,118 @@ function unpack_windows {
         rm $eachFile;
     done
 
-    cd ../../
+    if [ "$TRAVIS" == "true" ]; then
+        rm -rf downloads/jdk-$1.exe
+    fi
+    # cd ../../
+    echo "<< OK!"
 }
 
 function unpack_linux {
-    echo "> Extracting the JDK for $1"
-    cd local/$jdk_version-$jdk_build_version/
+    echo ">> Extracting the JDK for $1"
+    #cd local/$jdk_version-$jdk_build_version/
 
     if [ -d $1 ];
     then
-        echo "< Already existing, SKIPPING."
-        cd ../../
+        echo "<< Already existing, SKIPPING."
+        #cd ../../
         return 0
     fi
 
+    download_jdk $1.tar.gz
+
     mkdir -p $1
     cd $1
-    tar -xf "../jdk-$1.tar.gz"
+    tar -xf "../downloads/jdk-$1.tar.gz"
     cd jdk1*
     mv * ../
     cd ../
     rm -rf jdk1*
-    cd ../../../
-}
+    cd ../
 
-function build_mac_jdk {
-    if [ -f local/$jdk_version-$jdk_build_version/jdk-macosx.zip ];
-    then
-        rm -f jdk-macosx.zip
-        mv -f local/$jdk_version-$jdk_build_version/jdk-macosx.zip .
-    fi # Already packed
-}
-
-function exec_build_package {
-    echo "> Building Package for $1"
-    name="jdk-$1.$3"
-
-    if [ -f "$name" ]; then
-        echo "< Already existing, SKIPPING."
-    else
-        # ./build-package.sh $1 $2 # We do it manually now
-        unzipsfxname="unzipsfx/unzipsfx-$1"
-        if [ ! -f "$unzipsfxname" ]; then
-            echo "No unzipsfx for platform $1 found at $unzipsfxname, cannot continue"
-            exit 1
-        fi
-
-
-        echo ">> Creating SFX JDK package $name for $1 with source $2."
-
-        if [ -f "$2jre/lib/rt.jar" ]; then # Already packed?
-            pack200 -J-Xmx1024m $2jre/lib/rt.jar.pack.gz $2jre/lib/rt.jar
-            rm -rf $2jre/lib/rt.jar
-        fi
-
-        echo ">>> Zipping JDK"
-        zip -9 -qry jdk_tmp_sfx.zip $2
-        echo ">>> Building SFX"
-        cat $unzipsfxname jdk_tmp_sfx.zip > $name
-        chmod +x $name
-        rm -rf jdk_tmp_sfx.zip
+    if [ "$TRAVIS" == "true" ]; then
+        rm -rf downloads/jdk-$1.tar.gz
     fi
+
+    echo "<< OK!"
 }
 
-mkdir -p local/$jdk_version-$jdk_build_version
+# PARAMS: os arch_usual arch_oracle
+function compile_other {
+    echo "> Compiling JDK for $1-$2"
 
-for platform in ${platforms[@]}
-do
-    echo "> Downloading the JDK for $platform"
-
-    if [ -f local/$jdk_version-$jdk_build_version/jdk-$platform ];
-    then
-        # rm -f local/$jdk_version-$jdk_build_version/jdk-$platform
-        echo "< Already existing, SKIPPING."
+    if [ $1 == "windows" ]; then
+        name="jdk-$1-$2.exe"
+    elif [ $1 == "linux" ]; then
+        name="jdk-$1-$2.bin"
     else
-        curl -L  -s -o local/$jdk_version-$jdk_build_version/jdk-$platform http://download.oracle.com/otn-pub/java/jdk/$jdk_version-$jdk_build_version/jdk-$jdk_version-$platform --cookie "gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" #--progress-bar
+        echo "Unknown Platform $1. ERROR!!!"
+        exit 1
     fi
-done
 
-#cd local/$jdk_version-$jdk_build_version
-#install_seven_zip # see travis' apt addon
-#cd ../../
-unpack_mac_jdk
+    if [ -f "compiled/$name" ]; then
+        echo "< Already existing, SKIPPING."
+        return 0
+    fi
+
+    # Depends on UNPACK and thus DOWNLOAD
+    if [ $1 == "windows" ]; then
+        unpack_windows windows-$3
+    elif [ $1 == "linux" ]; then
+        unpack_linux linux-$3
+    fi
+
+    unzipsfxname="../../unzipsfx/unzipsfx-$1-$2"
+    if [ ! -f "$unzipsfxname" ]; then
+        echo "No unzipsfx for platform $1-$2 found at $unzipsfxname, cannot continue"
+        exit 1
+    fi
+
+    echo "> Creating SFX JDK package $name"
+    if [ -f "$1-$3/jre/lib/rt.jar" ]; then # Already packed?
+        echo "> PACK200 rt.jar"
+        pack200 -J-Xmx1024m $1-$3/jre/lib/rt.jar.pack.gz $1-$3/jre/lib/rt.jar
+        rm -rf $1-$3/jre/lib/rt.jar
+    fi
+
+    echo "> Zipping JDK"
+    zip -9 -qry jdk_tmp_sfx.zip $1-$3
+    echo "> Building SFX"
+    cat $unzipsfxname jdk_tmp_sfx.zip > compiled/$name
+    chmod +x compiled/$name
+    rm -rf jdk_tmp_sfx.zip
+
+    if [ "$TRAVIS" == "true" ]; then
+        rm -rf $1-$3
+    fi
+
+    echo "< OK!"
+}
+
+# PARAMS: os arch_usual arch_oracle
+function build_other_jdk {
+    echo "> Building Package for $1-$2"
+    compile_other $1 $2 $3 # Depend on Compile
+
+    if [ $1 == "windows" ]; then
+        name="jdk-$1-$2.exe"
+    elif [ $1 == "linux" ]; then
+        name="jdk-$1-$2.bin"
+    fi
+
+    rm -rf ../../$name
+    ln -s ./local/$jdk_version-$jdk_build_version/compiled/$name ../../ # Note that the first part is seen relative to the second one.
+    echo "< OK!"
+}
+
+mkdir -p local/$jdk_version-$jdk_build_version/downloads
+mkdir -p local/$jdk_version-$jdk_build_version/compiled
+
+cd local/$jdk_version-$jdk_build_version
+
 build_mac_jdk
-unpack_windows windows-i586
-exec_build_package windows-x86 local/$jdk_version-$jdk_build_version/windows-i586/ exe
-unpack_windows windows-x64
-exec_build_package windows-x64 local/$jdk_version-$jdk_build_version/windows-x64/ exe
-unpack_linux linux-i586
-exec_build_package linux-x86 local/$jdk_version-$jdk_build_version/linux-i586/ bin
-unpack_linux linux-x64
-exec_build_package linux-x64 local/$jdk_version-$jdk_build_version/linux-x64/ bin
+build_other_jdk windows x86 i586
+build_other_jdk windows x64 x64
+build_other_jdk linux x86 i586
+build_other_jdk linux x64 x64
+cd ../../
