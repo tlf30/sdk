@@ -36,9 +36,12 @@ install:
 before_deploy:
   - cd jdks
   - ./download-jdks.sh
+  - mv local/*/compiled/* .
   - cd ../
   - ant build-installers | awk '{printf("."); fflush(stdout)}'
   - rm -rf build/
+  - cd jdks
+  - mv *.bin *.zip *.exe local/*/compiled/
 
 deploy:
   provider: releases

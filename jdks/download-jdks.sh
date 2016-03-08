@@ -121,7 +121,7 @@ function build_mac_jdk {
     fi
 
     rm -rf ../../jdk-macosx.zip
-    ln -s ./local/$jdk_version-$jdk_build_version/compiled/jdk-macosx.zip ../../ # Note that the first part is seen relative to the second one.
+    # ln -s ./local/$jdk_version-$jdk_build_version/compiled/jdk-macosx.zip ../../ # Note that the first part is seen relative to the second one.
     echo "< OK!"
 }
 
@@ -252,7 +252,7 @@ function build_other_jdk {
     fi
 
     rm -rf ../../$name
-    ln -s ./local/$jdk_version-$jdk_build_version/compiled/$name ../../ # Note that the first part is seen relative to the second one.
+    # ln -s ./local/$jdk_version-$jdk_build_version/compiled/$name ../../ # Note that the first part is seen relative to the second one.
     echo "< OK!"
 }
 
