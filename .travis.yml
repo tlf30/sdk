@@ -30,6 +30,7 @@ install:
   -  ./gradlew buildSdk
   - cd jdks
   - ./download-jdks.sh
+  - cd ../
   
 #script:
 #  - ./gradlew check
