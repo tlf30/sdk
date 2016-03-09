@@ -227,9 +227,9 @@ function compile_other {
     fi
 
     echo "> Zipping JDK"
-    mv $1-$3 _jvm
-    zip -9 -qry jdk_tmp_sfx.zip _jvm
-    mv _jvm $1-$3
+    cd $1-$3 # zip behaves differently between 7zip and Info-Zip, so simply change wd
+    zip -9 -qry ../jdk_tmp_sfx.zip *
+    cd ../
     echo "> Building SFX"
     cat $unzipsfxname jdk_tmp_sfx.zip > compiled/$name
     chmod +x compiled/$name
