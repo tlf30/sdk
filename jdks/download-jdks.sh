@@ -121,7 +121,7 @@ function build_mac_jdk {
     fi
 
     rm -rf ../../jdk-macosx.zip
-    # ln -s ./local/$jdk_version-$jdk_build_version/compiled/jdk-macosx.zip ../../ # Note that the first part is seen relative to the second one.
+    ln -s ./local/$jdk_version-$jdk_build_version/compiled/jdk-macosx.zip ../../ # Note that the first part is seen relative to the second one.
     echo "< OK!"
 }
 
@@ -227,7 +227,9 @@ function compile_other {
     fi
 
     echo "> Zipping JDK"
-    zip -9 -qry jdk_tmp_sfx.zip $1-$3
+    mv $1-$3 _jvm
+    zip -9 -qry jdk_tmp_sfx.zip _jvm
+    mv _jvm $1-$3
     echo "> Building SFX"
     cat $unzipsfxname jdk_tmp_sfx.zip > compiled/$name
     chmod +x compiled/$name
@@ -252,7 +254,7 @@ function build_other_jdk {
     fi
 
     rm -rf ../../$name
-    # ln -s ./local/$jdk_version-$jdk_build_version/compiled/$name ../../ # Note that the first part is seen relative to the second one.
+    ln -s ./local/$jdk_version-$jdk_build_version/compiled/$name ../../ # Note that the first part is seen relative to the second one.
     echo "< OK!"
 }
 
