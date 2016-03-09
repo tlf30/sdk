@@ -38,7 +38,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "Filters",
 id = "com.jme3.gde.core.filters.OpenFilterAction")
@@ -46,7 +45,6 @@ id = "com.jme3.gde.core.filters.OpenFilterAction")
 @ActionReferences({
     @ActionReference(path = "Loaders/application/jme3filterpostprocessor/Actions", position = 10)
 })
-@Messages("CTL_OpenFilterAction=Open Filter")
 public final class OpenFilterAction implements ActionListener {
 
     private final FilterDataObject context;
