@@ -259,7 +259,10 @@ public class BlenderTool {
     }
 
     private static File getBlenderSettingsFolder() {
-        File blender = InstalledFileLocator.getDefault().locate(getBlenderOsSettingsPath() + "/2.75", null, false);
+        File blender = InstalledFileLocator.getDefault().locate(getBlenderOsSettingsPath() + "/2.76", null, false); /* Update this every new Blender Version you use */
+        if (blender == null) {
+            blender = InstalledFileLocator.getDefault().locate(getBlenderOsSettingsPath() + "/2.75", null, false);
+        }
         if (blender == null) {
             blender = InstalledFileLocator.getDefault().locate(getBlenderOsSettingsPath() + "/2.69", null, false);
         }
