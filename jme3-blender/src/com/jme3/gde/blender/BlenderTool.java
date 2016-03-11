@@ -173,17 +173,21 @@ public class BlenderTool {
         }
     }
 
+    /**
+     * We create a lot of own directories to place our scripts inside, have config/preferences files stored there etc.
+     * That's the place were we check for their existance and create them if necessary
+     * Note: We don't use config/scripts folder's anymore in favour of the blender internal paths.
+     * @return 
+     */
     private static boolean checkBlenderFolders() {
         String jmpDir = Places.getUserDirectory().getAbsolutePath();
         FileObject fileObject = FileUtil.toFileObject(new File(jmpDir));
         if (fileObject != null) {
-            FileObject configFileObject = fileObject.getFileObject(configFolderName);
-            //TODO: using installed blender scripts folder, make more flexible by moving
-            //to updateable folder
-            FileObject scriptsFileObject = fileObject.getFileObject(scriptsFolderName);
+            //FileObject configFileObject = fileObject.getFileObject(configFolderName);
+            //FileObject scriptsFileObject = fileObject.getFileObject(scriptsFolderName);
             FileObject jmeScriptsFileObject = fileObject.getFileObject(jmeScriptsFolderName);
             FileObject userScriptsFileObject = fileObject.getFileObject(userScriptsFolderName);
-            if (configFileObject == null) {
+            /* if (configFileObject == null) {
                 try {
                     configFileObject = FileUtil.createFolder(fileObject, configFolderName);
                 } catch (IOException ex) {
@@ -198,7 +202,7 @@ public class BlenderTool {
                     Exceptions.printStackTrace(ex);
                     return false;
                 }
-            }
+            }*/
             if (jmeScriptsFileObject == null) {
                 try {
                     jmeScriptsFileObject = FileUtil.createFolder(fileObject, jmeScriptsFolderName);
@@ -215,7 +219,7 @@ public class BlenderTool {
                     return false;
                 }
             }
-            Scripts.copyToFolder(jmeScriptsFileObject);
+            Scripts.copyToFolder(jmeScriptsFileObject); /* Unpack our converter scripts */
         } else {
             logger.log(Level.SEVERE, "No global settings folder found!");
             return false;
@@ -223,26 +227,51 @@ public class BlenderTool {
         return true;
     }
 
+    /**
+     * This is the Path where blender will store all changes to the config.
+     * Note that this is not the blender default so you'll see different settings when launching blender from inside the SDK
+     * Why? Good question actually.
+     * @return 
+     */
     private static String getConfigEnv() {
         String ret = Places.getUserDirectory().getAbsolutePath() + "/" + configFolderName;
         ret = ret.replace("/", File.separator);
         return ret;
     }
 
-    private static String getScriptsEnv() {
+    /**
+     * This is the Path where blender itself stores it's scripts.
+     * The plan was to take those scripts and reside them into a folder along with all the other scripts (UserScripts, ...),
+     * We don't do this anymore because there's no real reason to copy all the scripts or even maintain them on your own.
+     * Blender automatically takes care.
+     * @return 
+     */
+    private static String getSystemScriptsEnv() {
         //TODO: using installed blender scripts folder
-        String ret = getBlenderSettingsFolder().getAbsolutePath();
-//        String ret = System.getProperty("netbeans.user") + "/" + scriptsFolderName;
+        String ret = getBlenderSettingsFolder().getAbsolutePath() + "/" + "scripts";
+        //String ret = System.getProperty("netbeans.user") + "/" + scriptsFolderName;
         ret = ret.replace("/", File.separator);
         return ret;
     }
 
+    /**
+     * This is the Path where we put custom userscripts inside.
+     * They would be available inside blender (examples would be some jmonkey-animation-helper-addon)
+     * @return The directory where the user scripts are
+     */
     private static String getUserScriptsEnv() {
         String ret = Places.getUserDirectory().getAbsolutePath() + "/" + userScriptsFolderName;
         ret = ret.replace("/", File.separator);
         return ret;
     }
 
+    /**
+     * Get the full path to that script.
+     * Those are the scripts that come with jMonkeyEngine (so neither user nor system)
+     * @param scriptName The name of the Script
+     * @param prefix The prefix like "import" or "tool"
+     * @return The whole absolute path to that script
+     */
     private static String getScriptPath(String scriptName, String prefix) {
         String ret = Places.getUserDirectory().getAbsolutePath() + "/" + jmeScriptsFolderName + "/" + prefix + "_" + scriptName + ".py";
         ret = ret.replace("/", File.separator);
@@ -258,6 +287,12 @@ public class BlenderTool {
         return blender;
     }
 
+    /**
+     * Get the main folder of blender where all resources are found:
+     * System Scripts, Bundled Python, etc.
+     * We don't need this anymore see {@link #getSystemScriptsEnv() }
+     * @return 
+     */
     private static File getBlenderSettingsFolder() {
         File blender = InstalledFileLocator.getDefault().locate(getBlenderOsSettingsPath() + "/2.76", null, false); /* Update this every new Blender Version you use */
         if (blender == null) {
@@ -282,6 +317,12 @@ public class BlenderTool {
         return blender;
     }
 
+    /**
+     * Run Blender to convert .fbx or similar files to a blender file which can then be imported to .j3o
+     * @param type The Filetype (extension)
+     * @param input The FileObject (Input). It will be placed the same but with .blend
+     * @return Success or not.
+     */
     public static boolean runConversionScript(String type, FileObject input) {
         if (!checkBlenderFolders()) {
             logger.log(Level.SEVERE, "Could not create blender settings folders!");
@@ -306,8 +347,8 @@ public class BlenderTool {
                     "-i", inputPath,
                     "-o", outputPath);
             buildr.directory(getBlenderRootFolder());
-            buildr.environment().put("BLENDER_USER_CONFIG", getConfigEnv());
-            buildr.environment().put("BLENDER_SYSTEM_SCRIPTS", getScriptsEnv());
+            //buildr.environment().put("BLENDER_USER_CONFIG", getConfigEnv());
+            //buildr.environment().put("BLENDER_SYSTEM_SCRIPTS", getSystemScriptsEnv());
             buildr.environment().put("BLENDER_USER_SCRIPTS", getUserScriptsEnv());
             Process proc = buildr.start();
             OutputReader outReader = new OutputReader(proc.getInputStream());
@@ -329,6 +370,13 @@ public class BlenderTool {
         return true;
     }
 
+    /**
+     * This will run a tool instead of an importer.
+     * See {@link #runConversionScript(java.lang.String, org.openide.filesystems.FileObject) }
+     * @param toolName The tool to use
+     * @param input The file to process
+     * @return sucess?
+     */
     public static boolean runToolScript(String toolName, FileObject input) {
         if (!checkBlenderFolders()) {
             logger.log(Level.SEVERE, "Could not create blender settings folders!");
@@ -350,8 +398,8 @@ public class BlenderTool {
                     "--",
                     "-i", inputPath);
             buildr.directory(getBlenderRootFolder());
-            buildr.environment().put("BLENDER_USER_CONFIG", getConfigEnv());
-            buildr.environment().put("BLENDER_SYSTEM_SCRIPTS", getScriptsEnv());
+            //buildr.environment().put("BLENDER_USER_CONFIG", getConfigEnv());
+            //buildr.environment().put("BLENDER_SYSTEM_SCRIPTS", getSystemScriptsEnv());
             buildr.environment().put("BLENDER_USER_SCRIPTS", getUserScriptsEnv());
             Process proc = buildr.start();
             OutputReader outReader = new OutputReader(proc.getInputStream());
@@ -373,6 +421,12 @@ public class BlenderTool {
         return true;
     }
 
+    /**
+     * Simply open that Blender File
+     * @param file The file/path to open
+     * @param async Should this method lock until blender has finished?
+     * @return sucess?
+     */
     private static boolean runBlender(final String file, boolean async) {
         if (!checkBlenderFolders()) {
             logger.log(Level.SEVERE, "Could not create blender settings folders!");
@@ -398,9 +452,9 @@ public class BlenderTool {
                 try {
                     String command = exe.getAbsolutePath();
                     ProcessBuilder buildr = new ProcessBuilder(command, file);
-                    buildr.directory(getBlenderRootFolder());
-                    buildr.environment().put("BLENDER_USER_CONFIG", getConfigEnv());
-                    buildr.environment().put("BLENDER_SYSTEM_SCRIPTS", getScriptsEnv());
+                    buildr.directory(getBlenderRootFolder()); /* Set working Directory to where the executables are */
+                    //buildr.environment().put("BLENDER_USER_CONFIG", getConfigEnv());
+                    //buildr.environment().put("BLENDER_SYSTEM_SCRIPTS", getSystemScriptsEnv());
                     buildr.environment().put("BLENDER_USER_SCRIPTS", getUserScriptsEnv());
                     Process proc = buildr.start();
                     OutputReader outReader = new OutputReader(proc.getInputStream());
@@ -437,11 +491,20 @@ public class BlenderTool {
         return successful.get();
     }
 
+    /**
+     * Open the file in Blender.
+     * Note: Path Seperators are automatically converted, so always use the unix "/" way.
+     * @param file The File to open
+     * @return Whether we had success or not
+     */
     public static boolean openInBlender(FileObject file) {
         String path = file.getPath().replace("/", File.separator);
         return runBlender(path, true);
     }
 
+    /**
+     * Simply just run Blender
+     */
     public static void runBlender() {
         if (!runBlender(null, true)) {
             logger.log(Level.INFO, "Could not run blender, already running? Trying to focus window.");
