@@ -497,6 +497,8 @@ task cleanSdk() <<{
     ant.ant(dir: ".", antfile: "build.xml", target: "clean")
     file("jme3-core-baselibs/release/").deleteDir()
     file("jme3-core-libraries/release/").deleteDir()
+    file("jme3-core-baselibs/nbproject/project.xml").delete()
+    file("jme3-core-libraries/nbproject/project.xml").delete()
     file("jme3-project-baselibs/release/").deleteDir()
     file("jme3-project-libraries/release/").deleteDir()
     file("jme3-project-testdata/release/").deleteDir()
