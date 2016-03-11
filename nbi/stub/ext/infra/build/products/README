@@ -1,3 +1,3 @@
 Updating Bundled Products:
-a) To update the JDK edit ~/jdks/download-jdks.sh and make sure to clean any caches (on CI-Systems like Travis) or delete the file links in ~/jdks/ 
-b) When you update Blender (you already have the folder for that), make sure to also update jme3-blender/src/com/jme3/gde/blender/BlenderTool.java. It contains a getSettings method which WILL break each update. See #20
+a) To update the JDK edit ~/jdks/download-jdks.sh and make sure to clean any caches (on CI-Systems like Travis) or delete the file links in ~/jdks/
+b) To update blender you simply need to change the download URLs AND the Base Folder (just see their properties files, it’s self explanatory)
