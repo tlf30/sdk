@@ -2,6 +2,8 @@
 import groovy.xml.MarkupBuilder
 import java.util.zip.ZipFile
 
+apply from: 'gradle/libs/digest.gradle'
+
 
 if (!hasProperty('mainClass')) {
     ext.mainClass = ''
@@ -476,7 +478,51 @@ ant.properties['plugins.version'] = jmeVersion
 ant.properties['app.version']= jmeFullVersion
 ant.properties['nbm.revision']= jmeNbmRevision
 
-task buildSdk(dependsOn: [copyBaseLibs, copyProjectLibs, createProjectXml, createBaseXml, copyTestSources]) <<{
+task overrideHarness(dependsOn: checkPlatformConfig) << {
+    def props = new Properties()
+    props.load(new FileInputStream("harness-override/override.properties"))
+
+    def patch_file = { f ->
+        def g = file("harness-override/" + f.getName())
+        if (!f.exists()) {
+            throw new GradleException('Cannot find targetFile: ' +  f.getAbsolutePath());
+        }
+
+        if (!g.exists()) {
+            throw new GradleException('Cannot find sourceFile: ' +  g.getAbsolutePath());
+        }
+
+        if (getSHA256Hash(f) == props[f.getName() + ".hashAfter"]) {
+            println "> Harness file \"" + f.getName() + "\" is already patched!"
+            return; /* Already patched */
+        }
+        if (getSHA256Hash(f) == props[f.getName() + ".hashBefore"]) {
+            println "> Will patch harness file \"" + f.getName() + "\"!"
+
+            if (getSHA256Hash(g) != props[g.getName() + ".hashAfter"]) {
+                throw new GradleException("Dangerous Checksum Mismatch: sourceFile \"" + g.getName() + "\" doesn't equal to its hashAfter hash. This probably means someone changed this file but forgot to update said hash or someone tried to invade the SDK by spreading his exe.")
+            }
+
+            copy {
+                from g
+                into f.getParent()
+            }
+
+        } else {
+            throw new GradleException('Checksum Mismatch: targetFile ' + f.getName() + ' has invalid hash ' + getSHA256Hash(f) +  '. Did you update Netbeans without changing harness-override/override.properties?');
+        }
+    }
+
+    patch_file(file("netbeans/harness/launchers/app.exe"));
+    patch_file(file("netbeans/harness/launchers/app64.exe"));
+    patch_file(file("netbeans/harness/launchers/pre7_app.exe"));
+
+}
+overrideHarness.outputs.files([ 'netbeans/harness/launchers/app.exe', 'netbeans/harness/launchers/app64.exe', 'netbeans/harness/launchers/pre7_app.exe'])
+overrideHarness.inputs.files([ 'netbeans/harness/launchers/app.exe', 'netbeans/harness/launchers/app64.exe', 'netbeans/harness/launchers/pre7_app.exe', 'harness-override/override.properties'])
+
+
+task buildSdk(dependsOn: [copyBaseLibs, copyProjectLibs, createProjectXml, createBaseXml, copyTestSources, overrideHarness]) <<{
     ant.propertyfile(file: "nbproject/project.properties") {
         entry( key: "plugins.version", value: "${jmeVersion}")
         entry( key: "app.version", value: "${jmeFullVersion}")
