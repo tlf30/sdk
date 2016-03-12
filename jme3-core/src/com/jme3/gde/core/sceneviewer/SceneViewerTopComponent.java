@@ -95,9 +95,14 @@ public final class SceneViewerTopComponent extends TopComponent {
             public void mouseWheelMoved(final MouseWheelEvent e) {
                 SceneApplication.getApplication().enqueue(new Callable<Void>() {
                     public Void call() throws Exception {
-                        String action = "MouseWheel-";
+                        String action;
                         if (e.getWheelRotation() < 0) {
                             action = "MouseWheel";
+                        }else if (e.getWheelRotation() > 0) {
+                            action = "MouseWheel-";
+                        }
+                        else {
+                            return null;
                         }
                         if (app.getActiveCameraController() != null) {
                             app.getActiveCameraController().onAnalog(action, e.getWheelRotation(), 0);
