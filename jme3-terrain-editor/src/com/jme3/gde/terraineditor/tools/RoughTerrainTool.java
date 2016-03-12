@@ -45,12 +45,12 @@ import org.openide.loaders.DataObject;
 public class RoughTerrainTool extends TerrainTool {
     
     private RoughExtraToolParams params;
-    
+
     @Override
     public void actionPrimary(Vector3f point, int textureIndex, AbstractSceneExplorerNode rootNode, DataObject dataObject) {
         if (radius == 0 || weight == 0)
             return;
-        RoughTerrainToolAction action = new RoughTerrainToolAction(point, radius, weight, (RoughExtraToolParams)params);
+        RoughTerrainToolAction action = new RoughTerrainToolAction(point, radius, weight, params);
         action.doActionPerformed(rootNode, dataObject);
     }
 

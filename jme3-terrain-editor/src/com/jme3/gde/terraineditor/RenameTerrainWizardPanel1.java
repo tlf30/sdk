@@ -56,14 +56,14 @@ public class RenameTerrainWizardPanel1 implements WizardDescriptor.Panel<WizardD
 
     @Override
     public void readSettings(WizardDescriptor wiz) {
-        RenameTerrainVisualPanel1 comp = (RenameTerrainVisualPanel1) getComponent();
+        RenameTerrainVisualPanel1 comp = getComponent();
         String name = wiz.getProperty("oldName").toString();
         comp.setOriginalName(name);
     }
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        RenameTerrainVisualPanel1 comp = (RenameTerrainVisualPanel1) getComponent();
+        RenameTerrainVisualPanel1 comp = getComponent();
         String name = comp.getRenamed();
         wiz.putProperty("newName", name );
     }

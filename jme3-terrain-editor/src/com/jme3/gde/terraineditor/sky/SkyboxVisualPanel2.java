@@ -45,7 +45,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import jme3tools.converters.ImageToAwt;
 import org.openide.util.ImageUtilities;
-
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class SkyboxVisualPanel2 extends JPanel {
 
     private TexturePreview texPreview;

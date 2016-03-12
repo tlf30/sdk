@@ -69,7 +69,7 @@ public final class EditTerrainAction implements ActionListener {
                     java.awt.EventQueue.invokeLater(new Runnable() {
 
                         public void run() {
-                            manager.getManager().clearCache();
+                            manager.clearCache();
                             TerrainEditorTopComponent composer = TerrainEditorTopComponent.findInstance();
                             composer.openScene(asset, context, manager);
                         }

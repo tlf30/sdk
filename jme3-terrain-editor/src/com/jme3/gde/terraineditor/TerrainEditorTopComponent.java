@@ -1332,7 +1332,7 @@ public final class TerrainEditorTopComponent extends TopComponent implements Sce
                 toolController.cleanup();
             }
 
-            toolController = new TerrainToolController(currentRequest.getToolNode(), currentRequest.getManager().getManager(), request.getJmeNode());
+            toolController = new TerrainToolController(currentRequest.getToolNode(), currentRequest.getManager(), request.getJmeNode());
             camController = new TerrainCameraController(SceneApplication.getApplication().getCamera());
             camController.setMaster(this);
             camController.enable();
