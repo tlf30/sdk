@@ -17,6 +17,29 @@ From there you'll have a really simple process:
 That's basically it. No matter what, we will tell you what further information we need, just make sure to describe it as detailed as possible.  
 See also the following parts on what information you _could_ include depending on the Issue.  
 
+### Version Information
+This is quite important for any release (as long as you are not using the latest version. DOUBLE SUPER TRIPLE CHECK!), since the SDK releases are fast paced.  
+Note: The Welcome Screen doesn't tell the truth about this. It always shows the latest version available.  
+You can try to rely on the window title but the dead safe way is to open the SDK's log and look for information like:  
+```
+Running on jMonkeyEngine 3.1-alpha3
+* Branch: HEAD
+* Git Hash: 0b487ee
+* Build Date: 2016-03-14
+LWJGL 2.9.3 context running on thread jME3 Main
+* Graphics Adapter: null
+[...]
+OpenGL Renderer Information
+* Renderer: NVIDIA GeForce GT 650M OpenGL Engine
+[...]
+Audio Renderer Information
+* Device: Built-in Output
+[...]
+OpenAL EFX not available! Audio effects won't work.
+```
+
+Please also include the information on the About Screen (especially for Build Problems).
+
 ### Reporting Exceptions  
 From time to time, you might get an "Exception" being written in your SDK Console after you experienced an Issue.  
 It's important to not only copy the name of it but the full stacktrace (caused by xyz in line u, caught at ...).  
