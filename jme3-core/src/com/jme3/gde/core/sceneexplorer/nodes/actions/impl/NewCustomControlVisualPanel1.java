@@ -37,6 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.swing.JPanel;
 import org.netbeans.api.java.classpath.ClassPath;
@@ -89,7 +91,7 @@ public final class NewCustomControlVisualPanel1 extends JPanel {
             SourceGroup[] groups = sources.getSourceGroups(JavaProjectConstants.SOURCES_TYPE_JAVA);
             if (groups != null) {
                 for (SourceGroup sourceGroup : groups) {
-                    ClasspathInfo cpInfo = ClasspathInfo.create(ClassPath.getClassPath(sourceGroup.getRootFolder(), ClassPath.BOOT),
+                    final ClasspathInfo cpInfo = ClasspathInfo.create(ClassPath.getClassPath(sourceGroup.getRootFolder(), ClassPath.BOOT),
                             ClassPath.getClassPath(sourceGroup.getRootFolder(), ClassPath.COMPILE),
                             ClassPath.getClassPath(sourceGroup.getRootFolder(), ClassPath.SOURCE));
 
@@ -108,20 +110,38 @@ public final class NewCustomControlVisualPanel1 extends JPanel {
 //                                    TypeUtilities util = control.getTypeUtilities();//.isCastable(Types., null)
 //                                    util.isCastable(null, null);
                                     TypeElement elem = elementHandle.resolve(control);
-                                    if (elem != null) {
-                                        List<? extends TypeMirror> interfaces = elem.getInterfaces();
-                                        for (TypeMirror typeMirror : interfaces) {
+                                    if (elem == null)
+                                        return;
+                                    
+                                    String elementName = elem.getQualifiedName().toString();
+                                    
+                                    if (list.contains(elementName)) /* No duplicates */
+                                        return;
+                                    
+                                    do {
+                                        //Check if it implements control interface
+                                        for (TypeMirror typeMirror : elem.getInterfaces()) {
                                             String interfaceName = typeMirror.toString();
                                             if ("com.jme3.scene.control.Control".equals(interfaceName)) {
-                                                list.add(elem.getQualifiedName().toString());
+                                                if (!list.contains(elementName))
+                                                    list.add(elementName);
+                                                break;
                                             }
                                         }
-                                        TypeMirror superClass = elem.getSuperclass();
-                                        String superClassName = superClass.toString();
-                                        if ("com.jme3.scene.control.AbstractControl".equals(superClassName)) {
-                                            list.add(elem.getQualifiedName().toString());
+                                        //Check if it is an AbstractControl
+                                        String className = elem.toString();
+                                        if ("com.jme3.scene.control.AbstractControl".equals(className)) {
+                                            if (!list.contains(elementName))
+                                                list.add(elementName);
                                         }
-                                    }
+
+                                        TypeMirror superClass = elem.getSuperclass();
+                                        if (superClass == null || superClass.getKind() == TypeKind.NONE) {
+                                            break;
+                                        }
+
+                                        elem = (TypeElement)((DeclaredType)superClass).asElement(); // Iterate deeper
+                                    } while (elem != null);
                                 }
                             }, false);
                         } catch (Exception ioe) {
