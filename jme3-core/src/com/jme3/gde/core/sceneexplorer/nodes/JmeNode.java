@@ -176,6 +176,20 @@ public class JmeNode extends JmeSpatial {
     }
 
     @Override
+    public void destroy() throws IOException {
+        super.destroy(); /* super has to be the first call, since it calls spatial.removeFromParent(); */
+        
+        for (org.openide.nodes.Node n : getChildren().getNodes()) {
+            n.destroy(); // Call destroy on children
+        }
+        
+        if (getParentNode() == null) {
+            setName("Scene"); /* You can't delete the rootNode but fake clearing it */
+        }
+        refresh(false);
+    }
+
+    @Override
     public Class<?> getExplorerObjectClass() {
         return Node.class;
     }
