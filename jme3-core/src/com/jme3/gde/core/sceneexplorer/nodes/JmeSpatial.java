@@ -369,10 +369,10 @@ public class JmeSpatial extends AbstractSceneExplorerNode {
      * Note: There is no isEnabled because it's only passed on to the Controls and they could have several states.
      * @param enable 
      */
-    public void setEnabled(boolean enable) {
+    public void setControlsEnabled(boolean enable) {
         for (Node n : getChildren().getNodes()) {
             if (n instanceof JmeSpatial) {
-                ((JmeSpatial)n).setEnabled(enable);
+                ((JmeSpatial)n).setControlsEnabled(enable);
             } else if (n instanceof JmeControl) {
                 ((JmeControl)n).setEnabled(enable);
             }

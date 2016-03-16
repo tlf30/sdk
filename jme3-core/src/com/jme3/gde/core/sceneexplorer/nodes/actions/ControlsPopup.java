@@ -33,6 +33,7 @@ package com.jme3.gde.core.sceneexplorer.nodes.actions;
 
 import com.jme3.gde.core.sceneexplorer.nodes.JmeControl;
 import com.jme3.gde.core.sceneexplorer.nodes.JmeSpatial;
+import com.jme3.gde.core.util.notify.MessageUtil;
 import com.jme3.scene.Node;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
@@ -99,7 +100,7 @@ public class ControlsPopup extends AbstractAction implements Presenter.Popup {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Spatial != null) {
-                    Spatial.setEnabled(true);
+                    Spatial.setControlsEnabled(true);
                 }
             }
         };
@@ -116,7 +117,10 @@ public class ControlsPopup extends AbstractAction implements Presenter.Popup {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Control != null) {
-                    Control.setEnabled(true);
+                    if (Control.isEnableable())
+                        Control.setEnabled(true);
+                    else
+                        MessageUtil.warn("Cannot Start this Control!\nStart/Stop only works for Controls which extend AbstractControl.\nImplementing Control isn't enough.");
                 }
             }
         };
@@ -133,7 +137,7 @@ public class ControlsPopup extends AbstractAction implements Presenter.Popup {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Spatial != null) {
-                    Spatial.setEnabled(false);
+                    Spatial.setControlsEnabled(false);
                 }
             }
         };
@@ -149,9 +153,10 @@ public class ControlsPopup extends AbstractAction implements Presenter.Popup {
         return new AbstractAction("Stop") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (Control != null) {
-                    Control.setEnabled(false);
-                }
+                if (Control.isEnableable())
+                        Control.setEnabled(false);
+                    else
+                        MessageUtil.warn("Cannot Stop this Control!\nStart/Stop only works for Controls which extend AbstractControl.\nImplementing Control isn't enough.");
             }
         };
     }

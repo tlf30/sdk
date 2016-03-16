@@ -34,6 +34,7 @@ package com.jme3.gde.core.sceneexplorer.nodes;
 import com.jme3.gde.core.scene.SceneApplication;
 import com.jme3.gde.core.sceneexplorer.nodes.actions.ControlsPopup;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -55,7 +56,6 @@ import org.openide.util.actions.SystemAction;
 public abstract class JmeControl extends AbstractSceneExplorerNode {
 
     protected Control control;
-    protected boolean enabled;
     
     public JmeControl() {
         super();
@@ -126,44 +126,28 @@ public abstract class JmeControl extends AbstractSceneExplorerNode {
     }
     
     /**
-     * Enable/Disable the Control. This means essentially it will get detached from our Scene Graph.
+     * Enable/Disable the Control.
+     * This only works for extended AbstractControls!!
      * Also see: {@link #isEnabled() }
      * @param enabled Whether the Control should be enabled or disabled
-     * @return If we had success (false when an Exception occured or no {@link Control} assigned.
+     * @return If we had success (false when an Exception occured or no {@link Control} assigned or not of type {@link AbstractControl} )
      */
-    public boolean setEnabled(boolean enabled) {
-        if (control == null)
+    public boolean setEnabled(final boolean enabled) {
+        if (!isEnableable())
             return false;
-        
-        this.enabled = enabled;
-        final Spatial spat = getParentNode().getLookup().lookup(Spatial.class);
-        
         try {
-            if (enabled) {
-                SceneApplication.getApplication().enqueue(new Callable<Void>() {
-                    public Void call() throws Exception {
-                        if (spat.getControl(control.getClass()) == null)
-                            spat.addControl(control);
-                        return null;
-                    }
-                }).get();
-        
-            } else {
-                SceneApplication.getApplication().enqueue(new Callable<Void>() {
-                        public Void call() throws Exception {
-                            if (spat.getControl(control.getClass()) != null)
-                                spat.removeControl(control);
-                            return null;
-                        }
-                    }).get();
-            }
+            SceneApplication.getApplication().enqueue(new Callable<Void>() {
+                public Void call() throws Exception {
+                    ((AbstractControl)control).setEnabled(enabled);
+                    return null;
+                }
+            }).get();
+           
         } catch (InterruptedException ex) {
             Exceptions.printStackTrace(ex);
-            this.enabled = false;
             return false;
         } catch (ExecutionException ex) {
             Exceptions.printStackTrace(ex);
-            this.enabled = false;
             return false;
         }
         
@@ -171,12 +155,19 @@ public abstract class JmeControl extends AbstractSceneExplorerNode {
     }
     
     /**
-     * Returns whether this Control is enabled or disabled (i.e. attached to the SceneGraph and has it's controlUpdate rendered).
-     * <b>Note:</b> When an Exception occurs during {@link #setEnabled(boolean) }, it's status is considered disabled.
+     * Returns whether this Control is enabled or disabled.
+     * <b>Note:</b> When the Control doesn't extend AbstractControl, FALSE is returned.
      * @return -
      */
     public boolean isEnabled()
     {
-        return enabled;
+        if (isEnableable()) {
+            return ((AbstractControl)control).isEnabled();
+        } else
+            return false;
+    }
+    
+    public boolean isEnableable() {
+        return control instanceof AbstractControl;
     }
 }
