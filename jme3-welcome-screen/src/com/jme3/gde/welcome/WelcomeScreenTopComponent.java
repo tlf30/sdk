@@ -7,10 +7,12 @@ package com.jme3.gde.welcome;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -47,7 +49,7 @@ autostore = false)
     "HINT_WelcomeScreenTopComponent=Shows news and information about your SDK"
 })
 public final class WelcomeScreenTopComponent extends TopComponent implements HyperlinkListener {
-
+    private static Thread checkOpenThread;
     private static final Logger logger = Logger.getLogger(WelcomeScreenTopComponent.class.getName());
     private static final HelpCtx ctx = new HelpCtx("com.jme3.gde.core.about");
 //    private final RssFeedParser parser = new RssFeedParser(org.openide.util.NbBundle.getMessage(WelcomeScreenTopComponent.class, "WelcomeScreenTopComponent.rss.link"));
@@ -65,22 +67,47 @@ public final class WelcomeScreenTopComponent extends TopComponent implements Hyp
 
     public void loadPage() {
         try {
-            URL startUrl = new URL(org.openide.util.NbBundle.getMessage(WelcomeScreenTopComponent.class, "WelcomeScreenTopComponent.http.link"));
+            do {
+                try {
+                    Thread.sleep(100);
+                } catch (Exception ex) {}
+            }
+            while (checkOpenThread == null || checkOpenThread.isAlive()); /* Wait for first getModified (static executed from NB) to finish */
+            
+            final URL startUrl = new URL(org.openide.util.NbBundle.getMessage(WelcomeScreenTopComponent.class, "WelcomeScreenTopComponent.http.link"));
             long lastMod = getModified(startUrl);
             NbPreferences.forModule(getClass()).putLong("LAST_PAGE_UPDATE", lastMod);
-            jEditorPane1.setPage(startUrl);
-        } catch (IOException ex) {
-            logger.log(Level.INFO, "Loading welcome page from web failed", ex);
-            try {
-                jEditorPane1.setPage(new URL(org.openide.util.NbBundle.getMessage(WelcomeScreenTopComponent.class, "WelcomeScreenTopComponent.local.link")));
-            } catch (IOException ex1) {
-                logger.log(Level.SEVERE, "Could not open local help page!", ex1);
-            }
+            
+            SwingUtilities.invokeLater( new Runnable() {
+                @Override        
+                public void run() {
+                    try {    
+                        jEditorPane1.setPage(startUrl);
+                    } catch (IOException ex) {
+                        logger.log(Level.INFO, "Loading welcome page from web failed", ex);
+                        try {
+                            jEditorPane1.setPage(new URL(org.openide.util.NbBundle.getMessage(WelcomeScreenTopComponent.class, "WelcomeScreenTopComponent.local.link")));
+                        } catch (IOException ex1) {
+                            logger.log(Level.SEVERE, "Could not open local help page!", ex1);
+                        }
+                    }
+                } 
+            });
+        }
+        catch (MalformedURLException ex)
+        {
+            logger.log(Level.SEVERE, "Could not build URL since it's malformed!", ex);
         }
     }
 
     public static void checkOpen() {
-        checkOpen(0);
+        checkOpenThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                checkOpen(0);
+            }
+        }, "WelcomeScreenCheckOpenThread");
+        checkOpenThread.start();
     }
 
     public static void checkOpen(long lastMod) {
@@ -106,6 +133,7 @@ public final class WelcomeScreenTopComponent extends TopComponent implements Hyp
 
     }
 
+    @Override
     public void hyperlinkUpdate(HyperlinkEvent he) {
         if (he.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
             try {
@@ -158,9 +186,10 @@ public final class WelcomeScreenTopComponent extends TopComponent implements Hyp
             logger.log(Level.INFO, "Reading welcome page content from web failed", ex);
         } finally {
             try {
-                in.close();
+                if (in != null)
+                    in.close();
             } catch (IOException ex) {
-            logger.log(Level.INFO, "Closing reader for welcome page content from web failed", ex);
+                logger.log(Level.INFO, "Closing reader for welcome page content from web failed", ex);
             }
         }
         return "";
@@ -228,7 +257,12 @@ public final class WelcomeScreenTopComponent extends TopComponent implements Hyp
 
     @Override
     public void componentOpened() {
-        loadPage();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                loadPage();
+            }
+        }, "WelcomeScreenOpenedThread").start();
     }
 
     @Override
