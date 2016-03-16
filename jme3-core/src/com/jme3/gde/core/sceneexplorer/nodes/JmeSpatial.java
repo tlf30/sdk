@@ -36,6 +36,7 @@ import com.jme3.export.binary.BinaryExporter;
 import com.jme3.gde.core.properties.UserDataProperty;
 import com.jme3.gde.core.scene.SceneApplication;
 import com.jme3.gde.core.sceneexplorer.nodes.actions.AddUserDataAction;
+import com.jme3.gde.core.sceneexplorer.nodes.actions.ControlsPopup;
 import com.jme3.gde.core.sceneexplorer.nodes.actions.NewControlPopup;
 import com.jme3.gde.core.sceneexplorer.nodes.actions.NewLightPopup;
 import com.jme3.gde.core.sceneexplorer.nodes.actions.ToolPopup;
@@ -125,11 +126,14 @@ public class JmeSpatial extends AbstractSceneExplorerNode {
 //        return super.getActions(context);
         if (((JmeSpatialChildren) jmeChildren).readOnly) {
             return new Action[]{
-                        SystemAction.get(CopyAction.class),};
+                        SystemAction.get(CopyAction.class),
+                        new ControlsPopup(this)
+                };
         } else {
             return new Action[]{
                         new NewControlPopup(this),
                         new NewLightPopup(this),
+                        new ControlsPopup(this),
                         Actions.alwaysEnabled(new AddUserDataAction(this), "Add User Data", "", false),
                         new ToolPopup(this),
                         SystemAction.get(RenameAction.class),
@@ -357,5 +361,21 @@ public class JmeSpatial extends AbstractSceneExplorerNode {
         children.setReadOnly(cookie);
         children.setDataObject(key2);
         return new Node[]{new JmeSpatial((Spatial) key, children).setReadOnly(cookie)};
+    }
+    
+    /**
+     * This method will call {@link JmeControl#setEnabled(boolean) } for all children nodes of this.
+     * It will enabled/disable the Controls from the Scene Graph and hence being run.
+     * Note: There is no isEnabled because it's only passed on to the Controls and they could have several states.
+     * @param enable 
+     */
+    public void setEnabled(boolean enable) {
+        for (Node n : getChildren().getNodes()) {
+            if (n instanceof JmeSpatial) {
+                ((JmeSpatial)n).setEnabled(enable);
+            } else if (n instanceof JmeControl) {
+                ((JmeControl)n).setEnabled(enable);
+            }
+        }
     }
 }

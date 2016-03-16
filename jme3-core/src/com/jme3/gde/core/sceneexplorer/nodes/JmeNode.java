@@ -34,6 +34,7 @@ package com.jme3.gde.core.sceneexplorer.nodes;
 import com.jme3.gde.core.icons.IconList;
 import com.jme3.gde.core.scene.SceneApplication;
 import com.jme3.gde.core.sceneexplorer.nodes.actions.AddUserDataAction;
+import com.jme3.gde.core.sceneexplorer.nodes.actions.ControlsPopup;
 import com.jme3.gde.core.sceneexplorer.nodes.actions.NewControlPopup;
 import com.jme3.gde.core.sceneexplorer.nodes.actions.NewLightPopup;
 import com.jme3.gde.core.sceneexplorer.nodes.actions.NewSpatialPopup;
@@ -166,6 +167,7 @@ public class JmeNode extends JmeSpatial {
                         new NewLightPopup(this),
                         Actions.alwaysEnabled(new AddUserDataAction(this), "Add User Data", "", false),
                         new ToolPopup(this),
+                        new ControlsPopup(this),
                         SystemAction.get(RenameAction.class),
                         SystemAction.get(CopyAction.class),
                         SystemAction.get(CutAction.class),

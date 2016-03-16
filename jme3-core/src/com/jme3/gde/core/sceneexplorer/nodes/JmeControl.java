@@ -32,6 +32,7 @@
 package com.jme3.gde.core.sceneexplorer.nodes;
 
 import com.jme3.gde.core.scene.SceneApplication;
+import com.jme3.gde.core.sceneexplorer.nodes.actions.ControlsPopup;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
@@ -54,6 +55,8 @@ import org.openide.util.actions.SystemAction;
 public abstract class JmeControl extends AbstractSceneExplorerNode {
 
     protected Control control;
+    protected boolean enabled;
+    
     public JmeControl() {
         super();
     }
@@ -72,10 +75,11 @@ public abstract class JmeControl extends AbstractSceneExplorerNode {
     
     @Override
     public Action[] getActions(boolean context) {
-        return new SystemAction[]{
+        return new Action[]{
                     //                    SystemAction.get(CopyAction.class),
                     //                    SystemAction.get(CutAction.class),
                     //                    SystemAction.get(PasteAction.class),
+                    new ControlsPopup(this),
                     SystemAction.get(DeleteAction.class)
                 };
     }
@@ -119,5 +123,60 @@ public abstract class JmeControl extends AbstractSceneExplorerNode {
             AbstractSceneExplorerNode par=(AbstractSceneExplorerNode)parent;
             par.fireSave(modified);
         }
+    }
+    
+    /**
+     * Enable/Disable the Control. This means essentially it will get detached from our Scene Graph.
+     * Also see: {@link #isEnabled() }
+     * @param enabled Whether the Control should be enabled or disabled
+     * @return If we had success (false when an Exception occured or no {@link Control} assigned.
+     */
+    public boolean setEnabled(boolean enabled) {
+        if (control == null)
+            return false;
+        
+        this.enabled = enabled;
+        final Spatial spat = getParentNode().getLookup().lookup(Spatial.class);
+        
+        try {
+            if (enabled) {
+                SceneApplication.getApplication().enqueue(new Callable<Void>() {
+                    public Void call() throws Exception {
+                        if (spat.getControl(control.getClass()) == null)
+                            spat.addControl(control);
+                        return null;
+                    }
+                }).get();
+        
+            } else {
+                SceneApplication.getApplication().enqueue(new Callable<Void>() {
+                        public Void call() throws Exception {
+                            if (spat.getControl(control.getClass()) != null)
+                                spat.removeControl(control);
+                            return null;
+                        }
+                    }).get();
+            }
+        } catch (InterruptedException ex) {
+            Exceptions.printStackTrace(ex);
+            this.enabled = false;
+            return false;
+        } catch (ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+            this.enabled = false;
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Returns whether this Control is enabled or disabled (i.e. attached to the SceneGraph and has it's controlUpdate rendered).
+     * <b>Note:</b> When an Exception occurs during {@link #setEnabled(boolean) }, it's status is considered disabled.
+     * @return -
+     */
+    public boolean isEnabled()
+    {
+        return enabled;
     }
 }

@@ -34,6 +34,7 @@ package com.jme3.gde.core.sceneexplorer.nodes;
 import com.jme3.animation.AnimControl;
 import com.jme3.gde.core.icons.IconList;
 import com.jme3.gde.core.properties.AnimationProperty;
+import com.jme3.gde.core.sceneexplorer.nodes.actions.ControlsPopup;
 import com.jme3.gde.core.sceneexplorer.nodes.actions.TrackVisibilityPopup;
 import java.awt.Image;
 import javax.swing.Action;
@@ -116,10 +117,9 @@ public class JmeAnimControl extends JmeControl {
 
     @Override
     public Action[] getActions(boolean context) {
-
-
         return new Action[]{
                     new TrackVisibilityPopup(this),
+                    new ControlsPopup(this),
                     SystemAction.get(DeleteAction.class)
                 };
     }
