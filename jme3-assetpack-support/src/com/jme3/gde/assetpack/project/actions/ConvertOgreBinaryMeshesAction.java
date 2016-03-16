@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.project.Project;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
@@ -58,7 +57,7 @@ public final class ConvertOgreBinaryMeshesAction implements Action {
     }
 
     public void scanDir(String dir2scan, boolean delete) {
-        ProgressHandle handle = ProgressHandleFactory.createHandle("Convert Ogre Binary Files");
+        ProgressHandle handle = ProgressHandle.createHandle("Convert Ogre Binary Files");
         handle.start();
         try {
             File zipDir = new File(dir2scan);

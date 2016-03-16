@@ -45,7 +45,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.util.RequestProcessor;
 
 /**
@@ -115,7 +114,7 @@ public class JreDownloader {
 
             public Object call() throws Exception {
                 long length = connection.getContentLengthLong();
-                ProgressHandle progress = ProgressHandleFactory.createHandle("Downloading JRE to " + dest.getName());
+                ProgressHandle progress = ProgressHandle.createHandle("Downloading JRE to " + dest.getName());
                 progress.start((int) length);
                 BufferedInputStream in = null;
                 BufferedOutputStream out = null;

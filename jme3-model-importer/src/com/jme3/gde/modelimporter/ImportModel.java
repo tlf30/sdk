@@ -34,7 +34,6 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.swing.JComponent;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectInformation;
 import org.netbeans.api.project.ui.OpenProjects;
@@ -97,7 +96,7 @@ public final class ImportModel implements ActionListener {
         if (!cancelled) {
             new Thread(new Runnable() {
                 public void run() {
-                    ProgressHandle handle = ProgressHandleFactory.createHandle("Importing Model..");
+                    ProgressHandle handle = ProgressHandle.createHandle("Importing Model..");
                     handle.start();
                     try {
                         copyModel(wiz);

@@ -49,10 +49,8 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.modules.InstalledFileLocator;
 import org.openide.modules.Places;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
@@ -101,7 +99,7 @@ public class ZipExtensionTool {
                 }
             }
         }
-        ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Installing " + extensionName + " data");
+        ProgressHandle progressHandle = ProgressHandle.createHandle("Installing " + extensionName + " data");
         progressHandle.start();
         if (Utilities.isWindows()) {
             extractToolsJava(packageFolder + "/" + extensionName + "-" + SUFFIX_WIN + ".zip", settingsFolder + File.separator + extensionName);

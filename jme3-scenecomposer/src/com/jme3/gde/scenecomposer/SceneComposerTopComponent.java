@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.border.TitledBorder;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
@@ -1053,7 +1052,7 @@ private void jToggleSelectGeomActionPerformed(java.awt.event.ActionEvent evt) {/
                     Runnable call = new Runnable() {
 
                         public void run() {
-                            ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Reloading Scene..");
+                            ProgressHandle progressHandle = ProgressHandle.createHandle("Reloading Scene..");
                             progressHandle.start();
                             try {
                                 manager.clearCache();

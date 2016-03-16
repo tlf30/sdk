@@ -25,7 +25,6 @@ import java.util.zip.ZipOutputStream;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.project.Project;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
@@ -59,7 +58,7 @@ public final class PublishAssetPackAction implements Action {
             new Thread(new Runnable() {
 
                 public void run() {
-                    ProgressHandle handle = ProgressHandleFactory.createHandle("Publishing AssetPack..");
+                    ProgressHandle handle = ProgressHandle.createHandle("Publishing AssetPack..");
                     handle.start();
                     packZip(wizardDescriptor);
                     copyData(wizardDescriptor);

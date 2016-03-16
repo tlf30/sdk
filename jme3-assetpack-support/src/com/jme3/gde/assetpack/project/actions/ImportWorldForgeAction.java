@@ -35,7 +35,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Action;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.NotifyDescriptor.Message;
@@ -84,7 +83,7 @@ public final class ImportWorldForgeAction implements Action {
         new Thread(new Runnable() {
 
             public void run() {
-                ProgressHandle handle = ProgressHandleFactory.createHandle("Import WorldForge Models");
+                ProgressHandle handle = ProgressHandle.createHandle("Import WorldForge Models");
                 handle.start();
                 FileObject objects = folder.getFileObject("3d_objects");
                 if (objects == null) {

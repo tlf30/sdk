@@ -52,7 +52,6 @@ import javax.swing.JToolBar;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
@@ -336,7 +335,7 @@ public final class NiftyGuiVisualElement extends JPanel implements MultiViewElem
     }
 
     private void loadGui() {
-        ProgressHandle handle = ProgressHandleFactory.createHandle("Loading the gui file");
+        ProgressHandle handle = ProgressHandle.createHandle("Loading the gui file");
         try {
             
             InputStream is = this.obj.getPrimaryFile().getInputStream();

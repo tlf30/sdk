@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Action;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import org.w3c.dom.Element;
@@ -79,7 +78,7 @@ public final class CleanupProjectAction implements Action {
         new Thread(new Runnable() {
 
             public void run() {
-                ProgressHandle handle = ProgressHandleFactory.createHandle("Cleanup unused assets..");
+                ProgressHandle handle = ProgressHandle.createHandle("Cleanup unused assets..");
                 handle.start();
                 scanFiles(context.getAssetsFolder(), files);
                 handle.finish();

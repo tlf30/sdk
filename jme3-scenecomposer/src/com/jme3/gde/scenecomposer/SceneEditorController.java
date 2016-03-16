@@ -5,7 +5,6 @@
 package com.jme3.gde.scenecomposer;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.asset.DesktopAssetManager;
 import com.jme3.asset.ModelKey;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
@@ -38,7 +37,6 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.NotifyDescriptor.Confirmation;
@@ -567,7 +565,7 @@ public class SceneEditorController implements PropertyChangeListener, NodeListen
     }
     
     public void doAddModel(SpatialAssetDataObject file, Node selected, Vector3f location) {
-        ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Adding Model..");
+        ProgressHandle progressHandle = ProgressHandle.createHandle("Adding Model..");
         progressHandle.start();
         try {
             Spatial linkNode = file.loadAsset();
@@ -613,7 +611,7 @@ public class SceneEditorController implements PropertyChangeListener, NodeListen
     }
     
     public void doLinkModel(AssetManager manager, String assetName, Node selected, Vector3f location) {
-        ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Adding Model..");
+        ProgressHandle progressHandle = ProgressHandle.createHandle("Adding Model..");
         progressHandle.start();
         try {
             if (selected instanceof AssetLinkNode) {
@@ -668,7 +666,7 @@ public class SceneEditorController implements PropertyChangeListener, NodeListen
     }
     
     public void doAddModel(Spatial file, Node selected, Vector3f location) {
-        ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Adding Model..");
+        ProgressHandle progressHandle = ProgressHandle.createHandle("Adding Model..");
         progressHandle.start();
         try {
             if (file != null) {

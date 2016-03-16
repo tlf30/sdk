@@ -38,7 +38,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.util.Exceptions;
 
 public final class ConvertModel implements ActionListener {
@@ -52,7 +51,7 @@ public final class ConvertModel implements ActionListener {
     public void actionPerformed(ActionEvent ev) {
         Runnable run = new Runnable() {
             public void run() {
-                ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Converting Model");
+                ProgressHandle progressHandle = ProgressHandle.createHandle("Converting Model");
                 progressHandle.start();
                 for (SpatialAssetDataObject spatialAssetDataObject : context) {
                     if (!(spatialAssetDataObject instanceof BinaryModelDataObject)) {
