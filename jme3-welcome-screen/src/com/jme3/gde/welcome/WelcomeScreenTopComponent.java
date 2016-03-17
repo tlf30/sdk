@@ -75,14 +75,17 @@ public final class WelcomeScreenTopComponent extends TopComponent implements Hyp
             while (checkOpenThread == null || checkOpenThread.isAlive()); /* Wait for first getModified (static executed from NB) to finish */
             
             final URL startUrl = new URL(org.openide.util.NbBundle.getMessage(WelcomeScreenTopComponent.class, "WelcomeScreenTopComponent.http.link"));
-            long lastMod = getModified(startUrl);
+            final long lastMod = getModified(startUrl);
             NbPreferences.forModule(getClass()).putLong("LAST_PAGE_UPDATE", lastMod);
             
             SwingUtilities.invokeLater( new Runnable() {
                 @Override        
                 public void run() {
-                    try {    
-                        jEditorPane1.setPage(startUrl);
+                    try {
+                        if (lastMod != 0)
+                            jEditorPane1.setPage(startUrl);
+                        else
+                            jEditorPane1.setPage(new URL(org.openide.util.NbBundle.getMessage(WelcomeScreenTopComponent.class, "WelcomeScreenTopComponent.local.link")));
                     } catch (IOException ex) {
                         logger.log(Level.INFO, "Loading welcome page from web failed", ex);
                         try {
