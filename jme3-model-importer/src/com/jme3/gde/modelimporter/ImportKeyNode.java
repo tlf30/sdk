@@ -23,7 +23,7 @@ import org.openide.util.Exceptions;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ImportKeyNode extends AbstractNode {
-    private AssetKey key;
+    private final AssetKey key;
 
     public ImportKeyNode(AssetKey key) {
         super(Children.LEAF);
@@ -33,7 +33,7 @@ public class ImportKeyNode extends AbstractNode {
     @Override
     protected Sheet createSheet() {
         Sheet sheet = super.createSheet();
-        Sheet.Set set = sheet.createPropertiesSet();
+        Sheet.Set set = Sheet.createPropertiesSet();
         set.setName("AssetKey");
         set.setDisplayName("Conversion Settings");
         for (Field field : key.getClass().getDeclaredFields()) {

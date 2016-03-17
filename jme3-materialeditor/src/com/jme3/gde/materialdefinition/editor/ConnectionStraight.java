@@ -33,9 +33,9 @@ public class ConnectionStraight extends JPanel implements ComponentListener, Mou
 
     protected Dot start;
     protected Dot end;
-    private Point[] points = new Point[6];
+    private final Point[] points = new Point[6];
     private int pointsSize = 6;
-    private Corner[] corners = new Corner[6];
+    private final Corner[] corners = new Corner[6];
     private String key = "";
     protected MappingBlock mapping;
 
@@ -107,12 +107,12 @@ public class ConnectionStraight extends JPanel implements ComponentListener, Mou
         store.x = p.x - getLocation().x - 1;
         store.y = p.y - getLocation().y - 1;
     }
-    private Point p1 = new Point();
-    private Point p2 = new Point();
-    private Point tp1 = new Point();
-    private Point bp1 = new Point();
-    private Point tp2 = new Point();
-    private Point bp2 = new Point();
+    private final Point p1 = new Point();
+    private final Point p2 = new Point();
+    private final Point tp1 = new Point();
+    private final Point bp1 = new Point();
+    private final Point tp2 = new Point();
+    private final Point bp2 = new Point();
 
     @Override
     protected void paintBorder(Graphics g) {
@@ -125,6 +125,7 @@ public class ConnectionStraight extends JPanel implements ComponentListener, Mou
 //        g.drawLine(0, getHeight() - 1, 0, 0);
     }
 
+    @Override
     public String getKey() {
         return key;
     }
@@ -423,7 +424,7 @@ public class ConnectionStraight extends JPanel implements ComponentListener, Mou
     }
 
     private Diagram getDiagram() {
-        return (Diagram) start.getDiagram();
+        return start.getDiagram();
     }
 
     @Override
@@ -432,7 +433,7 @@ public class ConnectionStraight extends JPanel implements ComponentListener, Mou
     }
 
     private void dispatchEventToDiagram(MouseEvent e) {
-        MouseEvent me = null;
+        MouseEvent me;
         me = convertEvent(e);
         getDiagram().dispatchEvent(me);
     }

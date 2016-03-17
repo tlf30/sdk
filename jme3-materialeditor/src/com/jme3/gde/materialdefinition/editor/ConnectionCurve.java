@@ -104,6 +104,7 @@ public class ConnectionCurve extends JPanel implements ComponentListener, MouseI
     private final Point p3 = new Point();
     private final Point p4 = new Point();
 
+    @Override
     public String getKey() {
         return key;
     }
@@ -341,7 +342,7 @@ public class ConnectionCurve extends JPanel implements ComponentListener, MouseI
     }
 
     private Diagram getDiagram() {
-        return (Diagram) start.getDiagram();
+        return start.getDiagram();
     }
 
     @Override
@@ -415,19 +416,24 @@ public class ConnectionCurve extends JPanel implements ComponentListener, MouseI
     public void keyReleased(KeyEvent e) {
     }
 
+    @Override
     public void componentResized(ComponentEvent e) {
     }
 
+    @Override
     public void componentMoved(ComponentEvent e) {
         resize(start, end);
     }
 
+    @Override
     public void componentShown(ComponentEvent e) {
     }
 
+    @Override
     public void componentHidden(ComponentEvent e) {
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         MappingBlock map = (MappingBlock) evt.getSource();
         key = MaterialUtils.makeKey(map, getDiagram().getCurrentTechniqueName());
@@ -440,6 +446,5 @@ public class ConnectionCurve extends JPanel implements ComponentListener, MouseI
     public Dot getEnd() {
         return end;
     }
-    
     
 }

@@ -92,7 +92,7 @@ public class TexturePanel extends MaterialPropertyWidget {
         if (ratio <= 1) {
             height = (int) ((float) width * ratio);
         } else {
-            width = (int) ((float) height * (float) ratio);
+            width = (int) ((float) height * ratio);
         }
         BufferedImage resizedImage = new BufferedImage(width, height, type);
         Graphics2D g = resizedImage.createGraphics();

@@ -21,7 +21,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
-import com.jme3.util.MaterialDebugAppState;
 import com.jme3.util.TangentBinormalGenerator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -87,10 +86,11 @@ public class MaterialPreviewRenderer implements SceneListener {
         }
         exec.execute(new Runnable() {
 
+            @Override
             public void run() {
                 MaterialKey key = new MaterialKey(assetManager.getRelativeAssetPath(materialFileName));
                 assetManager.deleteFromCache(key);
-                Material mat = (Material) assetManager.loadAsset(key);
+                Material mat = assetManager.loadAsset(key);
                 if (mat != null) {
                     showMaterial(mat);
                 }
@@ -110,6 +110,7 @@ public class MaterialPreviewRenderer implements SceneListener {
         }
         SceneApplication.getApplication().enqueue(new Callable<Material>() {
 
+            @Override
             public Material call() throws Exception {
                 if (techniqueName != null) {
                     try {
@@ -121,6 +122,7 @@ public class MaterialPreviewRenderer implements SceneListener {
                 final Material mat = reloadMaterial(m);
                 if (mat != null) {
                     java.awt.EventQueue.invokeLater(new Runnable() {
+                        @Override
                         public void run() {
                             currentMaterial = mat;
                             currentGeom.setMaterial(mat);
@@ -133,6 +135,7 @@ public class MaterialPreviewRenderer implements SceneListener {
                                 }
                             } catch (Exception e) {
                                 java.awt.EventQueue.invokeLater(new Runnable() {
+                                    @Override
                                     public void run() {
                                         label.setIcon(Icons.error);
                                     }
@@ -187,6 +190,7 @@ public class MaterialPreviewRenderer implements SceneListener {
             smartLog("{0}", e.getMessage());
 
             java.awt.EventQueue.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     label.setIcon(Icons.error);
                 }
@@ -219,16 +223,20 @@ public class MaterialPreviewRenderer implements SceneListener {
         showMaterial(currentMaterial);
     }
 
+    @Override
     public void sceneOpened(SceneRequest request) {
     }
 
+    @Override
     public void sceneClosed(SceneRequest request) {
     }
 
+    @Override
     public void previewCreated(PreviewRequest request) {
         if (request.getRequester() == this) {
             final ImageIcon icon = new ImageIcon(request.getImage());
             java.awt.EventQueue.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     label.setIcon(icon);
                 }
