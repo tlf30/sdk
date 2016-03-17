@@ -31,8 +31,8 @@ import javax.swing.tree.TreeSelectionModel;
 public class AddNodeDialog extends javax.swing.JDialog {
 
     private List<ShaderNodeDefinition> defList = new ArrayList<ShaderNodeDefinition>();
-    private final Diagram diagram;
-    private final Point clickPosition;
+    private Diagram diagram;
+    private Point clickPosition;
     private String path;
 
     /**
