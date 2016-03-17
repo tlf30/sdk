@@ -41,7 +41,7 @@ import org.openide.util.NbBundle;
 )
 @ActionReferences({
     @ActionReference(path = "Menu/File", position = 1415),
-    @ActionReference(path = "Projects/org-netbeans-modules-java-j2seproject/Actions", position = 100)
+    @ActionReference(path = "Projects/org-netbeans-modules-java-j2seproject/Actions", position = 200)
 })
 @NbBundle.Messages("CTL_UpgradeProjectWizardAction=Upgrade Project")
 

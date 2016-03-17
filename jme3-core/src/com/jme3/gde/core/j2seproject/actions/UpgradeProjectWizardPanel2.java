@@ -222,7 +222,7 @@ public class UpgradeProjectWizardPanel2 implements WizardDescriptor.ValidatingPa
                 if (flatUpgrade)
                     appendLog("Chapeau! We are done :)\nNote: You can always re-run this Wizard, if you feel the need to Upgrade to 3.1");
                 else
-                    appendLog("\n\nChapeau! We are done :)\nNow that your project is 3.1 compatible, feel free to remove the NiftyGUI,\nBullet-Native, Terrain, etc. libraries to your liking, if you don't need them. (They were always-included in 3.0)");
+                    appendLog("\n\nChapeau! We are done :)\nNow that your project is 3.1 compatible, feel free to remove the NiftyGUI,\nBullet-Native, Terrain, etc. libraries to your liking, if you don't need them.\nThey were always automatically included in 3.0");
                 
             } catch (Exception e) {
                 appendLog("Error when trying to write project.properties. Exception: " + e.getMessage());
