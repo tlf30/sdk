@@ -41,6 +41,7 @@ public class ScaleTool extends SceneEditTool {
         super.activate(manager, toolNode, onTopToolNode, selectedSpatial, toolController);
         pickManager = Lookup.getDefault().lookup(PickManager.class);
         displayPlanes();
+        displayBoxes();
     }
 
     @Override

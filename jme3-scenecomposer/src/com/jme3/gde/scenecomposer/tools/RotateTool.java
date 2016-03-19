@@ -40,7 +40,7 @@ public class RotateTool extends SceneEditTool {
     public void activate(AssetManager manager, Node toolNode, Node onTopToolNode, Spatial selectedSpatial, SceneComposerToolController toolController) {
         super.activate(manager, toolNode, onTopToolNode, selectedSpatial, toolController);
         pickManager = Lookup.getDefault().lookup(PickManager.class);
-        displayPlanes();
+        displayCircles();
     }
 
     @Override
