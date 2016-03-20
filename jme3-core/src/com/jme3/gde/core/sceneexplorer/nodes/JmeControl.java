@@ -51,8 +51,6 @@ import org.openide.util.actions.SystemAction;
  * The JmeControl implements the Base Behavior of each Control-Node
  * @author MeFisto94
  */
-
-
 public abstract class JmeControl extends AbstractSceneExplorerNode {
 
     protected Control control;
@@ -93,7 +91,7 @@ public abstract class JmeControl extends AbstractSceneExplorerNode {
     public void destroy() throws IOException {
         super.destroy();
         
-        if (control == null)
+        if (control == null || getParentNode() == null)
             return;
         
         final Spatial spat = getParentNode().getLookup().lookup(Spatial.class);

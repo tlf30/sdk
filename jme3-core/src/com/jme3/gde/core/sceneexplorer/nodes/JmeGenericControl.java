@@ -49,7 +49,6 @@ public class JmeGenericControl extends JmeControl {
     public JmeGenericControl(Control control, DataObject dataObject) {
         //TODO: lookup content! (control etc)
         super(dataObject);
-        this.control = control;
         addToLookup(this);
         addToLookup(control);
         this.control = control;

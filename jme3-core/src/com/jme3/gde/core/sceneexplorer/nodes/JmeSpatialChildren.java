@@ -91,10 +91,17 @@ public class JmeSpatialChildren extends Children.Keys<Object> {
         setKeys(createKeys());
     }
 
+    /**
+     * CreateKey finds all the Elements in our SceneGraph and returns them as "Keys".
+     * Those Keys will then be processed by {@link #createNodes(java.lang.Object) } into SceneExplorer Nodes.
+     * That means the add-Actions just have to add elements to the SceneGraph for their AbstractSceneExplorerNode to be created
+     * @return The List of Keys
+     */
     protected List<Object> createKeys() {
         try {
             return SceneApplication.getApplication().enqueue(new Callable<List<Object>>() {
 
+                @Override
                 public List<Object> call() throws Exception {
                     List<Object> keys = new LinkedList<Object>();
                     if (spatial != null && spatial instanceof com.jme3.scene.Node) {
