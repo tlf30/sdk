@@ -20,7 +20,7 @@ build/*
 */build/*
 *.class
 .gradle
-netbeans
+netbeans/*
 */nbproject/private/*
 ant-jme/dist
 jdks/local/*
