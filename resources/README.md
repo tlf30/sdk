@@ -33,3 +33,11 @@ The first one is the plain `.exe` before changing (This is so we can see if ther
 
 Then issue `shasum -a 256 netbeans/harness/launchers/*.exe` so you have all the hashBefore’s / After’s  
 See `harness-override/README.md` for more information on that subject.
+
+### HOW TO Replace About/Splash Screen:
+The About Screen is currently just the same as the Splash Screen but downsampled:  
+It's currently 432 × 302 Pixels but that's just something I found on the net.  
+It's simply like this: Once your resolution is too large (like the 500x350px of our Splash Screen), some additional ugly scroll bars will appear and the window won't be enlarged. Since there is no easy (and reasonable) way to use your own About Screen, we will simply stick to this.  
+Just place the `about.png` and the `splash.gif` (though animation doesn't seem to be supported out of the box) inside `branding/core/core.jar/org/netbeans/core/startup/`. There you will also find the `Bundle.properties` which is responsible for the SDK Naming and the Splash Settings (Width, Height, Colors)  
+
+In `branding/modules/org-netbeans-core.jar/org/netbeans/core/ui/Bundle.properties` you will find the stuff needed to adjust the About Dialog (the html code displayed)
