@@ -32,15 +32,20 @@
 package com.jme3.gde.core;
 
 import com.jme3.gde.core.scene.SceneApplication;
+import java.awt.Component;
+import java.awt.Frame;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JPopupMenu;
+import javax.swing.filechooser.FileSystemView;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.modules.ModuleInstall;
 import org.openide.modules.Places;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
+import org.netbeans.core.startup.*;
 
 /**
  * Manages a module's lifecycle. Remember that an installer is optional and
@@ -74,19 +79,43 @@ public class Installer extends ModuleInstall {
         //select project folder
         String projectDir = NbPreferences.forModule(Installer.class).get("projects_path", null);
         if (projectDir == null) {
-            javax.swing.JFileChooser fr = new javax.swing.JFileChooser();
-            javax.swing.filechooser.FileSystemView fw = fr.getFileSystemView();
+            JFileChooser fr = new JFileChooser();
+            FileSystemView fw = fr.getFileSystemView();
             projectDir = fw.getDefaultDirectory().getAbsolutePath();
             FileChooserBuilder builder = new FileChooserBuilder(projectDir);
             builder.setApproveText("Set Project Folder");
             builder.setTitle("Please select folder for storing projects");
             builder.setDirectoriesOnly(true);
-            File file = builder.showOpenDialog();
+            
+            Splash s = Splash.getInstance();
+            
+            Component comp = s.getComponent();
+            while (!(comp instanceof Frame)) { // Loop through the Hierarchy until you have the parental Frame
+                if (comp.getParent() != null)
+                    comp = comp.getParent();
+                else { // No Frame found in Hiarchy
+                    comp = null;
+                    break;
+                }
+            }
+            
+            if (comp != null)
+                comp.setVisible(false);
+            else
+                s.setRunning(false); // Workaround from the Workaround.
+           
+            File file = builder.showOpenDialog(); //*/  chooser.getSelectedFile();
             if (file != null) {
                 projectDir = file.getAbsolutePath();
                 NbPreferences.forModule(Installer.class).put("projects_path", projectDir);
             }
+                
+            if (comp != null)
+                comp.setVisible(true);
+            else
+                s.setRunning(true); // Unfortunately this has no effect
         }
+        
         //netbeans.default_userdir_root
         logger.log(Level.INFO, "Set project dir {0}", projectDir);
         System.setProperty("netbeans.projects.dir", projectDir);
