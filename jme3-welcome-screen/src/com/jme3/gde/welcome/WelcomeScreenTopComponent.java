@@ -122,13 +122,18 @@ public final class WelcomeScreenTopComponent extends TopComponent implements Hyp
             }
             logger.log(Level.INFO, "Checking page id {0} vs stored id {1}", new Object[]{lastMod, lastCheck});
             if (lastCheck != lastMod) {
-                WelcomeScreenTopComponent tc = (WelcomeScreenTopComponent) WindowManager.getDefault().findTopComponent("WelcomeScreenTopComponent");
-                if (tc != null) {
-                    tc.open();
-                    tc.requestActive();
-                } else {
-                    logger.log(Level.WARNING, "Did not find Welcome Screen window");
-                }
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        WelcomeScreenTopComponent tc = (WelcomeScreenTopComponent) WindowManager.getDefault().findTopComponent("WelcomeScreenTopComponent");
+                        if (tc != null) {
+                            tc.open();
+                            tc.requestActive();
+                        } else {
+                            logger.log(Level.WARNING, "Did not find Welcome Screen window");
+                        }
+                    }
+                });
             }
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
