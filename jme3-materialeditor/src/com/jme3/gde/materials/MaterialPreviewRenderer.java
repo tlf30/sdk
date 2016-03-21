@@ -4,6 +4,7 @@
  */
 package com.jme3.gde.materials;
 
+import com.jme3.asset.AssetNotFoundException;
 import com.jme3.asset.MaterialKey;
 import com.jme3.gde.core.assets.ProjectAssetManager;
 import com.jme3.gde.core.scene.PreviewRequest;
@@ -200,6 +201,9 @@ public class MaterialPreviewRenderer implements SceneListener {
             //utterly bad, but for some reason I get random NPE here and can't figure out why so to avoid bigger issues, I just catch it.
             //the printStackTrace is intended, it will show up in debug mode, but won't be displayed in standzrd mode
             npe.printStackTrace();
+            return null;
+        } catch (AssetNotFoundException a) {
+            smartLog("Could not fully load Shader: Missing File: {0}", a.getMessage());
             return null;
         }
 
