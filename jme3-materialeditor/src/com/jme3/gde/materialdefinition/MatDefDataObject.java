@@ -142,7 +142,6 @@ public class MatDefDataObject extends MultiDataObject {
         findAssetManager();
         final MatDefMetaData metaData = new MatDefMetaData(this);
         lookupContents.add(metaData);
-        lookupContents.add(new MatDefNavigatorPanel());
         pf.addFileChangeListener(new FileChangeAdapter() {
             @Override
             public void fileChanged(FileEvent fe) {
@@ -190,7 +189,7 @@ public class MatDefDataObject extends MultiDataObject {
     public Lookup getLookup() {
         return lookup;
     }
-
+    
     @MultiViewElement.Registration(
         displayName = "#LBL_MatDef_EDITOR",
     iconBase = "com/jme3/gde/materialdefinition/icons/matdef.png",
@@ -202,10 +201,10 @@ public class MatDefDataObject extends MultiDataObject {
     public static MultiViewEditorElement createEditor(Lookup lkp) {
         final MatDefDataObject obj = lkp.lookup(MatDefDataObject.class);
         obj.loaded = true;
-        MatDefNavigatorPanel nav = obj.getLookup().lookup(MatDefNavigatorPanel.class);
-        if (nav != null) {
-            nav.updateData(obj);
-        }
+        MatDefNavigatorPanel nav = new MatDefNavigatorPanel();
+        obj.lookupContents.add(nav);
+        nav.updateData(obj);
+        
         MultiViewEditorElement ed = new MultiViewEditorElement(lkp) {
             KeyListener listener = new KeyListener() {
                 public void keyTyped(KeyEvent e) {
