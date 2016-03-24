@@ -126,6 +126,8 @@ public class IconList {
             ImageUtilities.loadImageIcon("com/jme3/gde/core/icons/light.gif", false);
     public static ImageIcon mesh =
             ImageUtilities.loadImageIcon("com/jme3/gde/core/icons/mesh.gif", false);
+    public static ImageIcon motionEvent =
+            ImageUtilities.loadImageIcon("com/jme3/gde/core/icons/chimpanzee-sad.gif", false); // TODO: Find something better
     public static ImageIcon node =
             ImageUtilities.loadImageIcon("com/jme3/gde/core/icons/node.gif", false);
     public static ImageIcon emitter =

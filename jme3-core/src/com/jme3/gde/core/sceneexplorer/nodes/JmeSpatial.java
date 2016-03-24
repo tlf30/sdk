@@ -76,10 +76,19 @@ import org.openide.util.actions.SystemAction;
 @org.openide.util.lookup.ServiceProvider(service = SceneExplorerNode.class)
 public class JmeSpatial extends AbstractSceneExplorerNode {
 
-    private Spatial spatial;
+    protected Spatial spatial;
     protected final DataFlavor SPATIAL_FLAVOR = new DataFlavor(ClipboardSpatial.class, "Spatial");
 
     public JmeSpatial() {
+        super();
+    }
+    
+    public JmeSpatial(Spatial spatial) {
+        super();
+        this.spatial = spatial;
+        getLookupContents().add(spatial);
+        getLookupContents().add(this);
+        super.setName(spatial.getName());
     }
 
     public JmeSpatial(Spatial spatial, JmeSpatialChildren factory) {

@@ -943,6 +943,7 @@ private void jToggleSelectGeomActionPerformed(java.awt.event.ActionEvent evt) {/
      * listener for node selection changes
      * @param ev
      */
+    @Override
     public void resultChanged(LookupEvent ev) {
         if (currentRequest == null || !currentRequest.isDisplayed()) {
             return;

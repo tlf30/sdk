@@ -661,6 +661,17 @@ public class SceneApplication extends Application implements LookupProvider {
     public Node getGuiNode() {
         return guiNode;
     }
+    
+    /**
+     * Gets the RootNode of this Application.
+     * Warning: With great Power comes great responsibility ;)
+     * You shouldn't use this unless you exactly know about it's implications.
+     * Adding Spatials here won't make them Serialize into the .j3o file...
+     * @return 
+     */
+    public Node getRootNode() {
+        return rootNode;
+    }
 
     public AbstractCameraController getActiveCameraController() {
         return activeCamController;
