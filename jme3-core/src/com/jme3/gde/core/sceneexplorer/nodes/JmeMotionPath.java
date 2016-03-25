@@ -229,6 +229,7 @@ public class JmeMotionPath extends AbstractSceneExplorerNode {
     
     public void refreshChildren() {
         ((JmeVector3fChildren)this.jmeChildren).refreshChildren(true);
+        updateSpline(false);
     }
     
     @Override
@@ -238,11 +239,6 @@ public class JmeMotionPath extends AbstractSceneExplorerNode {
         }
         super.destroy();
         ((AbstractSceneExplorerNode) getParentNode()).refresh(true);
-    }
-    
-    public void removeWaypoint(JmeVector3f jme) {
-        motionPath.removeWayPoint(jme.getVector3f()); // We need to clear this or else the keys will still have that Vector3f.
-        // Also we should modify the motionPath instead of just showing the changes ;)
     }
     
     public void enableDebugShapes() {

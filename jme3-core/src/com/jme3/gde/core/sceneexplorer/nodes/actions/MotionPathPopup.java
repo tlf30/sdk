@@ -37,13 +37,14 @@ import com.jme3.gde.core.sceneexplorer.SceneExplorerTopComponent;
 import com.jme3.gde.core.sceneexplorer.nodes.AbstractSceneExplorerNode;
 import com.jme3.gde.core.sceneexplorer.nodes.JmeMotionPath;
 import com.jme3.gde.core.sceneexplorer.nodes.JmeVector3f;
+import com.jme3.gde.core.sceneexplorer.nodes.JmeVector3fChildren;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Node;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import org.openide.loaders.DataObject;
+import org.openide.nodes.Node;
 import org.openide.util.actions.Presenter;
 
 /**
@@ -117,7 +118,9 @@ public class MotionPathPopup extends AbstractAction implements Presenter.Popup {
                     }
                 }
                 
-                jmeMotionPath.getMotionPath().addWayPoint(pos);
+                JmeVector3fChildren children = (JmeVector3fChildren)jmeMotionPath.getChildren();
+                JmeVector3f jme = new JmeVector3f(children, jmeMotionPath, pos);
+                children.add(new Node[] {jme});
                 jmeMotionPath.refreshChildren();
             }
         };

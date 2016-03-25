@@ -47,6 +47,7 @@ import org.openide.actions.DeleteAction;
 import org.openide.actions.MoveDownAction;
 import org.openide.actions.MoveUpAction;
 import org.openide.loaders.DataObject;
+import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.util.actions.SystemAction;
 
@@ -199,19 +200,18 @@ public class JmeVector3f extends JmeSpatial {
     @Override
     public void destroy() throws IOException {
         detachBox(spatial);
-        jmeMotionPath.updateSpline(true);
         
         /* These are mandatory:
          * Without them the Node looks like it's undeletable
          * (since it stays in the Motion Path and gets readded everytime)
          */
-        jmeMotionPath.removeWaypoint(this);
+        parent.remove(new Node[] { this });
         parent.refreshChildren(true);
+        jmeMotionPath.updateSpline(true);
         super.destroy();
     }
 
 // </editor-fold>
-    
     
     /* For Properties */
     public int getChildIndex() {
