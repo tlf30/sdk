@@ -34,7 +34,8 @@ public class DesktopExeCompositeProvider implements ProjectCustomizer.CompositeC
         "linux-x86.app.enabled",
         "linux-x64.app.enabled",
         "macosx-x64.app.enabled",
-        "bundle.jre.enabled"
+        "bundle.jre.enabled",
+        "bundle.jre.version"
     };
 
     public DesktopExeCompositeProvider() {
@@ -76,12 +77,12 @@ public class DesktopExeCompositeProvider implements ProjectCustomizer.CompositeC
                     || "true".equals(properties.getProperty("macosx-x64.app.enabled"))) {
                 desktopDeployment.loadTargets("nbres:/com/jme3/gde/desktop/executables/desktop-deployment-targets.xml");
                 desktopDeployment.checkExtension(project);
-                if("true".equals(properties.getProperty("bundle.jre.enabled"))){
+                if ("true".equals(properties.getProperty("bundle.jre.enabled"))) {
                     checkJreDownloads();
                 }
             } else {
                 desktopDeployment.removeExtension(project);
-                
+
             }
 
             try {
@@ -93,12 +94,14 @@ public class DesktopExeCompositeProvider implements ProjectCustomizer.CompositeC
 
         public void checkJreDownloads() {
             String projectPath = project.getProjectDirectory().getPath();
+            String jreVersion = properties.getProperty("bundle.jre.version");
+
             if ("true".equals(properties.getProperty("windows-x86.app.enabled"))) {
                 String jreName = projectPath + File.separator + "resources"
                         + File.separator + "desktop-deployment"
                         + File.separator + "jre-windows-x86.tar.gz";
                 if (!new File(jreName).exists()) {
-                    JreDownloader.downloadJre("windows-i586", jreName);
+                    JreDownloader.downloadJre(jreVersion, "windows-i586", jreName);
                 }
             }
             if ("true".equals(properties.getProperty("windows-x64.app.enabled"))) {
@@ -106,7 +109,7 @@ public class DesktopExeCompositeProvider implements ProjectCustomizer.CompositeC
                         + File.separator + "desktop-deployment"
                         + File.separator + "jre-windows-x64.tar.gz";
                 if (!new File(jreName).exists()) {
-                    JreDownloader.downloadJre("windows-x64", jreName);
+                    JreDownloader.downloadJre(jreVersion, "windows-x64", jreName);
                 }
             }
             if ("true".equals(properties.getProperty("linux-x86.app.enabled"))) {
@@ -114,7 +117,7 @@ public class DesktopExeCompositeProvider implements ProjectCustomizer.CompositeC
                         + File.separator + "desktop-deployment"
                         + File.separator + "jre-linux-x86.tar.gz";
                 if (!new File(jreName).exists()) {
-                    JreDownloader.downloadJre("linux-i586", jreName);
+                    JreDownloader.downloadJre(jreVersion, "linux-i586", jreName);
                 }
             }
             if ("true".equals(properties.getProperty("linux-x64.app.enabled"))) {
@@ -122,7 +125,7 @@ public class DesktopExeCompositeProvider implements ProjectCustomizer.CompositeC
                         + File.separator + "desktop-deployment"
                         + File.separator + "jre-linux-x64.tar.gz";
                 if (!new File(jreName).exists()) {
-                    JreDownloader.downloadJre("linux-x64", jreName);
+                    JreDownloader.downloadJre(jreVersion, "linux-x64", jreName);
                 }
             }
             if ("true".equals(properties.getProperty("macosx-x64.app.enabled"))) {
@@ -130,7 +133,7 @@ public class DesktopExeCompositeProvider implements ProjectCustomizer.CompositeC
                         + File.separator + "desktop-deployment"
                         + File.separator + "jre-macosx-x64.tar.gz";
                 if (!new File(jreName).exists()) {
-                    JreDownloader.downloadJre("macosx-x64", jreName);
+                    JreDownloader.downloadJre(jreVersion, "macosx-x64", jreName);
                 }
             }
         }
