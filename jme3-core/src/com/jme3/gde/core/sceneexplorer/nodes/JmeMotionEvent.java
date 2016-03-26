@@ -34,7 +34,6 @@ package com.jme3.gde.core.sceneexplorer.nodes;
 import com.jme3.cinematic.events.AbstractCinematicEvent;
 import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.gde.core.icons.IconList;
-import com.jme3.gde.core.scene.SceneApplication;
 import java.awt.Image;
 import java.io.IOException;
 import org.openide.loaders.DataObject;
@@ -44,12 +43,13 @@ import org.openide.nodes.Sheet;
 
 /**
  * This is the SceneExplorer Node (Display Component Class) for Motion Events
+ *
  * @author MeFisto94
  */
-
 @org.openide.util.lookup.ServiceProvider(service = SceneExplorerNode.class)
 @SuppressWarnings({"unchecked", "rawtypes", "LeakingThisInConstructor"})
 public class JmeMotionEvent extends JmeControl {
+
     private MotionEvent motionEvent;
     private static Image smallImage = IconList.motionEvent.getImage();
 
@@ -61,7 +61,7 @@ public class JmeMotionEvent extends JmeControl {
         super(children, dataObject);
         this.motionEvent = motionEvent;
         control = motionEvent; // to have JmeControl work
-        
+
         lookupContents.add(this);
         lookupContents.add(control);
         lookupContents.add(children);
@@ -81,45 +81,48 @@ public class JmeMotionEvent extends JmeControl {
     }
 
     /**
-     * This method creates the Property Sheet (i.e. the Contents for the Properties Editor)
-     * See {@link AbstractNode#createSheet() } for more information
-     * @return 
+     * This method creates the Property Sheet (i.e. the Contents for the
+     * Properties Editor).<br>See {@link AbstractNode#createSheet() } for more
+     * information
+     *
+     * @return The created Property Sheet
      */
     @Override
     protected Sheet createSheet() {
         Sheet sheet = new Sheet(); // Sheet.createDefault(); // Create a sheet with an empty set.
-        
+
         Sheet.Set abstractSet = Sheet.createPropertiesSet();
         abstractSet.setName("AbstractCinematicEvent");
         abstractSet.setDisplayName("Abstract Cinematic Event (Superclass)");
         abstractSet.setShortDescription("This is the Superclass of MotionEvent: The Abstract Cinematic Event");
-        
+
         createFields(AbstractCinematicEvent.class, abstractSet, motionEvent);
         sheet.put(abstractSet);
-        
+
         Sheet.Set set = Sheet.createPropertiesSet(); // Create a Properties "Set"/Entry for that Sheet. (A category so to say)
         set.setDisplayName("Motion Event");
         set.setShortDescription("These are the Properties of this Motion Event");
         set.setName(MotionEvent.class.getName());
-        
+
         MotionEvent obj = motionEvent;
         if (obj == null) {
             return sheet;
         }
-        
+
         createFields(MotionEvent.class, set, obj);
         set.remove("Spatial"); // since we're a Control we don't set that value, we just belong to it.
         set.remove("Path");
-        
+
         sheet.put(set);
-        
+
         return sheet;
 
     }
 
     /**
-     * Returns the class of the underlying Object of this Node.
-     * This is how we are related to things found in the SceneGraph
+     * Returns the class of the underlying Object of this Node.<br>This is how we
+     * are related to things found in the SceneGraph
+     *
      * @return {@link Class}
      */
     @Override
@@ -129,6 +132,7 @@ public class JmeMotionEvent extends JmeControl {
 
     /**
      * Returns the class of this Node
+     *
      * @return {@link Class}
      */
     @Override
@@ -139,16 +143,16 @@ public class JmeMotionEvent extends JmeControl {
     public MotionEvent getMotionEvent() {
         return motionEvent;
     }
-            
+
     @Override
     public org.openide.nodes.Node[] createNodes(Object key, DataObject key2, boolean cookie) {
         JmeMotionPathChildren children = new JmeMotionPathChildren();
         children.setReadOnly(cookie);
-        return new org.openide.nodes.Node[] { new JmeMotionEvent((MotionEvent) key, key2, children).setReadOnly(cookie) }; // If we would return null here, we would have the JmeControl default (i.e. auto-exposure of properties, no icon but also no createSheet method)
+        return new org.openide.nodes.Node[]{new JmeMotionEvent((MotionEvent) key, key2, children).setReadOnly(cookie)}; // If we would return null here, we would have the JmeControl default (i.e. auto-exposure of properties, no icon but also no createSheet method)
     }
-    
+
     public void refreshChildren() {
-        ((JmeMotionPathChildren)this.jmeChildren).refreshChildren(true);
+        ((JmeMotionPathChildren) this.jmeChildren).refreshChildren(true);
         for (Object node : getChildren().getNodes()) {
             JmeMotionPath mPath = (JmeMotionPath) node;
             ((JmeVector3fChildren) mPath.getChildren()).refreshChildren(true);
@@ -157,13 +161,12 @@ public class JmeMotionEvent extends JmeControl {
 
     @Override
     public void destroy() throws IOException {
-        for (Node n: getChildren().getNodes()) {
-            ((JmeMotionPath)n).destroy();
+        for (Node n : getChildren().getNodes()) {
+            ((JmeMotionPath) n).destroy();
         }
         super.destroy();
     }
-    
-    
+
     public void setModified(boolean immediate) {
         dataObject.setModified(immediate);
     }
@@ -175,17 +178,18 @@ public class JmeMotionEvent extends JmeControl {
 
     @Override
     public boolean isEnabled() {
-        if (motionEvent == null)
+        if (motionEvent == null) {
             return false;
-        else
+        } else {
             return motionEvent.isEnabled();
+        }
     }
 
     @Override
     public boolean setEnabled(boolean enabled) {
-        if (motionEvent == null)
+        if (motionEvent == null) {
             return false;
-        else {
+        } else {
             motionEvent.setEnabled(enabled);
             return true;
         }

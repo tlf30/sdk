@@ -45,10 +45,14 @@ import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 
 /**
- * This Class is responsible for the management of all underlying MotionPaths as Nodes<br>
- * (In fact we currently only have one possible MotionPath but we keep this to be consistent with JmeBoneChildren).<br>
- * You have to ensure that you set the appropriate JmeMotionEvent for this class (this happens when JmeMotionEvent is creating it's Nodes)<br>
+ * This Class is responsible for the management of all underlying MotionPaths as
+ * Nodes<br>
+ * (In fact we currently only have one possible MotionPath but we keep this to
+ * be consistent with JmeBoneChildren).<br>
+ * You have to ensure that you set the appropriate JmeMotionEvent for this class
+ * (this happens when JmeMotionEvent is creating it's Nodes)<br>
  * It will use this class as Children (which are JmeMotionPaths)<br>
+ *
  * @author MeFisto94
  */
 public class JmeMotionPathChildren extends Children.Keys<Object> {
@@ -86,12 +90,13 @@ public class JmeMotionPathChildren extends Children.Keys<Object> {
         try {
             return SceneApplication.getApplication().enqueue(new Callable<List<Object>>() {
 
+                @Override
                 public List<Object> call() throws Exception {
                     List<Object> keys = new LinkedList<Object>();
                     if (path != null) {
                         keys.add(path);
                     } else {
-                        keys.add(((MotionEvent)jmeMotionEvent.control).getPath());
+                        keys.add(((MotionEvent) jmeMotionEvent.control).getPath());
                     }
 
                     return keys;
