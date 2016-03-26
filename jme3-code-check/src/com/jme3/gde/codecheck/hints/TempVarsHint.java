@@ -24,6 +24,7 @@ import org.netbeans.spi.editor.hints.ErrorDescription;
 import org.netbeans.spi.editor.hints.ErrorDescriptionFactory;
 import org.netbeans.spi.editor.hints.Fix;
 import org.openide.awt.StatusDisplayer;
+import org.openide.util.NbBundle;
 
 public class TempVarsHint extends AbstractHint {
 
@@ -135,19 +136,19 @@ public class TempVarsHint extends AbstractHint {
     //Message that the user sees in the left sidebar:
     @Override
     public String getDisplayName() {
-        return "TempVars might not be released";
+        return NbBundle.getMessage(TempVarsHint.class, "TempVarsHint.display-name");
     }
 
     //Name of the hint in the Options window:
     @Override
     public String getId() {
-        return "TempVars release check";
+        return NbBundle.getMessage(TempVarsHint.class, "TempVarsHint.id");
     }
 
     //Description of the hint in the Options window:
     @Override
     public String getDescription() {
-        return "Checks for calls TempVars.get() and search for correspondinng release() call";
+        return NbBundle.getMessage(TempVarsHint.class, "TempVarsHint.description");
     }
 
     class MessagesFix implements EnhancedFix {
@@ -169,7 +170,7 @@ public class TempVarsHint extends AbstractHint {
 
         @Override
         public String getText() {
-            return "Add a release() call at the end of the method";
+            return NbBundle.getMessage(TempVarsHint.class, "TempVarsHint.fix-text");
         }
 
         @Override

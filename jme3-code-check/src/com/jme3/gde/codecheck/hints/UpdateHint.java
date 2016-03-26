@@ -87,21 +87,18 @@ public class UpdateHint extends AbstractHint {
     //Message that the user sees in the left sidebar:
     @Override
     public String getDisplayName() {
-        //return "Updating is not needed in jME3, check your update order if you need to call this.";
         return NbBundle.getMessage(UpdateHint.class, "UpdateHint.display-name");
     }
 
     //Name of the hint in the Options window:
     @Override
     public String getId() {
-        //return "Update States / Bound";
         return NbBundle.getMessage(UpdateHint.class, "UpdateHint.id");
     }
 
     //Description of the hint in the Options window:
     @Override
     public String getDescription() {
-        //return "Checks for calls to updateGeometricState(), updateLogicalState() and updateModelBound().";
         return NbBundle.getMessage(UpdateHint.class, "UpdateHint.description");
     }
 
@@ -124,7 +121,6 @@ public class UpdateHint extends AbstractHint {
 
         @Override
         public String getText() {
-            //return "Remove this call";
             return NbBundle.getMessage(UpdateHint.class, "UpdateHint.fix-text");
         }
 
