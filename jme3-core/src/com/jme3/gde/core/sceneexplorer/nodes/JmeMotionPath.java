@@ -294,7 +294,7 @@ public class JmeMotionPath extends AbstractSceneExplorerNode {
 
         Material m = new Material(SceneApplication.getApplication().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         m.setColor("Color", ColorRGBA.Red);
-        // Alpha4: m.getAdditionalRenderState().setLineWidth(4f);
+        m.getAdditionalRenderState().setLineWidth(4f);
 
         switch (motionPath.getPathSplineType()) {
             case CatmullRom:
