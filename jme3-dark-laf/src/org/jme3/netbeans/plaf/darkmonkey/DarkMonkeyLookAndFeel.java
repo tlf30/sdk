@@ -8,8 +8,8 @@ package org.jme3.netbeans.plaf.darkmonkey;
 import com.nilo.plaf.nimrod.NimRODTheme;
 import java.awt.Color;
 import java.awt.Font;
+import java.util.prefs.Preferences;
 import javax.swing.UIDefaults;
-import javax.swing.UIManager;
 import org.openide.util.NbPreferences;
 
 /**
@@ -49,6 +49,27 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
                     case "yellow":
                         setCurrentTheme(getYellowTheme());
                         break;
+                    
+                    case "yellow-two":
+                        setCurrentTheme(getYellowTwoTheme());
+                        break;
+                        
+                    case "manual":
+                        NimRODTheme nt = new NimRODTheme();
+                        Preferences pref = NbPreferences.root().node("laf");
+                        nt.setBlack(Color.decode(pref.get("darkmonkey.color.black", "#E8EAE0")));
+                        nt.setWhite(Color.decode(pref.get("darkmonkey.color.white", "#373737")));
+                        nt.setPrimary1(Color.decode(pref.get("darkmonkey.color.primary1", "#1A28BD")));
+                        nt.setPrimary2(Color.decode(pref.get("darkmonkey.color.primary2", "#233FB0")));
+                        nt.setPrimary3(Color.decode(pref.get("darkmonkey.color.primary3", "#3AA5F2")));
+                        nt.setSecondary1(Color.decode(pref.get("darkmonkey.color.secondary1", "#303030")));
+                        nt.setSecondary2(Color.decode(pref.get("darkmonkey.color.secondary2", "#3A3A3A")));
+                        nt.setSecondary3(Color.decode(pref.get("darkmonkey.color.secondary3", "#515151")));
+                        nt.setFrameOpacity(180);
+                        nt.setMenuOpacity(219);
+                        nt.setFont(Font.decode("DejaVu Sans Condensed-PLAIN-12"));
+                        setCurrentTheme(nt);
+                        break;
                         
                     case "legacy":
                         setCurrentTheme(getLegacyTheme());
@@ -64,7 +85,6 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         } catch (Exception e) {
             setCurrentTheme(getBlueTheme());
         }
-
     }
     
     /**
@@ -90,7 +110,7 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
 
     /**
      * This method override, getDescription() returns the String 
-     * "Look and Feel DarkMonkey - 2015, based on NimROD 2007" for 
+     * "Look and Feel DarkMonkey - 2016, based on NimROD 2007" for 
      * instances of future programming that might use it as a tool tip or 
      * small descriptor in their Look and Feel modules.
      * @return String "Look and Feel DarkMonkey - 2016, based on NimROD 2007"
@@ -104,6 +124,7 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
     @Override
     protected void initClassDefaults( UIDefaults table) {
         super.initClassDefaults( table);
+        // MenuBarUI currently doesn't compile table.put("MenuBarUI", "org.jme3.netbeans.plaf.darkmonkey.components.MenuBarUI");
         /*
         for( Enumeration en = table.keys(); en.hasMoreElements(); ) {
             System.out.println( "[" + en.nextElement() + "]");
@@ -166,6 +187,24 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         return nt;
     }
     
+    private NimRODTheme getYellowTwoTheme() {
+        NimRODTheme nt = new NimRODTheme();
+        
+        nt.setBlack(Color.decode("#F3C802")); // Font Foreground
+        nt.setWhite(Color.decode("#262626")); // Font Background
+        nt.setPrimary1(Color.decode("#2040D0")); // Surrounds Bars and Shortcuts
+        nt.setPrimary2(Color.decode("#1D3DBF")); // mainly used for bars 
+        nt.setPrimary3(Color.decode("#1D3DBF")); // e.g. for open tabs (Application)
+        nt.setSecondary1(Color.decode("#000000")); // Outlines, some decoration and tooltips for disabled buttons
+        nt.setSecondary2(Color.decode("#A6A086")); // Selected inactive things (and disabled text)
+        nt.setSecondary3(Color.decode("#323232")); // Unselected Frames (and general background color)
+        nt.setFrameOpacity(180);
+        nt.setMenuOpacity(219);
+        nt.setFont(Font.decode("DejaVu Sans Condensed-PLAIN-12"));
+        
+        return nt;
+    }
+    
     /**
      * This is the Legacy Theme. It's the one that DarkMonkey had before alpha-4
      * @return 
@@ -200,9 +239,9 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         nt.setPrimary1(Color.decode("#FF0000")); // Surrounds Bars and Shortcuts
         nt.setPrimary2(Color.decode("#00FF00")); // mainly used for bars 
         nt.setPrimary3(Color.decode("#0000FF")); // e.g. for open tabs (Application)
-        nt.setSecondary1(Color.decode("#00FF00")); // Selected Things
-        nt.setSecondary2(Color.decode("#FF0000")); // Selected inactive Things
-        nt.setSecondary3(Color.decode("#0000FF")); // Unselected Frames
+        nt.setSecondary1(Color.decode("#FFFF00")); // Outlines, some decoration and tooltips for disabled buttons
+        nt.setSecondary2(Color.decode("#FF00FF")); // Selected inactive things (and disabled text)
+        nt.setSecondary3(Color.decode("#00FFFF")); // Unselected Frames
         nt.setFrameOpacity(180);
         nt.setMenuOpacity(219);
         nt.setFont(Font.decode("DejaVu Sans Condensed-PLAIN-12"));

@@ -57,6 +57,7 @@ import org.openide.util.actions.SystemAction;
 /**
  * This Class actually represents the MotionPath in the SceneComposer.<br>
  * It is added and managed by {@link JmeMotionPathChildren }
+ *
  * @author MeFisto94
  */
 @org.openide.util.lookup.ServiceProvider(service = SceneExplorerNode.class)
@@ -68,13 +69,13 @@ public class JmeMotionPath extends AbstractSceneExplorerNode {
     private JmeMotionEvent motionEvent;
     private float debugBoxExtents = 0.5f;
     private Spatial spatial;
-    
+
     public JmeMotionPath() {
     }
 
     public JmeMotionPath(MotionPath motionPath, JmeMotionEvent parent, JmeVector3fChildren children) {
         super(children);
-        
+
         this.motionPath = motionPath;
         getLookupContents().add(motionPath);
         getLookupContents().add(this);
@@ -83,20 +84,21 @@ public class JmeMotionPath extends AbstractSceneExplorerNode {
         super.setDisplayName("Motion Path");
         children.setJmeMotionPath(this);
         motionEvent = parent;
-        
+
         updateSpline(false);
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Some boring Overrides">
+    //<editor-fold desc="Some Overrides for the Node">
     @Override
     public Image getIcon(int type) {
         return smallImage;
     }
+
     @Override
     public Image getOpenedIcon(int type) {
         return smallImage;
     }
-    
+
     @Override
     public Action[] getActions(boolean context) {
         MotionPathPopup m = new MotionPathPopup(this);
@@ -107,8 +109,8 @@ public class JmeMotionPath extends AbstractSceneExplorerNode {
             SystemAction.get(DeleteAction.class)
         };
     }
-//</editor-fold>
-    
+    //</editor-fold>
+
     @Override
     protected Sheet createSheet() {
         Sheet sheet = super.createSheet();
@@ -116,77 +118,77 @@ public class JmeMotionPath extends AbstractSceneExplorerNode {
         set.setDisplayName("Motion Path");
         set.setName(MotionPath.class.getName());
         set.setShortDescription("These are the Properties of the Motion Event's Motion Path");
-       
+
         if (motionPath == null) {
             return sheet;
         }
-        
+
         Property<?> prop = makeEmbedProperty(this, getExplorerNodeClass(), motionPath.getPathSplineType().getClass(), "getPathSplineType", "setPathSplineType", "PathSplineType");
         prop.setShortDescription("Sets the Type of the Paths' Spline. This will define how the single waypoints are interpolated (linear, curvy)");
         set.put(prop);
-        
+
         prop = makeEmbedProperty(this, getExplorerNodeClass(), float.class, "getCurveTension", "setCurveTension", "Curve Tension");
         prop.setShortDescription("Sets the Curves' Tension. This defines how \"Curvy\" a curve will be. A tension of 0 would be completely linear.");
         set.put(prop);
-        
+
         prop = makeProperty(motionPath, boolean.class, "isCycle", "setCycle", "Cycle?");
         prop.setShortDescription("Should the Path be a Cycle? This essentially means it will be looped. (Starting from the beginning after we're finished)");
         set.put(prop);
-        
+
         prop = makeProperty(motionPath, int.class, "getLength", null, "Path Length");
         prop.setShortDescription("This is the total length this path has");
         set.put(prop);
-        
+
         prop = makeEmbedProperty(motionPath, motionPath.getClass(), int.class, "getNbWayPoints", null, "Number of Waypoints");
         prop.setShortDescription("Shows the Number of Waypoints this Path consists of");
         set.put(prop);
-        
+
         sheet.put(set);
-        
+
         set = Sheet.createPropertiesSet();
         set.setDisplayName("Motion Path SDK");
         set.setName("MotionPathSDK");
         set.setShortDescription("These are SDK-dependent Settings which have nothing to do with MotionEvent or MotionPath in the first place.");
-        
+
         prop = makeEmbedProperty(this, JmeMotionPath.class, float.class, "getDebugBoxExtents", "setDebugBoxExtents", "DebugBox Extents");
         prop.setShortDescription("The DebugBox Extents defines how big the Debug Boxes (i.e. the Boxes you see for each Waypoint) are. Note: The BoxSize is 2 * extents");
         set.put(prop);
         sheet.put(set);
-        
+
         return sheet;
     }
-    
+
     public MotionPath getMotionPath() {
         return motionPath;
     }
-    
+
     public JmeMotionEvent getMotionEvent() {
         return motionEvent;
     }
-    
-    //<editor-fold defaultstate="collapsed" desc="Properties Getter/Setter">
+
+    //<editor-fold desc="Properties Getter/Setter">
     public float getDebugBoxExtents() {
         return debugBoxExtents;
     }
-    
+
     public void setDebugBoxExtents(float extents) {
         debugBoxExtents = extents;
-        
+
         if (getChildren() != null) {
             for (Node n : getChildren().getNodes()) {
                 if (n instanceof JmeVector3f) {
-                    ((JmeVector3f)n).updateBox();
+                    ((JmeVector3f) n).updateBox();
                 } else {
                     Logger.getLogger(JmeMotionPath.class.getName()).log(Level.WARNING, "JmeMotionPath has some unknown Children...");
                 }
             }
         }
     }
-    
+
     public Spline.SplineType getPathSplineType() {
         return motionPath.getPathSplineType();
     }
-    
+
     public void setPathSplineType(Spline.SplineType sType) {
         if (sType == Spline.SplineType.Nurb) {
             Logger.getLogger(JmeMotionPath.class.getName()).log(Level.SEVERE, "Nurb Curves aren't possible at the moment (they require additional helper points). Reverting to Catmull..");
@@ -197,20 +199,20 @@ public class JmeMotionPath extends AbstractSceneExplorerNode {
             setPathSplineType(Spline.SplineType.CatmullRom);
             return;
         }
-        
+
         motionPath.setPathSplineType(sType);
         updateSpline(true);
     }
-    
+
     public float getCurveTension() {
         return motionPath.getCurveTension();
     }
-    
+
     public void setCurveTension(float f) {
         motionPath.setCurveTension(f);
         updateSpline(true);
     }
-//</editor-fold>
+    //</editor-fold>
 
     @Override
     public Class getExplorerObjectClass() {
@@ -226,38 +228,38 @@ public class JmeMotionPath extends AbstractSceneExplorerNode {
     public org.openide.nodes.Node[] createNodes(Object key, DataObject key2, boolean cookie) {
         return null;
     }
-    
+
     public void refreshChildren() {
-        ((JmeVector3fChildren)this.jmeChildren).refreshChildren(true);
+        ((JmeVector3fChildren) this.jmeChildren).refreshChildren(true);
         updateSpline(false);
     }
-    
+
     @Override
     public void destroy() throws IOException {
-        for (Node n: getChildren().getNodes()) {
-            ((JmeVector3f)n).destroy();
+        for (Node n : getChildren().getNodes()) {
+            ((JmeVector3f) n).destroy();
         }
         super.destroy();
         ((AbstractSceneExplorerNode) getParentNode()).refresh(true);
     }
-    
+
     public void enableDebugShapes() {
         for (Node n : getChildren().getNodes()) {
             if (n instanceof JmeVector3f) {
-                ((JmeVector3f)n).attachBox(((JmeVector3f)n).spatial, this);
+                ((JmeVector3f) n).attachBox(((JmeVector3f) n).spatial, this);
             }
         }
-        
+
         updateSpline(false);
     }
-    
+
     public void disableDebugShapes() {
         for (Node n : getChildren().getNodes()) {
             if (n instanceof JmeVector3f) {
-                ((JmeVector3f)n).detachBox(((JmeVector3f)n).spatial);
+                ((JmeVector3f) n).detachBox(((JmeVector3f) n).spatial);
             }
         }
-        
+
         if (spatial != null) {
             final Spatial spat = spatial;
             SceneApplication.getApplication().enqueue(new Callable<Void>() {
@@ -268,11 +270,15 @@ public class JmeMotionPath extends AbstractSceneExplorerNode {
                 }
             });
         }
-        
+
     }
+
     /**
      * Call this to update the visual Spline.
-     * @param wasModified If the Spatial was Modified and hence the dirty-safe flag should be triggered (only false for the Constructors first initiation)
+     *
+     * @param wasModified If the Spatial was Modified and hence the dirty-safe
+     * flag should be triggered (only false for the Constructors first
+     * initiation)
      */
     public void updateSpline(boolean wasModified) {
         if (spatial != null) {
@@ -285,42 +291,42 @@ public class JmeMotionPath extends AbstractSceneExplorerNode {
                 }
             });
         }
-        
+
         Material m = new Material(SceneApplication.getApplication().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         m.setColor("Color", ColorRGBA.Red);
-        m.getAdditionalRenderState().setLineWidth(4f); // Brand new feature ;)
-        
-        switch (motionPath.getPathSplineType())
-        {
+        // Alpha4: m.getAdditionalRenderState().setLineWidth(4f);
+
+        switch (motionPath.getPathSplineType()) {
             case CatmullRom:
                 Geometry geo = new Geometry("Curve", new Curve(motionPath.getSpline(), 10));
                 geo.setMaterial(m);
                 spatial = geo;
                 break;
-                
+
             case Linear:
                 geo = new Geometry("Curve", new Curve(motionPath.getSpline(), 0));
                 geo.setMaterial(m);
                 spatial = geo;
                 break;
-                
+
             default:
                 geo = new Geometry("Curve", new Curve(motionPath.getSpline(), 10));
                 geo.setMaterial(m);
                 spatial = geo;
                 break;
         }
-        
+
         final Spatial spat = spatial;
         SceneApplication.getApplication().enqueue(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    SceneApplication.getApplication().getRootNode().attachChild(spat);
-                    return null;
-                }
+            @Override
+            public Void call() throws Exception {
+                SceneApplication.getApplication().getRootNode().attachChild(spat);
+                return null;
+            }
         });
-        
-        if (wasModified)
+
+        if (wasModified) {
             motionEvent.setModified(true);
+        }
     }
 }
