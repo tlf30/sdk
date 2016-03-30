@@ -3,8 +3,8 @@
 #Author MeFisto94
 set -e # Quit on Error
 
-jdk_version="8u74"
-jdk_build_version="b02"
+jdk_version="8u77"
+jdk_build_version="b03"
 platforms=( "linux-x64.tar.gz" "linux-i586.tar.gz" "windows-i586.exe" "windows-x64.exe" "macosx-x64.dmg" )
 
 function install_xar {
