@@ -38,7 +38,7 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
                 String color = NbPreferences.root().node("laf").get("darkmonkey.color", null);
                 if (color == null) { /* Create key with default value */
                     NbPreferences.root().node("laf").put("darkmonkey.color", "blue");
-                    color = "blue";
+                    color = "pony";
                 }
                 
                 switch (color.toLowerCase()) {
@@ -77,6 +77,10 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
                         
                     case "debug":
                         setCurrentTheme(getDebugTheme());
+                        break;
+                        
+                    case "pony":
+                        setCurrentTheme(getPonyTheme());
                         break;
                 }
             } else {
@@ -242,6 +246,24 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         nt.setSecondary1(Color.decode("#FFFF00")); // Outlines, some decoration and tooltips for disabled buttons
         nt.setSecondary2(Color.decode("#FF00FF")); // Selected inactive things (and disabled text)
         nt.setSecondary3(Color.decode("#00FFFF")); // Unselected Frames
+        nt.setFrameOpacity(180);
+        nt.setMenuOpacity(219);
+        nt.setFont(Font.decode("DejaVu Sans Condensed-PLAIN-12"));
+        
+        return nt;
+    }
+    
+    private NimRODTheme getPonyTheme() {
+        NimRODTheme nt = new NimRODTheme(); //nbres:/org.jme3.netbeans.plaf.darkmonkey
+        
+        nt.setBlack(Color.decode("#ED8EBB"));
+        nt.setWhite(Color.decode("#222222"));
+        nt.setPrimary1(Color.decode("#42002B"));
+        nt.setPrimary2(Color.decode("#AF0072"));
+        nt.setPrimary3(Color.decode("#0088CC"));
+        nt.setSecondary1(Color.decode("#0088CC"));
+        nt.setSecondary2(Color.decode("#003047"));
+        nt.setSecondary3(Color.decode("#333333"));
         nt.setFrameOpacity(180);
         nt.setMenuOpacity(219);
         nt.setFont(Font.decode("DejaVu Sans Condensed-PLAIN-12"));
