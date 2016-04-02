@@ -40,7 +40,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectExistsException;
@@ -101,6 +100,8 @@ public class SpatialAssetDataObject extends AssetDataObject {
             logger.log(Level.INFO, "Loaded asset {0}", getName());
             return spatial;
         } catch (Exception ex) {
+            logger.log(Level.SEVERE, "An Exception has occured when trying to load asset {0}", getName());
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             Exceptions.printStackTrace(ex);
         }
         return null;
@@ -137,7 +138,8 @@ public class SpatialAssetDataObject extends AssetDataObject {
                 logger.log(Level.WARNING, "New object {0} has no AssetData?", getName());
             }
         } catch (Exception ex) {
-            Exceptions.printStackTrace(ex);
+            logger.log(Level.SEVERE, "An Exception has occured when trying to save asset {0}", getName());
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 }
