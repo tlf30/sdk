@@ -102,7 +102,6 @@ public class SpatialAssetDataObject extends AssetDataObject {
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "An Exception has occured when trying to load asset {0}", getName());
             logger.log(Level.SEVERE, ex.getMessage(), ex);
-            Exceptions.printStackTrace(ex);
         }
         return null;
     }
