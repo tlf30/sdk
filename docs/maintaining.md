@@ -39,3 +39,19 @@ Edit the following line just so it recognizes the appropriate extensions.
 ```java
 return ext.startsWith("j3") || ext.equals("blend"); /* Add your own binary extensions here !! */
 ```
+
+### How to update Avian (iOS JVM)
+Avian is bundled in the jme3-ios.jar as `nbres:/com/jme3/gde/ios/avian-openjdk-mac.zip`.  
+The actual upgrade process is simply downloading the new versions, executing `cd jme3-ios && ant package-avian` and update the avianVersion in `IosCompositeProvider` or rather in it's inner SavePropsListener class.  
+
+- Download [Avian](https://readytalk.github.io/avian/) into any desired directory and extract it (it should create a folder called avian)
+- Download the OpenJDK unofficial builds from [here](https://github.com/alexkasko/openjdk-unofficial-builds). It's an unofficial build since there is only the source available for Mac OS and/or the only way to get official builds would be through the linux package managers. You need the "zip" file (no installer).  
+- Get the OpenJDK Sources. They are a bit hidden, but essentially pick the version [here](http://hg.openjdk.java.net/jdk7/jdk7/jdk/tags). Then click on zip (or whatever you like) on the left menu and extract the sources.
+- Download the Hello iOS Example Project from [here](https://github.com/ReadyTalk/hello-ios) (Click on Download ZIP) and extract it.
+
+Now you have to set-up the paths to the freshly downloaded things.  
+Open `jme3-ios/nbproject/project.properties` and adopt the changes to the few given paths. Let it point to the extracted things you just downloaded.
+Issue `cd jme3-ios && ant package-avian`.
+
+If you experience `ln: /usr/include/netinet/ip.h: No such file or directory` or something, then you didn't have XCode Command Line Tools installed. Type `xcode-select --install` to install them.  
+Note: Personally I was unable to compile Avian from here due to several compilation faults related to the downloaded JDK Sources. I will edit this document once I was able to.  
