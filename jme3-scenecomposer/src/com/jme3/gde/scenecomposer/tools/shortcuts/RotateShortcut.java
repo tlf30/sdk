@@ -124,7 +124,7 @@ public class RotateShortcut extends ShortcutTool {
     }
 
     @Override
-    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject dataObject, JmeSpatial selectedSpatial) {
+    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject dataObject) {
 
         if (!pickEnabled) {
             if (currentAxis.equals(Vector3f.UNIT_XYZ)) {

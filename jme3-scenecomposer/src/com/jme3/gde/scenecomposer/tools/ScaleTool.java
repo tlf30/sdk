@@ -92,7 +92,7 @@ public class ScaleTool extends SceneEditTool {
     }
 
     @Override
-    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject currentDataObject, JmeSpatial selectedSpatial) {
+    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject currentDataObject) {
         if (pickedMarker == null) {
             highlightAxisMarker(camera, screenCoord, axisPickType, true);
         } else {

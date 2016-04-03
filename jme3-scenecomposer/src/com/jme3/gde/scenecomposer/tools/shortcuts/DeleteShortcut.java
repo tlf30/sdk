@@ -91,7 +91,7 @@ public class DeleteShortcut extends ShortcutTool {
     }
 
     @Override
-    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject dataObject, JmeSpatial selectedSpatial) {
+    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject dataObject) {
     }
 
     @Override
