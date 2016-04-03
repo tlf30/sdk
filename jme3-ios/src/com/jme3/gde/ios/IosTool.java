@@ -74,7 +74,9 @@ public class IosTool {
         FileObject[] sdks = sdkRoot.getChildren();
         for (FileObject fileObject : sdks) {
             if (fileObject.isFolder()) {
-                if (fileObject.getName().startsWith(target)) {
+                if (fileObject.getName().equals(target)) {
+                    sdkList.add("default"); // instead of an empty field, we add "default"
+                } else if (fileObject.getName().startsWith(target)) {
                     sdkList.add(fileObject.getName().substring(target.length(), fileObject.getName().length()));
                 }
             }
