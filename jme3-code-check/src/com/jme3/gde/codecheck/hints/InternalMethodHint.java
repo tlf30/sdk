@@ -22,6 +22,7 @@ import org.netbeans.spi.editor.hints.ErrorDescription;
 import org.netbeans.spi.editor.hints.ErrorDescriptionFactory;
 import org.netbeans.spi.editor.hints.Fix;
 import org.openide.awt.StatusDisplayer;
+import org.openide.util.NbBundle;
 
 public class InternalMethodHint extends AbstractHint {
 
@@ -84,19 +85,19 @@ public class InternalMethodHint extends AbstractHint {
     //Message that the user sees in the left sidebar:
     @Override
     public String getDisplayName() {
-        return "You should not call this method, its for internal use only!";
+        return NbBundle.getMessage(InternalMethodHint.class, "InternalMethodHint.display-name");
     }
 
     //Name of the hint in the Options window:
     @Override
     public String getId() {
-        return "Internal Methods";
+        return NbBundle.getMessage(InternalMethodHint.class, "InternalMethodHint.id");
     }
 
     //Description of the hint in the Options window:
     @Override
     public String getDescription() {
-        return "Checks for calls to internal methods.";
+        return NbBundle.getMessage(InternalMethodHint.class, "InternalMethodHint.description");
     }
 
     class MessagesFix implements EnhancedFix {
@@ -118,7 +119,7 @@ public class InternalMethodHint extends AbstractHint {
 
         @Override
         public String getText() {
-            return "Remove this call";
+            return NbBundle.getMessage(InternalMethodHint.class, "InternalMethodHint.fix-text");
         }
 
         @Override
