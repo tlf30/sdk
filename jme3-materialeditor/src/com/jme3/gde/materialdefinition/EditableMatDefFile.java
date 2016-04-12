@@ -19,6 +19,7 @@ import com.jme3.gde.materialdefinition.navigator.node.MatDefNode;
 import com.jme3.material.MatParam;
 import com.jme3.material.Material;
 import com.jme3.material.MaterialDef;
+import com.jme3.material.TechniqueDef;
 import com.jme3.material.plugins.J3MLoader;
 import com.jme3.material.plugins.MatParseException;
 import com.jme3.shader.Glsl100ShaderGenerator;
@@ -32,6 +33,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -171,12 +173,17 @@ public class EditableMatDefFile {
         try {
             material.selectTechnique(currentTechnique.getName(), SceneApplication.getApplication().getRenderManager());
             Shader s;
+            StringBuilder sb = new StringBuilder();
+            TechniqueDef def = material.getActiveTechnique().getDef();
+            sb.append(def.getShaderPrologue());
+            material.getActiveTechnique().getDynamicDefines().generateSource(sb, Arrays.asList(def.getDefineNames()), Arrays.asList(def.getDefineTypes()));
+            
             if (version.equals(GLSL100)) {
-                glsl100.initialize(material.getActiveTechnique());
-                s = glsl100.generateShader();
+                glsl100.initialize(material.getActiveTechnique().getDef());
+                s = glsl100.generateShader(sb.toString());
             } else {
-                glsl150.initialize(material.getActiveTechnique());
-                s = glsl150.generateShader();
+                glsl150.initialize(material.getActiveTechnique().getDef());
+                s = glsl150.generateShader(sb.toString());
             }
             for (Shader.ShaderSource source : s.getSources()) {
                 if (source.getType() == type) {
