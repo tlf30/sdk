@@ -10,6 +10,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.prefs.Preferences;
 import javax.swing.UIDefaults;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 import org.openide.util.NbPreferences;
 
 /**
@@ -33,6 +35,8 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         //  From DarkMonkey.theme
         // This replaces getXYZTheme(), they will be seperate Files
         
+        StyleSheet styleSheet = new HTMLEditorKit().getStyleSheet();
+        
         try {
             if (NbPreferences.root().nodeExists("laf")) {
                 String color = NbPreferences.root().node("laf").get("darkmonkey.color", null);
@@ -44,14 +48,17 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
                 switch (color.toLowerCase()) {
                     case "blue":
                         setCurrentTheme(getBlueTheme());
+                        styleSheet.addRule("a {color:" + getBlueThemeLinkColor() + ";}");
                         break;
                         
                     case "yellow":
                         setCurrentTheme(getYellowTheme());
+                        styleSheet.addRule("a {color:" + getYellowThemeLinkColor()+ ";}");
                         break;
                     
                     case "yellow-two":
                         setCurrentTheme(getYellowTwoTheme());
+                        styleSheet.addRule("a {color:" + getYellowTwoThemeLinkColor() + ";}");
                         break;
                         
                     case "manual":
@@ -69,25 +76,31 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
                         nt.setMenuOpacity(219);
                         nt.setFont(Font.decode("DejaVu Sans Condensed-PLAIN-12"));
                         setCurrentTheme(nt);
+                        styleSheet.addRule("a {color:" + pref.get("darkmonkey.color.linkcolor", "#233fb0") + ");}");
                         break;
                         
                     case "legacy":
                         setCurrentTheme(getLegacyTheme());
+                        styleSheet.addRule("a {color:" + getLegacyThemeLinkColor()+ ";}");
                         break;
                         
                     case "debug":
                         setCurrentTheme(getDebugTheme());
+                        styleSheet.addRule("a {color:" + getDebugThemeLinkColor()+ ";}");
                         break;
                         
                     case "pony":
                         setCurrentTheme(getPonyTheme());
+                        styleSheet.addRule("a {color:" + getPonyThemeLinkColor()+ ";}");
                         break;
                 }
             } else {
                 setCurrentTheme(getBlueTheme());
+                styleSheet.addRule("a {color:" + getBlueThemeLinkColor() + ";}");
             }
         } catch (Exception e) {
             setCurrentTheme(getBlueTheme());
+            styleSheet.addRule("a {color:" + getBlueThemeLinkColor() + ";}");
         }
     }
     
@@ -169,6 +182,10 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         return nt;
     }
     
+    private String getBlueThemeLinkColor() {
+        return "#4673DB";
+    }
+    
     /**
      * This is the Yellow Theme. It's the new default one, since Bananas = Yellow
      * @return 
@@ -191,6 +208,10 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         return nt;
     }
     
+    private String getYellowThemeLinkColor() {
+        return "#FFD200";
+    }
+    
     private NimRODTheme getYellowTwoTheme() {
         NimRODTheme nt = new NimRODTheme();
         
@@ -207,6 +228,10 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         nt.setFont(Font.decode("DejaVu Sans Condensed-PLAIN-12"));
         
         return nt;
+    }
+    
+    private String getYellowTwoThemeLinkColor() {
+        return "#BAA027";
     }
     
     /**
@@ -231,6 +256,10 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         return nt;
     }
     
+    private String getLegacyThemeLinkColor() {
+        return "#CC8D56";
+    }
+    
     /**
      * Return the Debug Theme (It will have R, G and B so you know what Primary1 means etc)
      * @return 
@@ -253,6 +282,10 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         return nt;
     }
     
+    private String getDebugThemeLinkColor() {
+        return "#00ff00"; // Should be a mixture of nt.setBlack (which is the Log-Heading Color and Primary2, which is the Backgroundcolor)
+    }
+    
     private NimRODTheme getPonyTheme() {
         NimRODTheme nt = new NimRODTheme(); //nbres:/org.jme3.netbeans.plaf.darkmonkey
         
@@ -269,5 +302,9 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         nt.setFont(Font.decode("DejaVu Sans Condensed-PLAIN-12"));
         
         return nt;
+    }
+    
+    private String getPonyThemeLinkColor() {
+        return "#CF3E9C";
     }
 }
