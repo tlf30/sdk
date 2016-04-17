@@ -71,6 +71,8 @@ public class SmoothTerrainToolAction extends AbstractTerrainToolAction {
         Terrain terrain = getTerrain(rootNode.getLookup().lookup(Node.class));
         if (terrain == null)
             return null;
+        Node terrainNode = getTerrainNode(rootNode.getLookup().lookup(Node.class));
+        worldLoc.subtractLocal(terrainNode.getWorldTranslation());
         modifyHeight(terrain, worldLoc, radius, height, mesh);
         return terrain;
     }
