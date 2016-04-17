@@ -1,4 +1,4 @@
-MaterialDef Simple {
+MaterialDef Dashed {
     MaterialParameters {
         Float DashSize
         Vector4 Color
