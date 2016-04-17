@@ -42,6 +42,8 @@ import com.jme3.gde.terraineditor.tools.TerrainTool;
 import com.jme3.input.event.KeyInputEvent;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import com.jme3.terrain.Terrain;
 import java.util.concurrent.Callable;
 import org.openide.loaders.DataObject;
 

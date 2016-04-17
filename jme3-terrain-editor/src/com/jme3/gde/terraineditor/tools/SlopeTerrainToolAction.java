@@ -75,7 +75,10 @@ public class SlopeTerrainToolAction extends AbstractTerrainToolAction {
         Terrain terrain = getTerrain(rootNode.getLookup().lookup(Node.class));
         if (terrain == null)
             return null;
-
+        Node terrainNode = getTerrainNode(rootNode.getLookup().lookup(Node.class));
+        point1.subtractLocal(terrainNode.getWorldTranslation());
+        point2.subtractLocal(terrainNode.getWorldTranslation());
+        current.subtractLocal(terrainNode.getWorldTranslation());
         modifyHeight(terrain, point1, point2, current, radius, weight, precise, lock, mesh);
 
         return terrain;
