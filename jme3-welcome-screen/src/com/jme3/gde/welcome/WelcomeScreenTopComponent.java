@@ -20,6 +20,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.Exceptions;
 import org.openide.util.HelpCtx;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.NbPreferences;
@@ -43,11 +44,6 @@ autostore = false)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_WelcomeScreenAction",
         preferredID = "WelcomeScreenTopComponent")
-@Messages({
-    "CTL_WelcomeScreenAction=Welcome Screen",
-    "CTL_WelcomeScreenTopComponent=Welcome Screen",
-    "HINT_WelcomeScreenTopComponent=Shows news and information about your SDK"
-})
 public final class WelcomeScreenTopComponent extends TopComponent implements HyperlinkListener {
     private static Thread checkOpenThread;
     private static final Logger logger = Logger.getLogger(WelcomeScreenTopComponent.class.getName());
@@ -56,8 +52,8 @@ public final class WelcomeScreenTopComponent extends TopComponent implements Hyp
 
     public WelcomeScreenTopComponent() {
         initComponents();
-        setName(Bundle.CTL_WelcomeScreenTopComponent());
-        setToolTipText(Bundle.HINT_WelcomeScreenTopComponent());
+        setName(NbBundle.getMessage(WelcomeScreenTopComponent.class, "CTL_WelcomeScreenTopComponent"));
+        setToolTipText(NbBundle.getMessage(WelcomeScreenTopComponent.class, "HINT_WelcomeScreenTopComponent"));
 
         jScrollPane2.setOpaque(false);
         jScrollPane2.getViewport().setOpaque(false);
@@ -191,7 +187,8 @@ public final class WelcomeScreenTopComponent extends TopComponent implements Hyp
             in.close();
             return response.toString();
         } catch (IOException ex) {
-            logger.log(Level.INFO, "Reading welcome page content from web failed", ex);
+            logger.log(Level.INFO, "Reading welcome page content from web failed!");
+            logger.log(Level.INFO, ex.getMessage());
         } finally {
             try {
                 if (in != null)
