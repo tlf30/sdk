@@ -38,7 +38,8 @@ public class ScaleShortcut extends ShortcutTool {
     @Override
 
     public boolean isActivableBy(KeyInputEvent kie) {
-        return kie.getKeyCode() == KeyInput.KEY_S;
+        ShortcutManager scm = Lookup.getDefault().lookup(ShortcutManager.class);
+        return kie.getKeyCode() == KeyInput.KEY_S && !scm.isCtrlDown();
     }
 
     @Override
