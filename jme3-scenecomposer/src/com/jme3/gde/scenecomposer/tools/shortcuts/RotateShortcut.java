@@ -77,7 +77,7 @@ public class RotateShortcut extends ShortcutTool {
     @Override
     public void keyPressed(KeyInputEvent kie) {
         if (kie.isPressed()) {
-            Lookup.getDefault().lookup(ShortcutManager.class).activateShortcut(kie);
+            Lookup.getDefault().lookup(ShortcutManager.class).setActiveShortcut(this);
 
             boolean axisChanged = ShortcutManager.isAxisKey(kie);
             if (axisChanged) {
@@ -99,7 +99,7 @@ public class RotateShortcut extends ShortcutTool {
                 spatial.setLocalRotation(startRotation.clone());
             } else if (axisChanged || numberChanged) {
                 //update transformation
-       /*         float number = ShortcutManager.getNumberKey(numberBuilder);
+                /*         float number = ShortcutManager.getNumberKey(numberBuilder);
                  Vector3f translation = currentAxis.mult(number);
                  finalPosition = startPosition.add(translation);
                  spatial.setLocalTranslation(finalPosition);
@@ -145,8 +145,8 @@ public class RotateShortcut extends ShortcutTool {
         }
 
         if (pickManager.updatePick(camera, screenCoord)) {
-            
-            Quaternion rotation = startRotation.mult(pickManager.getRotation(startWorldRotate.inverse()));           
+
+            Quaternion rotation = startRotation.mult(pickManager.getRotation(startWorldRotate.inverse()));
             toolController.getSelectedSpatial().setLocalRotation(rotation);
             finalRotation = rotation;
             updateToolsTransformation();

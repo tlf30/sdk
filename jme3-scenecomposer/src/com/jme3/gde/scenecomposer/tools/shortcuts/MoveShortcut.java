@@ -76,8 +76,8 @@ public class MoveShortcut extends ShortcutTool {
     @Override
     public void keyPressed(KeyInputEvent kie) {
         if (kie.isPressed()) {
-            Lookup.getDefault().lookup(ShortcutManager.class).activateShortcut(kie);
-
+            Lookup.getDefault().lookup(ShortcutManager.class).setActiveShortcut(this);
+            
             boolean axisChanged = ShortcutManager.isAxisKey(kie);
             if (axisChanged) {
                 currentAxis = ShortcutManager.getAxisKey(kie);

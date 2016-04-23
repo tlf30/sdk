@@ -140,6 +140,12 @@ public class ShortcutManager {
         }
         return newShortcut != null;
     }
+    
+    public void setActiveShortcut(ShortcutTool newShortcut) {
+        if (newShortcut != null && newShortcut != currentShortcut) {
+            currentShortcut = newShortcut;
+        }
+    }
 
     /**
      * This should be called to trigger the currentShortcut.keyPressed() method.
