@@ -11,6 +11,7 @@ import com.jme3.gde.core.sceneviewer.SceneViewerTopComponent;
 import com.jme3.gde.scenecomposer.SceneEditTool;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.AssetLinkNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.Terrain;
@@ -37,23 +38,9 @@ public class SelectTool extends SceneEditTool {
     private boolean wasDraggingR, wasDraggingL = false;
     private boolean wasDownR = false;
 
-    /**
-     * This is stateful: First it checks for a command (rotate, translate,
-     * delete, etc..) Then it checks for an axis (x,y,z) Then it checks for a
-     * number (user typed a number Then, finally, it checks if Enter was hit.
-     *
-     * If either of the commands was actioned, the preceeding states/axis/amount
-     * will be reset. For example if the user types: G Y 2 R Then it will: 1)
-     * Set state as 'Translate' for the G (grab) 2) Set the axis as 'Y'; it will
-     * translate along the Y axis 3) Distance will be 2, when the 2 key is hit
-     * 4) Distance, Axis, and state are then reset because a new state was set:
-     * Rotate it won't actually translate because 'Enter' was not hit and 'R'
-     * reset the state.
-     *
-     */
     @Override
     public void actionPrimary(Vector2f screenCoord, boolean pressed, final JmeNode rootNode, DataObject dataObject) {
-        if (!pressed){
+        if (!pressed) {
             if (!wasDraggingL) {
                 Vector3f result = pickWorldLocation(getCamera(), screenCoord, rootNode);
                 if (result != null) {
@@ -64,7 +51,7 @@ public class SelectTool extends SceneEditTool {
                 }
             }
             wasDraggingL = false;
-        }        
+        }
     }
 
     @Override
@@ -76,7 +63,7 @@ public class SelectTool extends SceneEditTool {
             if (!wasDraggingR && !wasDownR) { // wasn't dragging and was not down already
                 // pick on the spot
                 Spatial s = pickWorldSpatial(camera, screenCoord, rootNode);
-                if (!toolController.selectTerrain() && isTerrain(s)) {
+                if (!toolController.isSelectTerrain() && isTerrain(s)) {
                     // only select non-terrain
                     selected = null;
                     return;
@@ -91,6 +78,10 @@ public class SelectTool extends SceneEditTool {
                             return;
                         }
                     }
+                    // if the selected spatial is a sub spatial of a linked node
+                    // select the linked node
+                    s = findAssetLinkNode(s);
+
                     final Spatial selec = s;
                     selected = selec;
                     java.awt.EventQueue.invokeLater(new Runnable() {
@@ -103,7 +94,7 @@ public class SelectTool extends SceneEditTool {
                         }
 
                         private void doSelect() {
-                            //in case of  linked assets the selected nod ein the viewer is not necessarily in the explorer.
+                            // in case of linked assets the selected node in the viewer is not necessarily in the explorer.
                             JmeSpatial n = rootNode.getChild(selec);
                             if (n != null) {
                                 SceneViewerTopComponent.findInstance().setActivatedNodes(new org.openide.nodes.Node[]{n});
@@ -112,8 +103,8 @@ public class SelectTool extends SceneEditTool {
                         }
                     });
                 }
-
-                toolController.updateSelection(selected);
+                // toolController will be updated by the SceneComposerTopComponent
+                //toolController.updateSelection(selected);
             }
             wasDownR = true;
         } else {
@@ -141,6 +132,29 @@ public class SelectTool extends SceneEditTool {
         }
 
         return null;
+    }
+
+    /**
+     * Search for a AssetLinkNode in the hierarchy of the Spatial spat. If found
+     * return the last AssetLinkNode encounter (closest to scene root). Else
+     * return the given Spatial spat.
+     *
+     * @param spat the Spatial to search from.
+     * @return a AssetLinkNode if encounter else return spat
+     */
+    private Spatial findAssetLinkNode(final Spatial spat) {
+        Spatial s = spat;
+        Spatial linked = null;
+        while (s != null) {
+            if (s instanceof AssetLinkNode) {
+                linked = s;
+            }
+            s = s.getParent();
+        }
+        if (linked != null) {
+            return linked;
+        }
+        return spat;
     }
 
     @Override

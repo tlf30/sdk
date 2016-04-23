@@ -573,7 +573,7 @@ public class SceneEditorController implements NodeListener {
             return;
         }
         if (selectedSpat instanceof Node) {
-            final Node selected = (Node) selectedSpat;
+            final Node selected = (Node) ((selectedSpat instanceof AssetLinkNode) ? selectedSpat.getParent() : selectedSpat);
             setNeedsSave(true);
             SceneApplication.getApplication().enqueue(new Callable<Object>() {
 

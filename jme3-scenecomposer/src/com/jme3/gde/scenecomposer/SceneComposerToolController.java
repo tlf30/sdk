@@ -333,7 +333,7 @@ public class SceneComposerToolController extends SceneToolController {
         return snapToScene;
     }
 
-    public boolean selectTerrain() {
+    public boolean isSelectTerrain() {
         return selectTerrain;
     }
 
