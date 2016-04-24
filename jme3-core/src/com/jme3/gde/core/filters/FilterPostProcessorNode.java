@@ -234,15 +234,10 @@ public class FilterPostProcessorNode extends AbstractNode {
         @Override
         protected Node[] createNodes(Object t) {
             Filter filter = (Filter) t;
-            for (FilterNode di : Lookup.getDefault().lookupAll(FilterNode.class)) {
-                if (di.getExplorerObjectClass().getName().equals(filter.getClass().getName())) {
-                    Node[] ret = di.createNodes(filter, dataObject, readOnly);
-                    if (ret != null) {
-                        return ret;
-                    }
-                }
-            }
-            return new Node[]{};
+            //get JmeFilter, the only FilterNode spi
+            FilterNode di = Lookup.getDefault().lookup(FilterNode.class);
+            Node[] ret = di.createNodes(filter, dataObject, readOnly);
+            return ret;
         }
     }
 }
