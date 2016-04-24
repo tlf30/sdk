@@ -41,6 +41,7 @@ dependencies {
     corelibs dep("org.jmonkeyengine:jme3-blender:$jmeFullVersion", true, true)
 
     corelibs dep("org.jmonkeyengine:jme3-jbullet:$jmeFullVersion", true, true)
+    corelibs dep(fileTree("lib"), false, false)
     corelibs dep("org.jmonkeyengine:jme3-jogg:$jmeFullVersion", true, true)
 
     corelibs dep("org.jmonkeyengine:jme3-networking:$jmeFullVersion", true, true)
