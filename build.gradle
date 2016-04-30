@@ -3,6 +3,8 @@ import groovy.xml.MarkupBuilder
 import java.util.zip.ZipFile
 
 apply from: 'gradle/libs/digest.gradle'
+apply from: file('version.gradle')
+//apply from: file('upload.gradle')
 
 
 if (!hasProperty('mainClass')) {
@@ -22,8 +24,7 @@ repositories {
 
 }
 
-ext.jmeFullVersion = "3.1.0-beta1" //3.1.0-SNAPSHOT
-ext.jmeNbmRevision = 0
+ext.jmeEngineVersion = "3.1.0-beta1" // Specify the Engine Version to be used.
 
 configurations {
     corelibs
@@ -34,31 +35,31 @@ configurations {
 
 dependencies {
 
-    corelibs dep("org.jmonkeyengine:jme3-core:$jmeFullVersion",true,true)
-    corelibs dep("org.jmonkeyengine:jme3-desktop:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-lwjgl:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-effects:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-blender:$jmeFullVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-core:$jmeEngineVersion",true,true)
+    corelibs dep("org.jmonkeyengine:jme3-desktop:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-lwjgl:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-effects:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-blender:$jmeEngineVersion", true, true)
 
-    corelibs dep("org.jmonkeyengine:jme3-jbullet:$jmeFullVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-jbullet:$jmeEngineVersion", true, true)
     corelibs dep(fileTree("lib"), false, false)
-    corelibs dep("org.jmonkeyengine:jme3-jogg:$jmeFullVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-jogg:$jmeEngineVersion", true, true)
 
-    corelibs dep("org.jmonkeyengine:jme3-networking:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-niftygui:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-plugins:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-terrain:$jmeFullVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-networking:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-niftygui:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-plugins:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-terrain:$jmeEngineVersion", true, true)
 
-    optlibs dep("org.jmonkeyengine:jme3-bullet:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-jogl:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-android:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-ios:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-android-native:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-bullet-native:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-bullet-native-android:$jmeFullVersion", true, true)
-    testdatalibs dep("org.jmonkeyengine:jme3-testdata:$jmeFullVersion", false, false)
+    optlibs dep("org.jmonkeyengine:jme3-bullet:$jmeEngineVersion", true, true)
+    optlibs dep("org.jmonkeyengine:jme3-jogl:$jmeEngineVersion", true, true)
+    optlibs dep("org.jmonkeyengine:jme3-android:$jmeEngineVersion", true, true)
+    optlibs dep("org.jmonkeyengine:jme3-ios:$jmeEngineVersion", true, true)
+    optlibs dep("org.jmonkeyengine:jme3-android-native:$jmeEngineVersion", true, true)
+    optlibs dep("org.jmonkeyengine:jme3-bullet-native:$jmeEngineVersion", true, true)
+    optlibs dep("org.jmonkeyengine:jme3-bullet-native-android:$jmeEngineVersion", true, true)
+    testdatalibs dep("org.jmonkeyengine:jme3-testdata:$jmeEngineVersion", false, false)
 
-    examplelibs dep("org.jmonkeyengine:jme3-examples:$jmeFullVersion", false, true)
+    examplelibs dep("org.jmonkeyengine:jme3-examples:$jmeEngineVersion", false, true)
 
 }
 
@@ -476,7 +477,7 @@ copyTestSources.outputs.dir "JME3TestsTemplate/src/"
 copyTestSources.outputs.dir "JME3TestsTemplateAndroid/src/"
 
 ant.properties['plugins.version'] = jmeVersion
-ant.properties['app.version']= jmeFullVersion
+ant.properties['app.version']= jmePomVersion
 ant.properties['nbm.revision']= jmeNbmRevision
 
 task overrideHarness(dependsOn: checkPlatformConfig) << {
@@ -526,7 +527,7 @@ overrideHarness.inputs.files([ 'netbeans/harness/launchers/app.exe', 'netbeans/h
 task buildSdk(dependsOn: [copyBaseLibs, copyProjectLibs, createProjectXml, createBaseXml, copyTestSources, overrideHarness]) <<{
     ant.propertyfile(file: "nbproject/project.properties") {
         entry( key: "plugins.version", value: "${jmeVersion}")
-        entry( key: "app.version", value: "${jmeFullVersion}")
+        entry( key: "app.version", value: "${jmePomVersion}")
         entry( key: "nbm.revision", value: "${jmeNbmRevision}")
     }
     ant.ant(dir: ".", antfile: "build.xml", target: "build")
