@@ -55,3 +55,17 @@ Issue `cd jme3-ios && ant package-avian`.
 
 If you experience `ln: /usr/include/netinet/ip.h: No such file or directory` or something, then you didn't have XCode Command Line Tools installed. Type `xcode-select --install` to install them.  
 Note: Personally I was unable to compile Avian from here due to several compilation faults related to the downloaded JDK Sources. I will edit this document once I was able to.  
+
+### How to supply Updates through the internal Update Center
+Supplying updates through our infrastructure is really easy, there are only a few things to keep in mind.  
+Those Updates are supplied as NBM Files (Netbeans Module) which are built by issuing `ant nbms` or rather the targets `hudson-nightly` and `hudson-stable`. What they do is changing the version to "impl" and "spec" (Some Internal Netbeans Stuff).  
+Each NBM is then signed by us and hopefully the SDK won't download unsigned NBMs.  
+For this, you need to have a file called `nbproject/private/keystore`. You can change the keystore location and the username (`alias`) in `nbproject/platform.properties` (`keystore` and `nbm_alias`).  
+To generate a keystore, you issue `keytool -genkey -storepass "SecurePassword" -alias jmeupdates -validity 1068 -keystore nbproject/private/keystore` which generates the keystore with a validity of 3 yrs for the alias `jmeupdates`.  
+Note: When the Storepass contains backticks, you have to escape them with `\`'s.  
+Note: You must never ever upload/save the storepass in the git/web.  
+
+When you then build the nbms, you have to specify the SecurePassword like so: `ant nbms -Dstorepass="SecurePassword"`. Keep in mind that you have to escape each backtick with three (3)! `\\\`'s.  
+To not show the key to the public, you can specify the StorePass as an Environment Variable inside of your CI Build System (Hudson, Travis, ...)  
+
+When all of this is completed, you just have to upload the nbms to the right server, we do that using the SCP Protocol which you can also see for uploading the maven artifacts.  
