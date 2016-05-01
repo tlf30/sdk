@@ -207,7 +207,6 @@
         <ant antfile="template.xml" dir="nbi/stub">
             <property name="suite.location" value="${basedir}"/>
             <property name="suite.nbi.product.uid" value="${app.name}"/>
-            <property name="pack200.enabled" value="false"/>
             <!--TODO: this is .0.2 because of the pre-release static 3.0.0, else the RCs could not be installed next to a beta-->
             <property name="suite.nbi.product.version" value="${plugins.version}.0.${nbm.revision}"/>
             <property name="nbi.stub.location" value="${basedir}/nbi/stub"/>
