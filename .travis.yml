@@ -47,10 +47,10 @@ before_deploy:
   - ant -Dstorepass="$NBM_SIGN_PASS" set-spec-version suite.nbms build-installers unset-spec-version | awk '{printf("."); fflush(stdout)}'
   # In case of NIGHTLY (see hudson-nightly target)
   # - ant set-impl-version suite.nbms build-installers unset-impl-version | awk '{printf("."); fflush(stdout)}'
+  
+  # Has to be done before deploy (due to the rm command)
+  - scp -i nbproject/private/www-updater.key build/updates/* updates.jmonkeyengine.org:/var/www/updates/nightly/3.1/plugins
   - rm -rf build/
-  #- cd jdks
-  #- mv *.bin *.zip *.exe local/*/compiled/
-  #- cd ../
 
 deploy:
   provider: releases
