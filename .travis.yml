@@ -74,6 +74,7 @@ before_install:
   # no root :( - apt-get install -qq p7zip-full libxml2-dev zip
   - git fetch --unshallow -q
   - openssl aes-256-cbc -K $encrypted_ab3650240afa_key -iv $encrypted_ab3650240afa_iv -in nbproject/private/www-updater.key.enc -out nbproject/private/www-updater.key -d
+  - chmod 600 nbproject/private/www-updater.key.enc
   #- "[ $TRAVIS_PULL_REQUEST == 'false' ] && openssl aes-256-cbc -K $encrypted_a1949b55824a_key -iv $encrypted_a1949b55824a_iv -in private/www-updater.key.enc -out private/www-updater.key -d || :"
 
 # before_install:
