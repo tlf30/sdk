@@ -44,7 +44,7 @@ before_deploy:
   #- mv local/*/compiled/* .
   #- cd ../
   # In case of STABLE (see hudson-stable target)
-  - ant -Dstorepass="$NBM_SIGN_PASS" set-spec-version suite.nbms build-installers unset-spec-version | awk '{printf("."); fflush(stdout)}'
+  - ant -Dstorepass="$NBM_SIGN_PASS" -Dpack200.enabled=false set-spec-version suite.nbms build-installers unset-spec-version | awk '{printf("."); fflush(stdout)}'
   # In case of NIGHTLY (see hudson-nightly target)
   # - ant set-impl-version suite.nbms build-installers unset-impl-version | awk '{printf("."); fflush(stdout)}'
   
