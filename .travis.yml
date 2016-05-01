@@ -1,16 +1,18 @@
 language: java
 sudo: false
 jdk: oraclejdk8
-env:
- - GRADLE_USER_HOME=gradle-cache
 
+before_cache:
+ - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
   directories:
-   - gradle-cache
+   - $HOME/.gradle/caches/
+   - $HOME/.gradle/wrapper/
    - netbeans
    - jdks/local/8u74-b02/compiled
 
 addons:
+  ssh_known_hosts: updates.jmonkeyengine.org
   apt:
     packages:
     - p7zip-full

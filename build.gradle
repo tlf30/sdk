@@ -4,7 +4,6 @@ import java.util.zip.ZipFile
 
 apply from: 'gradle/libs/digest.gradle'
 apply from: file('version.gradle')
-//apply from: file('upload.gradle')
 
 
 if (!hasProperty('mainClass')) {
