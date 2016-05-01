@@ -9,7 +9,7 @@ cache:
    - $HOME/.gradle/caches/
    - $HOME/.gradle/wrapper/
    - netbeans
-   - jdks/local/8u74-b02/compiled
+   - jdks/local/8u77-b03/compiled
 
 addons:
   ssh_known_hosts: updates.jmonkeyengine.org
