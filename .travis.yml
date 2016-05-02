@@ -49,7 +49,7 @@ before_deploy:
   # - ant set-impl-version suite.nbms build-installers unset-impl-version | awk '{printf("."); fflush(stdout)}'
   
   # Has to be done before deploy (due to the rm command)
-  - scp -irp nbproject/private/www-updater.key build/updates/* www-updater@updates.jmonkeyengine.org:/var/www/updates/nightly/3.1/plugins
+  - scp -rp -i nbproject/private/www-updater.key build/updates/* www-updater@updates.jmonkeyengine.org:/var/www/updates/nightly/3.1/plugins
   - rm -rf build/
 
 deploy:
