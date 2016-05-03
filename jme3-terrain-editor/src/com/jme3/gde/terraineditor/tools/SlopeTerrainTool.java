@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 jMonkeyEngine
+ * Copyright (c) 2009-2016 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,6 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.BillboardControl;
 import com.jme3.scene.shape.Line;
-import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import org.openide.loaders.DataObject;
 
@@ -118,7 +117,7 @@ public class SlopeTerrainTool extends TerrainTool {
         angleText.setSize(0.5f);
         angleText.setCullHint(Spatial.CullHint.Never);
     }
-
+    
     @Override
     public void actionPrimary(Vector3f point, int textureIndex, AbstractSceneExplorerNode rootNode, DataObject dataObject) {
         if (point1 != null && point2 != null && point1.distance(point2) > 0.01f) { // Preventing unexpected behavior, like destroying the terrain
@@ -183,13 +182,13 @@ public class SlopeTerrainTool extends TerrainTool {
     @Override
     public void actionSecondary(Vector3f point, int textureIndex, AbstractSceneExplorerNode rootNode, DataObject dataObject) {
         if (leftCtrl) {
-            point2 = point;
+            point2 = new Vector3f(point);
             if (markerThird.getParent() == null)
                 parent.attachChild(markerThird);
 
             markerThird.setLocalTranslation(point);
         } else {
-            point1 = point;
+            point1 = new Vector3f(point);
             if (markerSecondary.getParent() == null)
                 parent.attachChild(markerSecondary);
 

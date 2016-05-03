@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 jMonkeyEngine
+ * Copyright (c) 2009-2016 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,8 +48,8 @@ import java.util.List;
 public class SlopeTerrainToolAction extends AbstractTerrainToolAction {
 
     private final Vector3f current;
-    private Vector3f point1;
-    private Vector3f point2;
+    private final Vector3f point1;
+    private final Vector3f point2;
     private final float radius;
     private final float weight;
     private List<Vector2f> undoLocs;
@@ -60,8 +60,8 @@ public class SlopeTerrainToolAction extends AbstractTerrainToolAction {
 
     public SlopeTerrainToolAction(Vector3f current, Vector3f point1, Vector3f point2, float radius, float weight, boolean precise, boolean lock, Meshes mesh) {
         this.current = current.clone();
-        this.point1 = point1;
-        this.point2 = point2;
+        this.point1 = point1.clone();
+        this.point2 = point2.clone();
         this.radius = radius;
         this.weight = weight;
         this.precise = precise;
