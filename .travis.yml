@@ -33,8 +33,8 @@ install:
   - cd jdks
   - ./download-jdks.sh
   - cd ../
-  - '[ -n "$TRAVIS_TAG" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && ant -Dstorepass="$NBM_SIGN_PASS" hudson-nightly || :'
-  - '[ -n "$TRAVIS_TAG" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && scp -rp -i nbproject/private/www-updater.key build/updates/* www-updater@updates.jmonkeyengine.org:/var/www/updates/nightly/3.1/plugins || :'
+  - '[ -z "$TRAVIS_TAG" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && ant -Dstorepass="$NBM_SIGN_PASS" hudson-nightly || :'
+  - '[ -z "$TRAVIS_TAG" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && scp -rp -i nbproject/private/www-updater.key build/updates/* www-updater@updates.jmonkeyengine.org:/var/www/updates/nightly/3.1/plugins || :'
   
 #script:
 #  - ./gradlew check
