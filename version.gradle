@@ -61,11 +61,12 @@ def getReleaseInfo(String tag) {
         // not a tagged commit
         return null;
     }
-    if (!tag.startsWith("v")) {
+    /*if (!tag.startsWith("v")) {
         // syntax error
         return null;
     }
     tag = tag.substring(1)
+    The SDK has it’s own versioning scheme which doesn’t start with v…*/
 
     String[] parts = tag.split("-", 2);
     String mainVersion;
