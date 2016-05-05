@@ -33,23 +33,19 @@ install:
   - cd jdks
   - ./download-jdks.sh
   - cd ../
+  - '[ -n "$TRAVIS_TAG" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && ant -Dstorepass="$NBM_SIGN_PASS" hudson-nightly || :'
+  - '[ -n "$TRAVIS_TAG" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && scp -rp -i nbproject/private/www-updater.key build/updates/* www-updater@updates.jmonkeyengine.org:/var/www/updates/nightly/3.1/plugins || :'
   
 #script:
 #  - ./gradlew check
 #  - ./gradlew createZipDistribution
 
 before_deploy:
-  #- cd jdks
-#  - ./download-jdks.sh
-  #- mv local/*/compiled/* .
-  #- cd ../
   # In case of STABLE (see hudson-stable target)
   - ant -Dstorepass="$NBM_SIGN_PASS" -Dpack200.enabled=false set-spec-version suite.nbms build-installers unset-spec-version | awk '{printf("."); fflush(stdout)}'
-  # In case of NIGHTLY (see hudson-nightly target)
-  # - ant set-impl-version suite.nbms build-installers unset-impl-version | awk '{printf("."); fflush(stdout)}'
   
   # Has to be done before deploy (due to the rm command)
-  - scp -rp -i nbproject/private/www-updater.key build/updates/* www-updater@updates.jmonkeyengine.org:/var/www/updates/nightly/3.1/plugins
+  - scp -rp -i nbproject/private/www-updater.key build/updates/* www-updater@updates.jmonkeyengine.org:/var/www/updates/stable/3.1/plugins
   - rm -rf build/
 
 deploy:
