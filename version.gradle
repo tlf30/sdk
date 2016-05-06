@@ -80,6 +80,7 @@ def getReleaseInfo(String tag) {
         releaseName = parts[1];
         if (releaseName.size() == 0) {
             // syntax error
+            println "Warning: getReleaseInfo() found an errorneous tag: \"" + tag + "\". Syntax Error: Release Name is of Length 0!";
             return null;
         }
     } else if (parts.length == 1) {
@@ -88,17 +89,25 @@ def getReleaseInfo(String tag) {
         mainVersion = parts[0];
     } else {
         // error
+        println "Warning: getReleaseInfo() found an errorneous tag: \"" + tag + "\". Syntax Error: The Tag didn't contain the expected number of dash-seperated keywords"
         return null;
     }
 
     if (mainVersion.size() == 0) {
         // syntax error
+        println "Warning: getReleaseInfo() found an errorneous tag: \"" + tag + "\". Syntax Error: The Main Version (e.g. 3.1) couldn't be extracted successfully."
         return null;
     }
 
     parts = mainVersion.split("\\.");
+    if (parts.size() == 2) {
+        mainVersion = mainVersion + ".0" // Assume Revision Zero
+        parts = mainVersion.split("\\.");
+    }
+    
     if (parts.size() != 3) {
         // syntax error
+        println "Warning: getReleaseInfo() found an errorneous tag: \"" + tag + "\". Syntax Error: The Tags Main Version didn't consist of two/three parts"
         return null;
     }
 
