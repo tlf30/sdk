@@ -42,6 +42,7 @@ install:
 
 before_deploy:
   # In case of STABLE (see hudson-stable target)
+  # the above gradlew already sets the correct ant properties to build
   - ant -Dstorepass="$NBM_SIGN_PASS" -Dpack200.enabled=false set-spec-version suite.nbms build-installers unset-spec-version | awk '{printf("."); fflush(stdout)}'
   
   # Has to be done before deploy (due to the rm command)
