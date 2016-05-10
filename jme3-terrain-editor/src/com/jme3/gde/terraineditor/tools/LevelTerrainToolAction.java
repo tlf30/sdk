@@ -64,7 +64,7 @@ public class LevelTerrainToolAction extends AbstractTerrainToolAction {
         this.worldLoc = markerLocation.clone();
         this.radius = radius;
         this.height = height;
-        this.levelTerrainLocation = levelTerrainLocation;
+        this.levelTerrainLocation = levelTerrainLocation.clone();
         this.precision = precision;
         this.mesh = mesh;
         name = "Level terrain";
@@ -77,6 +77,7 @@ public class LevelTerrainToolAction extends AbstractTerrainToolAction {
             return null;
         Node terrainNode = getTerrainNode(rootNode.getLookup().lookup(Node.class));
         worldLoc.subtractLocal(terrainNode.getWorldTranslation());
+        levelTerrainLocation.subtractLocal(terrainNode.getWorldTranslation());
         modifyHeight(terrain, levelTerrainLocation, worldLoc, radius, height, precision, mesh);
         return terrain;
     }
