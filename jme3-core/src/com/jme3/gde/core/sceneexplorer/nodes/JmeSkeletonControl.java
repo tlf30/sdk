@@ -82,7 +82,10 @@ public class JmeSkeletonControl extends JmeControl {
         if (skeletonControl == null) {
             return sheet;
         }
-
+        Property<?> prop = makeProperty(skeletonControl, boolean.class, "isHardwareSkinningPreferred", "setHardwareSkinningPreferred", "Hardware Skinning");
+        prop.setShortDescription("This Preference enables/disables the usage of HW Skinning for this Skeleton. This will improve your performance and is the default, however you might want to turn it off to debug some failure. Also Note that setting it to true doesn't guarantee that HW Skinning is used, it has to be supported by the Platform.");
+        set.put(prop);
+        
         //  set.put(new AnimationProperty(animControl));
 
         sheet.put(set);
