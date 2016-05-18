@@ -163,12 +163,13 @@ public class MaterialPreviewRenderer implements SceneListener {
     }
 
     public Material reloadMaterial(Material mat) {
-
-        ((ProjectAssetManager) mat.getMaterialDef().getAssetManager()).clearCache();
-
-        //creating a dummy mat with the mat def of the mat to reload
-        Material dummy = new Material(mat.getMaterialDef());
+        Material dummy;
         try {
+            ((ProjectAssetManager) mat.getMaterialDef().getAssetManager()).clearCache();
+
+            //creating a dummy mat with the mat def of the mat to reload
+            dummy = new Material(mat.getMaterialDef());
+        
             for (MatParam matParam : mat.getParams()) {
                 dummy.setParam(matParam.getName(), matParam.getVarType(), matParam.getValue());
             }
