@@ -8,6 +8,8 @@ package org.jme3.netbeans.plaf.darkmonkey;
 import com.nilo.plaf.nimrod.NimRODTheme;
 import java.awt.Color;
 import java.awt.Font;
+import java.util.HashMap;
+import java.util.Properties;
 import java.util.prefs.Preferences;
 import javax.swing.UIDefaults;
 import javax.swing.text.html.HTMLEditorKit;
@@ -29,6 +31,8 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
     public static final String dmLAFDefault = "DarkMonkey.theme";
     protected static NimRODTheme nrTheme = new NimRODTheme();
     
+    private HashMap<String, Properties> propertiesMap = new HashMap<String, Properties>();
+    
     public DarkMonkeyLookAndFeel(){
         super();
         // Todo: replace following code with proper loading
@@ -38,27 +42,55 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         StyleSheet styleSheet = new HTMLEditorKit().getStyleSheet();
         
         try {
+                      
+            // Since the Blue Theme is the Default one (and the fallback for missing values), it'll always be defined.
+            Properties prop = new Properties();
+            prop.put("linkColor", "#4673DB");
+            prop.put("nb.versioning.added.color", "#49D249");
+            prop.put("nb.versioning.modified.color", "#1AB8FF");
+            prop.put("nb.versioning.deleted.color", "#FFAFAF");
+            prop.put("nb.versioning.conflicted.color", "#FF6464");
+            prop.put("nb.versioning.ignored.color", "#8E8E8E");
+            prop.put("nb.diff.added.color", "#2B552B");
+            prop.put("nb.diff.changed.color", "#285570");
+            prop.put("nb.diff.deleted.color", "#552B2B");
+            prop.put("nb.diff.applied.color", "#447152");
+            prop.put("nb.diff.notapplied.color", "#43698D");
+            prop.put("nb.diff.unresolved.color", "#821E1E");
+            prop.put("nb.diff.sidebar.deleted.color", "#552B2B");
+            prop.put("nb.diff.sidebar.changed.color", "#1E4B70");
+            propertiesMap.put("blue", prop);
+                
             if (NbPreferences.root().nodeExists("laf")) {
                 String color = NbPreferences.root().node("laf").get("darkmonkey.color", null);
                 if (color == null) { /* Create key with default value */
                     NbPreferences.root().node("laf").put("darkmonkey.color", "blue");
                     color = "blue";
                 }
-                
+      
                 switch (color.toLowerCase()) {
                     case "blue":
                         setCurrentTheme(getBlueTheme());
-                        styleSheet.addRule("a {color:" + getBlueThemeLinkColor() + ";}");
+                        
+                        styleSheet.addRule("a {color: " + propertiesMap.get("blue").getProperty("linkColor") + ";}"); // We use prop.get so you only have to change the color once.
                         break;
                         
                     case "yellow":
                         setCurrentTheme(getYellowTheme());
-                        styleSheet.addRule("a {color:" + getYellowThemeLinkColor()+ ";}");
+                        prop = new Properties();
+                        prop.put("linkColor", "#FFD200");
+                        
+                        propertiesMap.put("yellow", prop);
+                        styleSheet.addRule("a {color: " + prop.getProperty("linkColor") + ";}");
                         break;
                     
                     case "yellow-two":
                         setCurrentTheme(getYellowTwoTheme());
-                        styleSheet.addRule("a {color:" + getYellowTwoThemeLinkColor() + ";}");
+                        prop = new Properties();
+                        prop.put("linkColor", "#BAA027");
+                        
+                        propertiesMap.put("yellow-two", prop);
+                        styleSheet.addRule("a {color: " + prop.getProperty("linkColor") + ";}");
                         break;
                         
                     case "manual":
@@ -76,31 +108,70 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
                         nt.setMenuOpacity(219);
                         nt.setFont(Font.decode("DejaVu Sans Condensed-PLAIN-12"));
                         setCurrentTheme(nt);
-                        styleSheet.addRule("a {color:" + pref.get("darkmonkey.color.linkcolor", "#233fb0") + ");}");
+                        
+                        prop = new Properties();
+                        prop.put("linkColor", pref.get("darkmonkey.color.linkcolor", "#233fb0"));
+                        
+                        for (String key : pref.keys()) {
+                            if (key.startsWith("darkmonkey.color.nb.")) {
+                                prop.put(key.substring("darkmonkey.color.".length()), pref.get(key, "#FF0000"));
+                            }
+                        }
+                        
+                        propertiesMap.put("manual", prop);
+                        styleSheet.addRule("a {color:" + prop.getProperty("linkColor") + ");}");
                         break;
                         
                     case "legacy":
                         setCurrentTheme(getLegacyTheme());
-                        styleSheet.addRule("a {color:" + getLegacyThemeLinkColor()+ ";}");
+                        prop = new Properties();
+                        prop.put("linkColor", "#CC8D56");
+                        
+                        propertiesMap.put("legacy", prop);
+                        styleSheet.addRule("a {color: " + prop.getProperty("linkColor") + ";}");
                         break;
                         
                     case "debug":
                         setCurrentTheme(getDebugTheme());
-                        styleSheet.addRule("a {color:" + getDebugThemeLinkColor()+ ";}");
+                        prop = new Properties();
+                        prop.put("linkColor", "#00ff00");
+                        
+                        propertiesMap.put("debug", prop);
+                        styleSheet.addRule("a {color: " + prop.getProperty("linkColor") + ";}");
                         break;
                         
                     case "pony":
                         setCurrentTheme(getPonyTheme());
-                        styleSheet.addRule("a {color:" + getPonyThemeLinkColor()+ ";}");
+                        prop = new Properties();
+                        prop.put("linkColor", "#CF3E9C");
+                        
+                        propertiesMap.put("pony", prop);
+                        styleSheet.addRule("a {color: " + prop.getProperty("linkColor") + ";}");
                         break;
                 }
             } else {
                 setCurrentTheme(getBlueTheme());
-                styleSheet.addRule("a {color:" + getBlueThemeLinkColor() + ";}");
+                styleSheet.addRule("a {color:" + propertiesMap.get("blue").getProperty("linkColor") + ";}");
             }
         } catch (Exception e) {
             setCurrentTheme(getBlueTheme());
-            styleSheet.addRule("a {color:" + getBlueThemeLinkColor() + ";}");
+            Properties prop = new Properties();
+            prop.put("linkColor", "#4673DB");
+            prop.put("nb.versioning.added.color", "#49D249");
+            prop.put("nb.versioning.modified.color", "#1AB8FF");
+            prop.put("nb.versioning.deleted.color", "#FFAFAF");
+            prop.put("nb.versioning.conflicted.color", "#FF6464");
+            prop.put("nb.versioning.ignored.color", "#8E8E8E");
+            prop.put("nb.diff.added.color", "#2B552B");
+            prop.put("nb.diff.changed.color", "#285570");
+            prop.put("nb.diff.deleted.color", "#552B2B");
+            prop.put("nb.diff.applied.color", "#447152");
+            prop.put("nb.diff.notapplied.color", "#43698D");
+            prop.put("nb.diff.unresolved.color", "#821E1E");
+            prop.put("nb.diff.sidebar.deleted.color", "#552B2B");
+            prop.put("nb.diff.sidebar.changed.color", "#1E4B70");
+            propertiesMap.put("blue", prop);
+            styleSheet.addRule("a {color:" + prop.getProperty("linkColor") + ";}");
         }
     }
     
@@ -181,11 +252,7 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         
         return nt;
     }
-    
-    private String getBlueThemeLinkColor() {
-        return "#4673DB";
-    }
-    
+        
     /**
      * This is the Yellow Theme. It's the new default one, since Bananas = Yellow
      * @return 
@@ -208,10 +275,6 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         return nt;
     }
     
-    private String getYellowThemeLinkColor() {
-        return "#FFD200";
-    }
-    
     private NimRODTheme getYellowTwoTheme() {
         NimRODTheme nt = new NimRODTheme();
         
@@ -230,9 +293,6 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         return nt;
     }
     
-    private String getYellowTwoThemeLinkColor() {
-        return "#BAA027";
-    }
     
     /**
      * This is the Legacy Theme. It's the one that DarkMonkey had before alpha-4
@@ -255,11 +315,7 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         
         return nt;
     }
-    
-    private String getLegacyThemeLinkColor() {
-        return "#CC8D56";
-    }
-    
+        
     /**
      * Return the Debug Theme (It will have R, G and B so you know what Primary1 means etc)
      * @return 
@@ -282,10 +338,7 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         return nt;
     }
     
-    private String getDebugThemeLinkColor() {
-        return "#00ff00"; // Should be a mixture of nt.setBlack (which is the Log-Heading Color and Primary2, which is the Backgroundcolor)
-    }
-    
+        
     private NimRODTheme getPonyTheme() {
         NimRODTheme nt = new NimRODTheme(); //nbres:/org.jme3.netbeans.plaf.darkmonkey
         
@@ -304,7 +357,38 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
         return nt;
     }
     
-    private String getPonyThemeLinkColor() {
-        return "#CF3E9C";
+    
+    /**
+     * This Method will simplify the lookup of any theme-related value.
+     * It will see if it's a built in theme or a manual theme and therefore look at the right place.
+     * 
+     * @param name The property to look for
+     * @param defaultValue The Value to return when the property isn't defined.
+     * @return The String Value of said property.
+     */
+    public String getThemeProperty(String name, String defaultValue) {
+        if (NbPreferences.root().nodeExists("laf")) {
+            String color = NbPreferences.root().node("laf").get("darkmonkey.color", "blue");
+
+            return propertiesMap.get(color.toLowerCase()).getProperty(name, defaultValue);
+        } else {
+            return propertiesMap.get("blue").getProperty(name, defaultValue);
+        }
+    }
+    
+    /**
+     * This Method will simplify the lookup of any theme-related value.
+     * It will return null if the value wasn't found.
+     * 
+     * @see #getThemeProperty(java.lang.String, java.lang.String) 
+     * @param name The Parameter to look for
+     * @return The String Value of said property (or null)
+     */
+    public String getThemeProperty(String name) {
+        return getThemeProperty(name, null);
+    }
+    
+    public String getDefaultThemeProperty(String name, String defaultValue) {
+        return propertiesMap.get("blue").getProperty(name, defaultValue);
     }
 }
