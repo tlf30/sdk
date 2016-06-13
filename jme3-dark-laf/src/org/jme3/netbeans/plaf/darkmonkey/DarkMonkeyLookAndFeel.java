@@ -367,12 +367,16 @@ public class DarkMonkeyLookAndFeel extends com.nilo.plaf.nimrod.NimRODLookAndFee
      * @return The String Value of said property.
      */
     public String getThemeProperty(String name, String defaultValue) {
-        if (NbPreferences.root().nodeExists("laf")) {
-            String color = NbPreferences.root().node("laf").get("darkmonkey.color", "blue");
+        try {
+            if (NbPreferences.root().nodeExists("laf")) {
+                String color = NbPreferences.root().node("laf").get("darkmonkey.color", "blue");
 
-            return propertiesMap.get(color.toLowerCase()).getProperty(name, defaultValue);
-        } else {
-            return propertiesMap.get("blue").getProperty(name, defaultValue);
+                return propertiesMap.get(color.toLowerCase()).getProperty(name, defaultValue);
+            } else {
+                return propertiesMap.get("blue").getProperty(name, defaultValue);
+            }
+        } catch (Exception e) {
+            return defaultValue;
         }
     }
     
