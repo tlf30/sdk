@@ -26,6 +26,7 @@ repositories {
 
 ext.jmeEngineVersion = "3.1.0-beta1" // Specify the Engine Version to be used.
 ext.jmeEngineVersion = "3.1.0-SNAPSHOT" // Specify the Engine Version to be used.
+ext.jmeEngineVersion = "3.1.0-master-SNAPSHOT" // Specify the Engine Version to be used.
 
 configurations {
     corelibs
