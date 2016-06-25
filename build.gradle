@@ -21,16 +21,15 @@ repositories {
     maven {
         url 'http://nifty-gui.sourceforge.net/nifty-maven-repo/'
     }
+    maven { url "https://jitpack.io" }
 
 }
 
-ext.jmeEngineVersion = "3.1.0-beta1" // Specify the Engine Version to be used.
-ext.jmeEngineVersion = "3.1.0-SNAPSHOT" // Specify the Engine Version to be used.
-ext.jmeEngineVersion = "3.1.0-master-SNAPSHOT" // Specify the Engine Version to be used.
 if (ext.jmeGitTag != null)
     ext.jmeEngineVersion = "3.1.0-" + ext.jmeGitTag + "-SNAPSHOT"
 else
     ext.jmeEngineVersion = "3.1.0-master-SNAPSHOT" // Specify the Engine Version to be used.
+
 
 configurations {
     corelibs
@@ -41,7 +40,9 @@ configurations {
 
 dependencies {
 
-    corelibs dep("org.jmonkeyengine:jme3-core:$jmeEngineVersion",true,true)
+    corelibs dep("com.github.xbuf:jme3_xbuf:0.8.4", false, false)
+
+    corelibs dep("org.jmonkeyengine:jme3-core:$jmeEngineVersion", true, true)
     corelibs dep("org.jmonkeyengine:jme3-desktop:$jmeEngineVersion", true, true)
     corelibs dep("org.jmonkeyengine:jme3-lwjgl:$jmeEngineVersion", true, true)
     corelibs dep("org.jmonkeyengine:jme3-effects:$jmeEngineVersion", true, true)
@@ -119,7 +120,7 @@ task copyBaseLibs(dependsOn:configurations.corelibs) <<{
    
     project.configurations.corelibs.collect {file ->
         // copy built jme3 jar files to jme3-core-baselibs
-        if (file.name.startsWith("jme3-") && !isSourceOrJavadoc(file.name)){
+        if (file.name.startsWith("jme3") && !isSourceOrJavadoc(file.name)){
             copy {
                 from file
                 into "jme3-core-baselibs/release/modules/ext/"
@@ -150,7 +151,7 @@ def isJavadoc(dep){
     return dep.endsWith("-javadoc.jar")
 }
 def isJmeDep(dep) {
-    return dep.startsWith("jme3-")
+    return dep.startsWith("jme3")
 }
 
 task createBaseXml(dependsOn: configurations.corelibs) <<{
@@ -162,7 +163,7 @@ task createBaseXml(dependsOn: configurations.corelibs) <<{
     // collect jar files
     project.configurations.corelibs.collect {file ->
         // copy built jme3 jar files to jme3-core-baselibs
-        if (file.name.startsWith("jme3-") && !isSourceOrJavadoc(file.name)){
+        if (file.name.startsWith("jme3") && !isSourceOrJavadoc(file.name)){
         
             //collect jme jars
             if(!jmeJarFiles.contains(file)){
