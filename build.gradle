@@ -561,6 +561,30 @@ task cleanSdk() <<{
     file("JME3TestsTemplateAndroid/src/jme3test/").deleteDir()
 }
 
+task patchPlatformIndependent(type: Copy) {
+    from zipTree('dist/jmonkeyplatform.zip')
+    into "dist/temp/"
+
+    filter { String line ->
+        line.startsWith('#jdkhome=') ? '#jdkhome="/path/to/jdk"': line
+    }
+
+    doLast {
+        delete(file('dist/jmonkeyplatform.zip'))
+    }
+}
+
+task fixPlatformIndependent(dependsOn: patchPlatformIndependent, type: Zip) {
+    description = "We compile our installers with the bundled jdk, but the platform independent zip doesn't have the jdk. For this we need to change the jmonkeyplatform.zip after building the installers to not have a jdk bundled"
+
+    from 'dist/temp'
+    archiveName = 'jmonkeyplatform.zip'
+    destinationDir = file('dist')
+
+    doLast {
+        delete("dist/temp")
+    }
+}
 
 //jar.dependsOn(buildSdk)
 //clean.dependsOn(cleanSdk)
