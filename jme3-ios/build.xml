@@ -25,10 +25,10 @@ Avian sources: ${avian.src.path.exists}
 
     <target name="sources.check">
         <dirname property="dir.current" file="${ant.file}"/>
-        <property name="avian.jdk.path" value="${dir.current}/downloads/openjdk-1.7.0-u80-unoffficial-macosx-x86_64-image"/>
+        <property name="avian.jdk.path" value="${dir.current}/downloads/openjdk-1.7.0-u80-unofficial-macosx-x86_64-image"/>
         <property name="avian.jdk.src.path" value="${dir.current}/downloads/jdk7u/jdk/src"/>
         <property name="avian.src.path" value="${dir.current}/downloads/avian"/>
-        <property name="avian.lzma.sdk.path" value="${dir.current}/downloads/lzma920"/>
+        <property name="avian.lzma.sdk.path" value="${dir.current}/downloads/lzma-920"/>
         <property name="avian.build.options" value="lzma-bootimage-openjdk-src"/>
         
         <condition property="avian.jdk.path.exists" else="false">
