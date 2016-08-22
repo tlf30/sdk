@@ -179,6 +179,11 @@ to   XCode.app/Contents/Developer/usr/bin
             <arg line="build/ios-x86_64-${avian.build.options}/classpath.jar"/>
             <arg line="build/ios-x86_64-${avian.build.options}/libavian.a"/>
         </exec>
+        <zip destfile="src/com/jme3/gde/ios/avian-openjdk-mac.zip" update="true">
+            <zipfileset file="${avian.src.path}/build/ios-x86_64-${avian.build.options}/bootimage-generator" filemode="755" fullpath="avian-x86_64/bootimage-generator"/>
+            <zipfileset file="${avian.src.path}/build/ios-x86_64-${avian.build.options}/binaryToObject/binaryToObject" filemode="755" fullpath="avian-x86_64/binaryToObject"/>
+            <zipfileset file="${avian.src.path}/build/ios-x86_64-${avian.build.options}/libavian.a" fullpath="avian-x86_64/libavian.a"/>
+        </zip>
         <!--<exec executable="make" dir="${avian.src.path}" failonerror="true">
             <env key="JAVA_HOME" value="${avian.jdk.path}"/>
             <arg line="arch=i386"/>
