@@ -1,0 +1,11 @@
+--- downloads/jdk7u/jdk/src/share/javavm/export/jvm.h	2016-08-21 11:55:38.000000000 +0200
++++ downloads/jdk7u/jdk/src/share/javavm/export/jvm.h	2016-08-21 11:55:43.000000000 +0200
+@@ -437,6 +437,8 @@
+ JNIEXPORT jobjectArray JNICALL
+ JVM_GetClassInterfaces(JNIEnv *env, jclass cls);
+ 
++JNIEXPORT jobject JNICALL
++JVM_GetClassLoader(JNIEnv *env, jclass cls);
+
+ JNIEXPORT jboolean JNICALL
+ JVM_IsInterface(JNIEnv *env, jclass cls);
