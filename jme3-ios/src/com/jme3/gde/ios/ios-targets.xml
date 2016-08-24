@@ -1,7 +1,7 @@
     <target name="build-ios">
         <antcall target="build-ios-arm" inheritall="false" inheritrefs="false"/>
         <antcall target="build-ios-arm64" inheritall="false" inheritrefs="false"/>
-        <antcall target="build-ios-i386" inheritall="false" inheritrefs="false"/>
+        <antcall target="build-ios-x86_64" inheritall="false" inheritrefs="false"/>
         <echo>The needed native iOS libraries have been built, open the XCode project at ios/project to run the application on iOS.</echo>
     </target>
 
@@ -9,7 +9,7 @@
     
     <target name="build-ios-arm64" depends="init, -init-platform-arm64, -create-properties, -build-ios" description="Builds iOS libraries for device"/>
     
-    <target name="build-ios-i386" depends="init, -init-platform-i386, -create-properties, -build-ios" description="Builds iOS libraries for simulator"/>
+    <target name="build-ios-x86_64" depends="init, -init-platform-x86_64, -create-properties, -build-ios" description="Builds iOS libraries for simulator (64 bit)"/>
 
     <target name="-init-platform-arm" description="Initialize for arm platform">
         <property name="ios.arch" value="arm"/>
@@ -21,12 +21,12 @@
         <property file="ios/ios.properties"/>
     </target>
     
-    <target name="-init-platform-i386" description="Initialize for i386 platform">
-        <property name="ios.arch" value="i386"/>
+    <target name="-init-platform-x86_64" description="Initialize for x86_64 platform">
+        <property name="ios.arch" value="x86_64"/>
         <property file="ios/ios.properties"/>
     </target>
     
-    <target name="-check-properties-platform" description="Checks the used platform (arm/i386)">
+    <target name="-check-properties-platform" description="Checks the used platform (arm/x86_64)">
         <taskdef resource="proguard/ant/task.properties"
              classpath="${libs.pro-guard.classpath}"/>
         <condition property="ios.do.arm">
@@ -35,8 +35,8 @@
         <condition property="ios.do.arm64">
             <equals arg1="${ios.arch}" arg2="arm64"/>
         </condition>
-        <condition property="ios.do.i386">
-            <equals arg1="${ios.arch}" arg2="i386"/>
+        <condition property="ios.do.x86_64">
+            <equals arg1="${ios.arch}" arg2="x86_64"/>
         </condition>
     </target>
     
@@ -62,18 +62,18 @@
         <property name="ios.avian.binary" value="${ios.avian.arm64.binary}"/>
     </target>
 
-    <target name="-create-properties-i386" if="ios.do.i386" description="Sets properties for i386 build">
+    <target name="-create-properties-x86_64" if="ios.do.x86_64" description="Sets properties for x86_64 build">
         <property name="ios.target" value="iPhoneSimulator"/>
-        <property name="ios.arch.flag" value="${ios.i386.flag}"/>
+        <property name="ios.arch.flag" value="${ios.x86_64.flag}"/>
         
-        <property name="ios.avian.classpath" value="${ios.avian.i386.classpath}"/>
-        <property name="ios.avian.bootimage-generator" value="${ios.avian.i386.bootimage-generator}"/>
-        <property name="ios.avian.generator" value="${ios.avian.i386.generator}"/>
-        <property name="ios.avian.converter" value="${ios.avian.i386.converter}"/>
-        <property name="ios.avian.binary" value="${ios.avian.i386.binary}"/>
+        <property name="ios.avian.classpath" value="${ios.avian.x86_64.classpath}"/>
+        <property name="ios.avian.bootimage-generator" value="${ios.avian.x86_64.bootimage-generator}"/>
+        <property name="ios.avian.generator" value="${ios.avian.x86_64.generator}"/>
+        <property name="ios.avian.converter" value="${ios.avian.x86_64.converter}"/>
+        <property name="ios.avian.binary" value="${ios.avian.x86_64.binary}"/>
     </target>
     
-    <target name="-create-properties" depends="-check-properties-platform, -create-properties-arm, -create-properties-arm64, -create-properties-i386" description="Sets global properties based on platform">
+    <target name="-create-properties" depends="-check-properties-platform, -create-properties-arm, -create-properties-arm64, -create-properties-x86_64" description="Sets global properties based on platform">
         <property name="ios.sdk.sysroot" value="${ios.dev.root}/Platforms/${ios.target}.platform/Developer/SDKs/${ios.target}${ios.version}.sdk"/>
         <property name="ios.cc.compiler.path" value="${ios.dev.root}/Toolchains/XcodeDefault.xctoolchain/usr/bin/${ios.cc.compiler}"/>
         <property name="ios.cc.flags" value="-isysroot ${ios.sdk.sysroot} -arch ${ios.arch.flag}"/>
@@ -92,7 +92,7 @@
         <javac
             destdir="${ios.java.classes.dir}"
             srcdir="${ios.cc.source.dir}"
-            classpath="${run.classpath}:${libs.ios-base.classpath}"/>
+            classpath="${run.classpath}"/>
         <copy todir="${ios.java.classes.dir}">
             <fileset dir="${ios.cc.source.dir}" excludes="${build.classes.excludes},${excludes},**/*.c,**/*.m" includes="${includes}"/>
         </copy>
@@ -120,7 +120,7 @@
             </path>
         </pathconvert>
         <proguard>
-            -injars  ${ios.avian.classpath}:${ios.java.classes.dir}:${libs.ios-base.classpath}:${ios.avian.project.classpath}
+            -injars  ${ios.avian.classpath}:${ios.java.classes.dir}:${ios.avian.project.classpath}
             -outjars ${ios.build.classes.dir}(**.class)
             -outjars ${ios.build.resources.jar}
             -include ${ios.proguard.vm.path}

@@ -106,7 +106,6 @@ public class IosCompositeProvider implements ProjectCustomizer.CompositeCategory
         public SavePropsListener(ProjectExtensionProperties props, Project project) {
             this.properties = props;
             this.project = project;
-            manager.setAntTaskLibrary("ios-base");
         }
 
         public void actionPerformed(ActionEvent e) {
