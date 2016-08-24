@@ -54,20 +54,62 @@ BOOL checkJNIException(JNIEnv *e){
 #define _Included_com_jme3_system_ios_IosImageLoader
 #endif
 
+
+static void flipImage(int scanline, int height, char* data)
+{
+    char tmp[scanline];
+    
+    for (int y = 0; y < height / 2; y++)
+    {
+        int oppY = height - y - 1;
+        int yOff  = y * scanline;
+        int oyOff = oppY * scanline;
+        // Copy scanline at Y to tmp
+        memcpy(tmp, &data[yOff], scanline);
+        // Copy data at opposite Y to Y
+        memcpy(&data[yOff], &data[oyOff], scanline);
+        // Copy tmp to opposite Y
+        memcpy(&data[oyOff], tmp, scanline);
+    }
+}
+
 JNIEXPORT jobject JNICALL
-Java_com_jme3_system_ios_IosImageLoader_loadImageData(JNIEnv* e, jclass obj, jobject imageFormat, jobject inputStream){
+Java_com_jme3_system_ios_IosImageLoader_loadImageData(JNIEnv* e, jclass obj, jobject imageFormat, jboolean flipY, jobject inputStream){
     // prepare java classes and method pointers
-    jclass imageClass = (*e)->FindClass(e, "com.jme3.texture.Image");
-    jclass inputStreamClass = (*e)->FindClass(e, "java.io.InputStream");
-    jclass bufferUtilsClass = (*e)->FindClass(e, "com.jme3.util.BufferUtils");
-    jmethodID imageConstructor = (*e)->GetMethodID(e, imageClass, "<init>", "(Lcom/jme3/texture/Image$Format;IILjava/nio/ByteBuffer;)V");
+    jclass imageClass = (*e)->FindClass(e, "com/jme3/texture/Image");
+    jclass imageFormatClass = (*e)->FindClass(e, "com/jme3/texture/Image$Format");
+    jclass inputStreamClass = (*e)->FindClass(e, "java/io/InputStream");
+    jclass bufferUtilsClass = (*e)->FindClass(e, "com/jme3/util/BufferUtils");
+    jclass colorSpaceClass = (*e)->FindClass(e, "com/jme3/texture/image/ColorSpace");
+    
+    jmethodID imageConstructor = (*e)->GetMethodID(e, imageClass, "<init>", "(Lcom/jme3/texture/Image$Format;IILjava/nio/ByteBuffer;Lcom/jme3/texture/image/ColorSpace;)V");
     jmethodID readMethod = (*e)->GetMethodID(e, inputStreamClass, "read", "([B)I");
     jmethodID newBufferMethod = (*e)->GetStaticMethodID(e, bufferUtilsClass, "createByteBuffer", "(I)Ljava/nio/ByteBuffer;");
+    jmethodID bitsPerPixel = (*e)->GetMethodID(e, imageFormatClass, "getBitsPerPixel", "()I");
+    jfieldID sRGBFieldID = (*e)->GetStaticFieldID(e, colorSpaceClass, "sRGB", "Lcom/jme3/texture/image/ColorSpace;");
+    jobject sRGBVal = (*e)->GetStaticObjectField(e, colorSpaceClass, sRGBFieldID);
+    
     if (checkJNIException(e)) {
         return nil;
     }
+
+    int bpp = (*e)->CallIntMethod(e, imageFormat, bitsPerPixel);
+    int comps = 4; // Components (Bytes) per Pixel
+    
+    if ((bpp % 8) == 0)
+    {
+        comps = bpp / 8;
+    } else {
+        jclass assetExClazz = (*e)->FindClass(e, "com/jme3/asset/AssetLoadException");
+        (*e)->ThrowNew(e, assetExClazz, "Unsupported ImageFormat: Bits per Pixel is no multiple of 8");
+    }
+    
     // read data from inputstream via byteArray to NSMutableData
     jbyteArray tempArray = (*e)->NewByteArray (e, 1000);
+    if (checkJNIException(e)) {
+        return nil;
+    }
+    
     NSMutableData *inData = [[NSMutableData alloc] init];
     jint size = (*e)->CallIntMethod(e, inputStream, readMethod, tempArray);
     if (checkJNIException(e)) {
@@ -90,6 +132,7 @@ Java_com_jme3_system_ios_IosImageLoader_loadImageData(JNIEnv* e, jclass obj, job
         [inData release];
         return nil;
     }
+    
     // decode image data
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     UIImage* inputImage = [UIImage imageWithData:inData];
@@ -101,8 +144,9 @@ Java_com_jme3_system_ios_IosImageLoader_loadImageData(JNIEnv* e, jclass obj, job
     CGImageRef inImage = [inputImage CGImage];
     int wdth = CGImageGetWidth(inImage);
     int ht = CGImageGetHeight(inImage);
+    
     // NewDirectByteBuffer seems to fail? -> Creating ByteBuffer in java
-    jobject nativeBuffer = (*e)->CallStaticObjectMethod(e, bufferUtilsClass, newBufferMethod, ht*wdth*4);
+    jobject nativeBuffer = (*e)->CallStaticObjectMethod(e, bufferUtilsClass, newBufferMethod, ht*wdth*comps);
     if (checkJNIException(e)) {
         [inData release];
         [pool release];
@@ -118,8 +162,13 @@ Java_com_jme3_system_ios_IosImageLoader_loadImageData(JNIEnv* e, jclass obj, job
     CGContextRelease(context);
     [inData release];
     [pool release];
+    
+    if (flipY) {
+        flipImage(wdth * comps, ht, rawData);
+    }
+    
     //create image
-    jobject imageObject = (*e)->NewObject(e, imageClass, imageConstructor, imageFormat, wdth, ht, nativeBuffer);
+    jobject imageObject = (*e)->NewObject(e, imageClass, imageConstructor, imageFormat, wdth, ht, nativeBuffer, sRGBVal);
     return imageObject;
 }
 
