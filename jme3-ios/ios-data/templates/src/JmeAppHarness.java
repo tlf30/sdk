@@ -1,8 +1,6 @@
-import com.jme3.system.AppSettings;
 import com.jme3.system.ios.IosHarness;
-import com.jme3.renderer.ios.IGLESShaderRenderer;
 import com.jme3.input.ios.IosInputHandler;
-import com.jme3.renderer.*;
+import com.jme3.renderer.opengl.GLRenderer;
 import com.jme3.system.JmeContext;
 import com.jme3.system.AppSettings;
 import java.util.logging.Level;
@@ -17,7 +15,7 @@ import java.util.logging.Logger;
 public class JmeAppHarness extends IosHarness{
 
     private static final Logger logger = Logger.getLogger(JmeAppHarness.class.getName());
-	protected IGLESShaderRenderer renderer;
+	protected GLRenderer renderer;
 	protected IosInputHandler input;
 	protected boolean autoFlush = true;
 
@@ -66,14 +64,14 @@ public class JmeAppHarness extends IosHarness{
         logger.log(Level.FINE, "JmeAppHarness appDraw");
 		if (renderer == null) {
 			JmeContext iosContext = app.getContext();
-			renderer = (IGLESShaderRenderer)iosContext.getRenderer();
+			renderer = (GLRenderer)iosContext.getRenderer();
 			renderer.initialize();
 			input = (IosInputHandler)iosContext.getTouchInput();
 			input.initialize();
 		} else {
 			app.update();
     	    if (autoFlush) {
-        	    renderer.onFrame();
+        	    renderer.postFrame();
         	}
         }
     }
