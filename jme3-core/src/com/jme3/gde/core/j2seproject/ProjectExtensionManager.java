@@ -93,6 +93,7 @@ public class ProjectExtensionManager {
         this.extensionVersion = extensionVersion;
         this.extensionTargets = extensionTargets;
         this.extensionDependencies = extensionDependencies;
+        this.antTaskLibrary = antTaskLibrary;
     }
 
     public ProjectExtensionManager(String extensionName, String extensionVersion, String extensionTargets, String[] extensionDependencies) {
