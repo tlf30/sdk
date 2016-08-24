@@ -1722,8 +1722,7 @@ Java_com_jme3_renderer_ios_JmeIosGLES_glVertexAttribPointer(JNIEnv* e, jobject c
 }
 
 JNIEXPORT void JNICALL
-Java_com_jme3_renderer_ios_JmeIosGLES_glVertexAttribPointer2(JNIEnv* e, jobject c, jint indx, jint size, jint type, jboolean normalized, jint stride, jbyteArray ptr, jint offset) {
-	jbyte *ptrNative = (*e)->GetByteArrayElements(e, ptr, NULL);
+Java_com_jme3_renderer_ios_JmeIosGLES_glVertexAttribPointer2(JNIEnv* e, jclass c, jint indx, jint size, jint type, jboolean normalized, jint stride, jint offset) {
 	
     glVertexAttribPointer(
         (GLuint)indx,
@@ -1731,10 +1730,8 @@ Java_com_jme3_renderer_ios_JmeIosGLES_glVertexAttribPointer2(JNIEnv* e, jobject 
         (GLenum)type,
         (GLboolean)normalized,
         (GLsizei)stride,
-        (GLvoid *)(ptrNative + offset)
+        (GLvoid *)(offset)
     );
-	
-	(*e)->ReleaseByteArrayElements(e, ptr, ptrNative, 0);
 }
 
 JNIEXPORT void JNICALL
