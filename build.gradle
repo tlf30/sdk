@@ -566,7 +566,7 @@ task patchPlatformIndependent(type: Copy) {
     into "dist/temp/"
 
     filter { String line ->
-        line.startsWith('#jdkhome=') ? '#jdkhome="/path/to/jdk"': line
+        line.startsWith('jdkhome=') ? '#jdkhome="/path/to/jdk"': line
     }
 
     doLast {
