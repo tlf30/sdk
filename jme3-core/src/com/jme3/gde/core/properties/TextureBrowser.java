@@ -234,6 +234,7 @@ private void noTexturebuttonActionPerformed(java.awt.event.ActionEvent evt) {//G
             selected = selected.substring(0, selected.lastIndexOf("/"));
 //            Texture tex = assetManager.loadTexture(selected);
 //            editor.setValue(tex);
+            editor.setValue(null); // Invalidate the old texture
             editor.setAsText(selected);
             return true;
         }
