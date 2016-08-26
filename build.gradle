@@ -40,7 +40,7 @@ configurations {
 
 dependencies {
 
-    corelibs dep("com.github.xbuf:jme3_xbuf:0.8.4", false, false)
+    corelibs dep("com.github.xbuf:jme3_xbuf:0.9.1", false, false)
 
     corelibs dep("org.jmonkeyengine:jme3-core:$jmeEngineVersion", true, true)
     corelibs dep("org.jmonkeyengine:jme3-desktop:$jmeEngineVersion", true, true)
