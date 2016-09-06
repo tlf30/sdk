@@ -530,8 +530,16 @@ task overrideHarness(dependsOn: checkPlatformConfig) << {
 overrideHarness.outputs.files([ 'netbeans/harness/launchers/app.exe', 'netbeans/harness/launchers/app64.exe', 'netbeans/harness/launchers/pre7_app.exe'])
 overrideHarness.inputs.files([ 'netbeans/harness/launchers/app.exe', 'netbeans/harness/launchers/app64.exe', 'netbeans/harness/launchers/pre7_app.exe', 'harness-override/override.properties'])
 
+task downloadAvian() << {
+    def avianFile = file("jme3-ios/src/com/jme3/gde/ios/avian-openjdk-mac.zip")
+    
+    if (!avianFile.exists())
+    {
+        new URL('https://bintray.com/mefisto94/jme-sdk-storage/download_file?file_path=avian-openjdk-mac.zip').withInputStream{ i -> avianFile.withOutputStream{ it << i }}
+    }
+}
 
-task buildSdk(dependsOn: [copyBaseLibs, copyProjectLibs, createProjectXml, createBaseXml, copyTestSources, overrideHarness]) <<{
+task buildSdk(dependsOn: [copyBaseLibs, copyProjectLibs, createProjectXml, createBaseXml, copyTestSources, overrideHarness, downloadAvian]) <<{
     ant.propertyfile(file: "nbproject/project.properties") {
         entry( key: "plugins.version", value: "${jmeVersion}")
         entry( key: "app.version", value: "${jmePomVersion}")
