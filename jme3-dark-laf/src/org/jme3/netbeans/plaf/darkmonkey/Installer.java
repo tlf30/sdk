@@ -47,7 +47,6 @@ public class Installer extends ModuleInstall {
                     
                     /* The laf file is parsed before this code is executed so we set the LaF once programatically */
                    UIManager.setLookAndFeel("org.jme3.netbeans.plaf.darkmonkey.DarkMonkeyLookAndFeel");
-                   UIManager.put("Nb.DarkMonkeyLFCustoms", new DarkMonkeyLFCustoms((DarkMonkeyLookAndFeel)UIManager.getLookAndFeel()));
                    
                    /* Calling Netbeans Internal API, unfortunately there is no way around that, apart from manually fiddling with the config/.nbattrs file,
                    which would need some parsing and a restart to take effect: <fileobject name=""> <attr name="Editors\currentFontColorProfile" stringvalue="Dark Monkey"/></fileobject>
@@ -57,6 +56,8 @@ public class Installer extends ModuleInstall {
                    setting.setCurrentFontColorProfile("Dark Monkey");
                 }
             }
+            
+            UIManager.put("Nb.DarkMonkeyLFCustoms", new DarkMonkeyLFCustoms((DarkMonkeyLookAndFeel)UIManager.getLookAndFeel()));
         } catch (Exception e) {}
         
     }
