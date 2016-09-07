@@ -25,11 +25,15 @@ repositories {
 
 }
 
-if (ext.jmeGitTag != null)
-    ext.jmeEngineVersion = "3.1.0-" + ext.jmeGitTag + "-SNAPSHOT"
-else
-    ext.jmeEngineVersion = "3.1.0-master-SNAPSHOT" // Specify the Engine Version to be used.
-
+if (System.getenv('TRAVIS') != null) {
+    if (ext.jmeGitTag != "") {
+        ext.jmeEngineVersion = "3.1.0-" + ext.jmeGitTag + "-SNAPSHOT"
+    } else {
+        ext.jmeEngineVersion = "3.1.0-master-SNAPSHOT"
+    }
+} else {
+    ext.jmeEngineVersion = "3.1.0-SNAPSHOT"
+}
 
 configurations {
     corelibs
