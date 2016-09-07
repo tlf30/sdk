@@ -16,7 +16,6 @@ addons:
   apt:
     packages:
     - p7zip-full
-    - maven
 
 # branches:
 #   only:
@@ -32,6 +31,8 @@ notifications:
 install:
   - chmod u+x build_engine.sh
   - ./build_engine.sh
+  # Remove Engine Source and built class files since travis is low on disk space
+  - rm -rf engine/
   - ./gradlew buildSdk
   - cd jdks
   - ./download-jdks.sh
@@ -46,7 +47,8 @@ install:
 before_deploy:
   # In case of STABLE (see hudson-stable target)
   # the above gradlew already sets the correct ant properties to build
-  - ant -Dstorepass="$NBM_SIGN_PASS" -Dpack200.enabled=false set-spec-version suite.nbms build-installers unset-spec-version | awk '{printf("."); fflush(stdout)}'
+  # Include suite.nbms again, when we upload nbms again.
+  - ant -Dstorepass="$NBM_SIGN_PASS" -Dpack200.enabled=true set-spec-version build-installers unset-spec-version | awk '{printf("."); fflush(stdout)}'
   
   # Has to be done before deploy (due to the rm command)
   #- scp -rp -i nbproject/private/www-updater.key build/updates/* www-updater@updates.jmonkeyengine.org:/var/www/updates/stable/3.1/plugins
@@ -72,7 +74,6 @@ deploy:
     tags: true
 
 before_install:
-  # no root :( - apt-get install -qq p7zip-full libxml2-dev zip
   - git fetch --unshallow -q
   - "[ $TRAVIS_PULL_REQUEST == 'false' ] && openssl aes-256-cbc -K $encrypted_ab3650240afa_key -iv $encrypted_ab3650240afa_iv -in nbproject/private/www-updater.key.enc -out nbproject/private/www-updater.key -d || :"
   - "[ $TRAVIS_PULL_REQUEST == 'false' ] && chmod 600 nbproject/private/www-updater.key || :"
