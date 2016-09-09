@@ -42,6 +42,8 @@ getEnv(JavaVM* vm)
     _glview.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     _glview.delegate = self;
     
+    [EAGLContext setCurrentContext: _ctx];
+    
     /**
      * GLES View Controller initialization
      **/
