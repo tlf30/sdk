@@ -560,6 +560,10 @@ file('.').eachDir{
 }
 buildSdk.outputs.dir "build"
 
+task run(dependsOn: buildSdk) << {
+    ant.ant(dir: ".", antfile: "build.xml", target: "run")
+}
+
 task cleanSdk() <<{
     ant.ant(dir: ".", antfile: "build.xml", target: "clean")
     file("jme3-core-baselibs/release/").deleteDir()
