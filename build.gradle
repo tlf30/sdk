@@ -29,7 +29,7 @@ if (System.getenv('TRAVIS') != null) {
     if (ext.jmeGitTag != "") {
         ext.jmeEngineVersion = "3.2.0-" + ext.jmeGitTag + "-SNAPSHOT"
     } else {
-        ext.jmeEngineVersion = "3.2.0-master-SNAPSHOT"
+        ext.jmeEngineVersion = "3.2.0-PBRisComing-SNAPSHOT"
     }
 } else {
     ext.jmeEngineVersion = "3.2.0-SNAPSHOT"
