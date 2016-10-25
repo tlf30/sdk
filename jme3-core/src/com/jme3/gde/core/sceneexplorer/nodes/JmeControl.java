@@ -32,7 +32,9 @@
 package com.jme3.gde.core.sceneexplorer.nodes;
 
 import com.jme3.gde.core.scene.SceneApplication;
+import com.jme3.gde.core.sceneexplorer.nodes.actions.ControlsPopup;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -49,11 +51,10 @@ import org.openide.util.actions.SystemAction;
  * The JmeControl implements the Base Behavior of each Control-Node
  * @author MeFisto94
  */
-
-
 public abstract class JmeControl extends AbstractSceneExplorerNode {
 
     protected Control control;
+    
     public JmeControl() {
         super();
     }
@@ -72,10 +73,11 @@ public abstract class JmeControl extends AbstractSceneExplorerNode {
     
     @Override
     public Action[] getActions(boolean context) {
-        return new SystemAction[]{
+        return new Action[]{
                     //                    SystemAction.get(CopyAction.class),
                     //                    SystemAction.get(CutAction.class),
                     //                    SystemAction.get(PasteAction.class),
+                    new ControlsPopup(this),
                     SystemAction.get(DeleteAction.class)
                 };
     }
@@ -89,7 +91,7 @@ public abstract class JmeControl extends AbstractSceneExplorerNode {
     public void destroy() throws IOException {
         super.destroy();
         
-        if (control == null)
+        if (control == null || getParentNode() == null)
             return;
         
         final Spatial spat = getParentNode().getLookup().lookup(Spatial.class);
@@ -119,5 +121,51 @@ public abstract class JmeControl extends AbstractSceneExplorerNode {
             AbstractSceneExplorerNode par=(AbstractSceneExplorerNode)parent;
             par.fireSave(modified);
         }
+    }
+    
+    /**
+     * Enable/Disable the Control.
+     * This only works for extended AbstractControls!!
+     * Also see: {@link #isEnabled() }
+     * @param enabled Whether the Control should be enabled or disabled
+     * @return If we had success (false when an Exception occured or no {@link Control} assigned or not of type {@link AbstractControl} )
+     */
+    public boolean setEnabled(final boolean enabled) {
+        if (!isEnableable())
+            return false;
+        try {
+            SceneApplication.getApplication().enqueue(new Callable<Void>() {
+                public Void call() throws Exception {
+                    ((AbstractControl)control).setEnabled(enabled);
+                    return null;
+                }
+            }).get();
+           
+        } catch (InterruptedException ex) {
+            Exceptions.printStackTrace(ex);
+            return false;
+        } catch (ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Returns whether this Control is enabled or disabled.
+     * <b>Note:</b> When the Control doesn't extend AbstractControl, FALSE is returned.
+     * @return -
+     */
+    public boolean isEnabled()
+    {
+        if (isEnableable()) {
+            return ((AbstractControl)control).isEnabled();
+        } else
+            return false;
+    }
+    
+    public boolean isEnableable() {
+        return control instanceof AbstractControl;
     }
 }

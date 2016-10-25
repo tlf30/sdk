@@ -260,7 +260,7 @@ public class ImageEditorComponent implements EditorToolTarget {
         if (NotifyDescriptor.YES_OPTION.equals(result)) {
             String name = editedFile.getExt();
             try {
-                IOModule.create().store(editedImage, name, new File(editedFile.getURL().toURI()));
+                IOModule.create().store(editedImage, name, new File(editedFile.toURI()));
                 disableSaving();
             } catch (Exception ex) {
                 Exceptions.printStackTrace(ex);

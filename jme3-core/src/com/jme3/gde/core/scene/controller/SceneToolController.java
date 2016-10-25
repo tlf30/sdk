@@ -248,9 +248,8 @@ public class SceneToolController implements AppState {
             BoundingBox bbox = (BoundingBox) bound;
             Vector3f extent = new Vector3f();
             bbox.getExtent(extent);
-            WireBox wireBox = new WireBox();
-            wireBox.fromBoundingBox(bbox);
-            final Geometry selectionGeometry = new Geometry("selection_geometry_sceneviewer", wireBox);
+            final Geometry selectionGeometry = WireBox.makeGeometry(bbox);
+            selectionGeometry.setName("selection_geometry_sceneviewer");
             selectionGeometry.setMaterial(blueMat);
             selectionGeometry.setLocalTranslation(bbox.getCenter().subtract(geom.getWorldTranslation()));
             //Vector3f scale = new Vector3f(1,1,1);

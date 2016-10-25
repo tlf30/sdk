@@ -46,7 +46,8 @@ import org.openide.loaders.DataObject;
 public abstract class AbstractTerrainToolAction extends AbstractStatefulGLToolAction {
 
     private Terrain terrain;
-    
+    private Node terrainNode;
+
     protected Terrain getTerrain(Spatial root) {
 
         if (terrain != null)
@@ -55,6 +56,7 @@ public abstract class AbstractTerrainToolAction extends AbstractStatefulGLToolAc
         // is this the terrain?
         if (root instanceof Terrain && root instanceof Node) {
             terrain = (Terrain)root;
+            terrainNode = (Node)root;
             return terrain;
         }
 
@@ -72,6 +74,32 @@ public abstract class AbstractTerrainToolAction extends AbstractStatefulGLToolAc
         return null;
     }
     
+    protected Node getTerrainNode(Spatial root) {
+
+        if (terrainNode != null)
+            return terrainNode;
+        
+        // is this the terrain?
+        if (root instanceof Terrain && root instanceof Node) {
+            terrainNode = (Node)root;
+            terrain = (Terrain)root;
+            return terrainNode;
+        }
+
+        if (root instanceof Node) {
+            Node n = (Node) root;
+            for (Spatial c : n.getChildren()) {
+                if (c instanceof Node){
+                    Node res = getTerrainNode(c);
+                    if (res != null)
+                        return res;
+                }
+            }
+        }
+
+        return null;
+    }
+     
     @Override
     protected void setModified(final AbstractSceneExplorerNode rootNode, final DataObject dataObject) {
         if (dataObject.isModified())

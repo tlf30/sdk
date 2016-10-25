@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.StatusDisplayer;
@@ -107,7 +106,7 @@ public class NewSceneSaveNode extends AbstractNode implements SaveCookie {
                         return null;
                     }
                 }
-                ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Saving File..");
+                ProgressHandle progressHandle = ProgressHandle.createHandle("Saving File..");
                 progressHandle.start();
                 try {
                     BinaryExporter exp = BinaryExporter.getInstance();

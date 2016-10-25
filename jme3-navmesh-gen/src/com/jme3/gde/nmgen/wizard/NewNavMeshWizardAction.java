@@ -10,7 +10,6 @@ import com.jme3.gde.core.sceneexplorer.nodes.actions.NewSpatialAction;
 import com.jme3.gde.nmgen.NavMeshGenerator;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
@@ -27,7 +26,6 @@ import javax.swing.JComponent;
 import jme3tools.optimize.GeometryBatchFactory;
 import org.critterai.nmgen.IntermediateData;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 
@@ -67,7 +65,7 @@ public final class NewNavMeshWizardAction extends AbstractNewSpatialWizardAction
         if (configuration == null) {
             return null;
         }
-        ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Generating NavMesh");
+        ProgressHandle progressHandle = ProgressHandle.createHandle("Generating NavMesh");
         progressHandle.start();
         final Geometry navMesh = new Geometry("NavMesh");
         try {

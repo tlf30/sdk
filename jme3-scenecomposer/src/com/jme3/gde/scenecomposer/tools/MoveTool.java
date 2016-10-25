@@ -37,7 +37,7 @@ public class MoveTool extends SceneEditTool {
     private PickManager pickManager;
 
     public MoveTool() {
-        axisPickType = AxisMarkerPickType.axisAndPlane;
+        axisPickType = SceneEditTool.AxisMarkerPickType.axisAndPlane;
         setOverrideCameraControl(true);
 
     }
@@ -47,6 +47,7 @@ public class MoveTool extends SceneEditTool {
         super.activate(manager, toolNode, onTopToolNode, selectedSpatial, toolController);
         pickManager = Lookup.getDefault().lookup(PickManager.class);
         displayPlanes();
+        displayCones();
     }
 
     @Override
@@ -101,7 +102,7 @@ public class MoveTool extends SceneEditTool {
     }
 
     @Override
-    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject currentDataObject, JmeSpatial selectedSpatial) {
+    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject currentDataObject) {
 
         if (pickedMarker == null) {
             highlightAxisMarker(camera, screenCoord, axisPickType);
@@ -133,7 +134,13 @@ public class MoveTool extends SceneEditTool {
             } else if (pickedMarker.equals(ARROW_X) || pickedMarker.equals(ARROW_Y) || pickedMarker.equals(ARROW_Z)) {
                 diff = pickManager.getTranslation(constraintAxis);
             }
-            Vector3f position = startPosition.add(diff);
+            Vector3f position;
+            Spatial parent = toolController.getSelectedSpatial().getParent();
+            if (parent != null) {
+                position = startPosition.add(parent.getWorldRotation().inverse().mult(diff));
+            } else {
+                position = startPosition.add(diff);
+            }
             lastPosition = position;
             toolController.getSelectedSpatial().setLocalTranslation(position);
             updateToolsTransformation();

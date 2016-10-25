@@ -35,7 +35,6 @@ import com.jme3.asset.AssetEventListener;
 import com.jme3.asset.AssetKey;
 import com.jme3.export.Savable;
 import com.jme3.export.binary.BinaryExporter;
-import com.jme3.gde.core.scene.ApplicationLogHandler.LogLevel;
 import com.jme3.gde.core.scene.SceneApplication;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -48,7 +47,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.beanutils.BeanUtils;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectManager;
 import org.openide.DialogDisplayer;
@@ -217,7 +215,7 @@ public class AssetDataObject extends MultiDataObject {
             return;
         }
         final Savable savable = this.savable;
-        ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Saving File..");
+        ProgressHandle progressHandle = ProgressHandle.createHandle("Saving File..");
         progressHandle.start();
         BinaryExporter exp = BinaryExporter.getInstance();
 //        FileLock lock = null;

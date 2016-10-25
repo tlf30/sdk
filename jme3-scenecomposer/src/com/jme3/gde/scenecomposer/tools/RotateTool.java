@@ -26,12 +26,13 @@ public class RotateTool extends SceneEditTool {
 
     private Vector3f pickedMarker;
     private Quaternion startRotate;
+    private Quaternion startWorldRotate;
     private Quaternion lastRotate;
     private boolean wasDragging = false;
     private PickManager pickManager;
 
     public RotateTool() {
-        axisPickType = AxisMarkerPickType.planeOnly;
+        axisPickType = SceneEditTool.AxisMarkerPickType.planeOnly;
         setOverrideCameraControl(true);
     }
 
@@ -39,7 +40,7 @@ public class RotateTool extends SceneEditTool {
     public void activate(AssetManager manager, Node toolNode, Node onTopToolNode, Spatial selectedSpatial, SceneComposerToolController toolController) {
         super.activate(manager, toolNode, onTopToolNode, selectedSpatial, toolController);
         pickManager = Lookup.getDefault().lookup(PickManager.class);
-        displayPlanes();
+        displayCircles();
     }
 
     @Override
@@ -71,6 +72,7 @@ public class RotateTool extends SceneEditTool {
                     pickManager.initiatePick(toolController.getSelectedSpatial(), PickManager.PLANE_YZ, getTransformType(), camera, screenCoord);
                 }
                 startRotate = toolController.getSelectedSpatial().getLocalRotation().clone();
+                startWorldRotate = toolController.getSelectedSpatial().getWorldRotation().clone();
                 wasDragging = true;
             }
         }
@@ -84,7 +86,7 @@ public class RotateTool extends SceneEditTool {
     }
 
     @Override
-    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject currentDataObject, JmeSpatial selectedSpatial) {
+    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject currentDataObject) {
         if (pickedMarker == null) {
             highlightAxisMarker(camera, screenCoord, axisPickType);
         } else {
@@ -110,7 +112,7 @@ public class RotateTool extends SceneEditTool {
             }
 
             if (pickedMarker.equals(QUAD_XY) || pickedMarker.equals(QUAD_XZ) || pickedMarker.equals(QUAD_YZ)) {
-                Quaternion rotation = startRotate.mult(pickManager.getRotation(startRotate.inverse()));
+                Quaternion rotation = startRotate.mult(pickManager.getRotation(startWorldRotate.inverse()));
                 toolController.getSelectedSpatial().setLocalRotation(rotation);
                 lastRotate = rotation;
             }

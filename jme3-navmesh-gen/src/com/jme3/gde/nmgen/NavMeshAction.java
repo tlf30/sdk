@@ -10,7 +10,6 @@ import com.jme3.scene.Spatial;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.NotifyDescriptor.Confirmation;
@@ -35,7 +34,7 @@ public class NavMeshAction implements ActionListener {
         Runnable call = new Runnable() {
 
             public void run() {
-                ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Opening in Nav Mesh Editor");
+                ProgressHandle progressHandle = ProgressHandle.createHandle("Opening in Nav Mesh Editor");
                 progressHandle.start();
 
                 

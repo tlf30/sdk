@@ -21,6 +21,7 @@ import org.netbeans.spi.editor.hints.ErrorDescription;
 import org.netbeans.spi.editor.hints.ErrorDescriptionFactory;
 import org.netbeans.spi.editor.hints.Fix;
 import org.openide.awt.StatusDisplayer;
+import org.openide.util.NbBundle;
 
 public class ReadOnlyPrimitiveHint extends AbstractHint {
 
@@ -94,19 +95,19 @@ public class ReadOnlyPrimitiveHint extends AbstractHint {
     //Message that the user sees in the left sidebar:
     @Override
     public String getDisplayName() {
-        return "This primitive is read only and should not be modified!";
+        return NbBundle.getMessage(ReadOnlyPrimitiveHint.class, "ReadOnlyPrimitiveHint.display-name");
     }
 
     //Name of the hint in the Options window:
     @Override
     public String getId() {
-        return "ReadOnly Primitives";
+        return NbBundle.getMessage(ReadOnlyPrimitiveHint.class, "ReadOnlyPrimitiveHint.id");
     }
 
     //Description of the hint in the Options window:
     @Override
     public String getDescription() {
-        return "Checks for modifications to readonly primitives. (getLocalTranslation().set())";
+        return NbBundle.getMessage(ReadOnlyPrimitiveHint.class, "ReadOnlyPrimitiveHint.description");
     }
 
     class MessagesFix implements EnhancedFix {
@@ -128,7 +129,7 @@ public class ReadOnlyPrimitiveHint extends AbstractHint {
 
         @Override
         public String getText() {
-            return "Remove this call";
+            return NbBundle.getMessage(ReadOnlyPrimitiveHint.class, "ReadOnlyPrimitiveHint.fix-text");
         }
 
         @Override

@@ -31,6 +31,7 @@
  */
 package com.jme3.gde.desktop.executables;
 
+import com.jme3.gde.core.util.notify.MessageUtil;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -45,7 +46,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.util.RequestProcessor;
 
 /**
@@ -65,21 +65,30 @@ public class JreDownloader {
      * Download a specific platforms JRE to the location specified, a tar.gz
      * file will be downloaded so the location parameter should end with tar.gz
      *
+     * @param jreVersion The Version to use. If null, we'll use the System JRE
+     * Version
      * @param platform The platform to download for (windows-i586, windows-x64,
      * linux-i586, linux-x64, maxosx-x64)
      * @param location The absolute file path to download to.
      */
-    public static void downloadJre(String platform, String location) {
-        String property = System.getProperty("java.runtime.version");
+    public static void downloadJre(String jreVersion, String platform, String location) {
+        String property; // The JRE Version
+
+        if (jreVersion == null) {
+            property = System.getProperty("java.runtime.version");
+        } else {
+            property = jreVersion;
+        }
+
         Matcher m = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)_(\\d+)\\-b(\\d+)").matcher(property);
         if (m.matches()) {
 //            "http://download.oracle.com/otn-pub/java/jdk/${jv.minor}u${jv.update}-b${jv.build}/jre-${jv.minor}u${jv.update}-${platform.durl}.tar.gz";
             String urlString = "http://download.oracle.com/otn-pub/java/jdk/" + m.group(2) + "u" + m.group(4) + "-b" + m.group(5) + "/jre-" + m.group(2) + "u" + m.group(4) + "-" + platform + ".tar.gz";
-            attemptDownload(urlString, new File(location));
+            attemptDownload(urlString, new File(location), 0);
         }
     }
 
-    private static void attemptDownload(String newUrl, File dest) {
+    private static void attemptDownload(String newUrl, File dest, int retry) {
         logger.log(Level.INFO, "Attempt to download JRE from {0}", newUrl);
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(newUrl).openConnection();
@@ -89,11 +98,14 @@ public class JreDownloader {
             connection.connect();
             int status = connection.getResponseCode();
             if (status == HttpURLConnection.HTTP_OK) {
-                downloadFile(connection, dest);
+                downloadFile(connection, dest, retry);
             } else if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER) {
-                handleRedirect(connection, dest);
+                handleRedirect(connection, dest, retry);
+            } else if (status == HttpURLConnection.HTTP_NOT_FOUND) {
+                MessageUtil.error("Download of JRE failed because it was not found.\nMaybe you are running an old Version which isn't available for download anymore?");
+                MessageUtil.error("Go to download.oracle.com and alter the version field in the Project Properties accordingly.\nIf the Problem persists, download the .tar.gz files manually to\n" + dest.getAbsolutePath());
             } else {
-                logger.log(Level.WARNING, "Download of JRE from {0} failed", newUrl);
+                logger.log(Level.WARNING, "Download of JRE from {0} failed. HTTP Status Code {1} ", new Object[]{newUrl, status});
             }
         } catch (MalformedURLException ex) {
             logger.log(Level.SEVERE, "{0}", ex);
@@ -102,20 +114,20 @@ public class JreDownloader {
         }
     }
 
-    private static void handleRedirect(HttpURLConnection conn, File dest) {
+    private static void handleRedirect(HttpURLConnection conn, File dest, int retry) {
         String newUrl = conn.getHeaderField("Location");
         logger.log(Level.INFO, "JRE download redirected to {0}", newUrl);
         conn.disconnect();
-        attemptDownload(newUrl, dest);
+        attemptDownload(newUrl, dest, retry);
     }
 
-    private static void downloadFile(final HttpURLConnection connection, final File dest) {
+    private static void downloadFile(final HttpURLConnection connection, final File dest, final int retry) {
         logger.log(Level.INFO, "Downloading JRE from {0}", connection.getURL());
         Callable task = new Callable() {
 
             public Object call() throws Exception {
                 long length = connection.getContentLengthLong();
-                ProgressHandle progress = ProgressHandleFactory.createHandle("Downloading JRE to " + dest.getName());
+                ProgressHandle progress = ProgressHandle.createHandle("Downloading JRE to " + dest.getName());
                 progress.start((int) length);
                 BufferedInputStream in = null;
                 BufferedOutputStream out = null;
@@ -129,6 +141,12 @@ public class JreDownloader {
                         input = in.read();
                         progress.progress(i);
                         i++;
+                    }
+
+                    if (i < length) {
+                        /* Download Error */
+                        logger.log(Level.WARNING, "Download of JRE got Interrupted. Retrying ({0} of 3)", retry + 1);
+                        attemptDownload(connection.getURL().toString(), dest, retry + 1);
                     }
                 } catch (IOException ex) {
                     logger.log(Level.SEVERE, "{0}", ex);

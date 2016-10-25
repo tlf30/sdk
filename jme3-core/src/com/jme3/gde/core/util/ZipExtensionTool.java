@@ -49,10 +49,8 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.modules.InstalledFileLocator;
 import org.openide.modules.Places;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
@@ -101,7 +99,7 @@ public class ZipExtensionTool {
                 }
             }
         }
-        ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Installing " + extensionName + " data");
+        ProgressHandle progressHandle = ProgressHandle.createHandle("Installing " + extensionName + " data");
         progressHandle.start();
         if (Utilities.isWindows()) {
             extractToolsJava(packageFolder + "/" + extensionName + "-" + SUFFIX_WIN + ".zip", settingsFolder + File.separator + extensionName);
@@ -209,7 +207,8 @@ public class ZipExtensionTool {
                 return false;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error when extracting {0}. Is unzip installed? Did the download fail?", extensionName);
+            logger.log(Level.SEVERE, "Exception", e);
             NotifyDescriptor.Confirmation msg = new NotifyDescriptor.Confirmation(
                     "Error extracting " + extensionName,
                     NotifyDescriptor.DEFAULT_OPTION,
@@ -221,14 +220,16 @@ public class ZipExtensionTool {
                 try {
                     in.close();
                 } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
+                    logger.log(Level.SEVERE, "Exception when trying to close the ZIP Input Stream.");
+                    logger.log(Level.SEVERE, "Exception", ex);
                 }
             }
             if (out != null) {
                 try {
                     out.close();
                 } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
+                    logger.log(Level.SEVERE, "Exception when trying to close the Output Stream.");
+                    logger.log(Level.SEVERE, "Exception", ex);
                 }
             }
         }
@@ -282,7 +283,8 @@ public class ZipExtensionTool {
                     NotifyDescriptor.DEFAULT_OPTION,
                     NotifyDescriptor.ERROR_MESSAGE);
             DialogDisplayer.getDefault().notify(msg);
-            Exceptions.printStackTrace(ex);
+            logger.log(Level.SEVERE, "Error when extracting {0}. Is unzip installed? Did the download fail?", extensionName);
+            logger.log(Level.SEVERE, "Exception", ex);
             return false;
         }
 
@@ -316,7 +318,8 @@ public class ZipExtensionTool {
                     }
                 }
             } catch (Exception e) {
-                Exceptions.printStackTrace(e);
+                logger.log(Level.SEVERE, "Exception when trying to read from STDOUT/STDERR.");
+                logger.log(Level.SEVERE, "Exception", e);
             }
         }
     }

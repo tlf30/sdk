@@ -40,7 +40,7 @@ cd jdk_tmp/jre
 pack200 -J-Xmx1024m lib/rt.jar.pack.gz lib/rt.jar
 rm -rf lib/rt.jar
 cd ..
-zip -9 -r -y ../jdk_tmp_sfx.zip .
+zip -9 -r -y -q ../jdk_tmp_sfx.zip .
 cd ..
 cat $unzipsfxname jdk_tmp_sfx.zip > $name
 chmod +x $name

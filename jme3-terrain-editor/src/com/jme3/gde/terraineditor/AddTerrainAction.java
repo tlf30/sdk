@@ -116,8 +116,8 @@ public class AddTerrainAction extends AbstractNewSpatialWizardAction {
         com.jme3.material.Material mat = new com.jme3.material.Material(manager, "Common/MatDefs/Terrain/TerrainLighting.j3md");
 
         String assetFolder = "";
-        if (manager != null && manager instanceof ProjectAssetManager)
-            assetFolder = ((ProjectAssetManager)manager).getAssetFolderName();
+        if (manager != null)
+            assetFolder = manager.getAssetFolderName();
 
         // write out 3 alpha blend images
         for (int i=0; i<TerrainEditorController.NUM_ALPHA_TEXTURES; i++) {
@@ -138,12 +138,19 @@ public class AddTerrainAction extends AbstractNewSpatialWizardAction {
             File alphaImageFile = new File(assetFolder+alphaBlendFileName);
             ImageIO.write(alphaBlend, "png", alphaImageFile);
             Texture tex = manager.loadAsset(new TextureKey(alphaBlendFileName, false));
-            if (i == 0)
-                mat.setTexture("AlphaMap", tex);
-            else if (i == 1)
-                mat.setTexture("AlphaMap_1", tex);
-            else if (i == 2)
-                mat.setTexture("AlphaMap_2", tex);
+            switch (i) {
+                case 0:
+                    mat.setTexture("AlphaMap", tex);
+                    break;
+                case 1:
+                    mat.setTexture("AlphaMap_1", tex);
+                    break;
+                case 2:
+                    mat.setTexture("AlphaMap_2", tex);
+                    break;
+                default:
+                    break;
+            }
         }
         
         Texture defaultTexture = manager.loadTexture(TerrainEditorController.DEFAULT_TERRAIN_TEXTURE);

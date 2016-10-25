@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.NotifyDescriptor.Confirmation;
@@ -48,7 +47,7 @@ public final class AdvOgreXMLConvertAction implements ActionListener {
         Runnable run = new Runnable() {
 
             public void run() {
-                ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Converting OgreXML");
+                ProgressHandle progressHandle = ProgressHandle.createHandle("Converting OgreXML");
                 progressHandle.start();
 
                 OgreXMLConvert converter = new OgreXMLConvert();

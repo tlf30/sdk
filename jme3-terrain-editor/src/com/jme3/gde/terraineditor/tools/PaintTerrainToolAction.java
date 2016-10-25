@@ -73,6 +73,8 @@ public class PaintTerrainToolAction extends AbstractTerrainToolAction {
         Terrain terrain = getTerrain(rootNode.getLookup().lookup(Node.class));
         if (terrain == null)
             return null;
+        Node terrainNode = getTerrainNode(rootNode.getLookup().lookup(Node.class));
+        worldLoc.subtractLocal(terrainNode.getWorldTranslation());
         paintTexture(terrain, worldLoc, radius, weight, selectedTextureIndex);
         return terrain;
     }
@@ -95,7 +97,7 @@ public class PaintTerrainToolAction extends AbstractTerrainToolAction {
         Vector2f UV = getPointPercentagePosition(terrain, markerLocation);
 
         // get the radius of the brush in pixel-percent
-        float brushSize = toolRadius/(terrain.getTerrainSize()*((Node)terrain).getLocalScale().x);
+        float brushSize = toolRadius/(terrain.getTerrainSize()*((Node)terrain).getWorldScale().x);
         int texIndex = selectedTextureIndex - ((selectedTextureIndex/4)*4); // selectedTextureIndex/4 is an int floor, do not simplify the equation
         boolean erase = toolWeight<0;
         if (erase)
@@ -108,9 +110,10 @@ public class PaintTerrainToolAction extends AbstractTerrainToolAction {
     
     public Vector2f getPointPercentagePosition(Terrain terrain, Vector3f worldLoc) {
         Vector2f uv = new Vector2f(worldLoc.x,-worldLoc.z);
-        float scale = ((Node)terrain).getLocalScale().x;
-        
-        uv.subtractLocal(((Node)terrain).getWorldTranslation().x*scale, ((Node)terrain).getWorldTranslation().z*scale); // center it on 0,0
+        float scale = ((Node)terrain).getWorldScale().x;
+
+        // already centered on Terrain's node origin (0,0)
+        //uv.subtractLocal(((Node)terrain).getWorldTranslation().x*scale, ((Node)terrain).getWorldTranslation().z*scale); // center it on 0,0
         float scaledSize = terrain.getTerrainSize()*scale;
         uv.addLocal(scaledSize/2, scaledSize/2); // shift the bottom left corner up to 0,0
         uv.divideLocal(scaledSize); // get the location as a percentage

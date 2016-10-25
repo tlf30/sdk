@@ -5,34 +5,23 @@
 package com.jme3.gde.scenecomposer;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.audio.AudioNode;
 import com.jme3.gde.core.scene.SceneApplication;
 import com.jme3.gde.core.scene.controller.SceneToolController;
+import com.jme3.gde.core.sceneexplorer.nodes.AbstractSceneExplorerNode;
 import com.jme3.gde.core.sceneexplorer.nodes.JmeNode;
-import com.jme3.gde.core.sceneexplorer.nodes.JmeSpatial;
-import com.jme3.gde.scenecomposer.gizmo.light.LightGizmoFactory;
-import com.jme3.gde.scenecomposer.tools.PickManager;
+import com.jme3.gde.scenecomposer.gizmo.GizmoFactory;
 import com.jme3.gde.scenecomposer.tools.shortcuts.ShortcutManager;
 import com.jme3.input.event.KeyInputEvent;
-import com.jme3.light.Light;
-import com.jme3.light.LightProbe;
-import com.jme3.light.PointLight;
-import com.jme3.light.SpotLight;
-import com.jme3.material.Material;
-import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.renderer.queue.RenderQueue.Bucket;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.control.BillboardControl;
-import com.jme3.scene.control.Control;
-import com.jme3.scene.shape.Quad;
-import com.jme3.texture.Texture;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 import org.openide.util.Lookup;
 
@@ -44,26 +33,27 @@ public class SceneComposerToolController extends SceneToolController {
 
     private JmeNode rootNode;
     private SceneEditTool editTool;
-    private SceneEditorController editorController;  
+    private SceneEditorController editorController;
     private ViewPort overlayView;
     private Node onTopToolsNode;
-    private Node nonSpatialMarkersNode;    
-    private Material audioMarkerMaterial;
-    private JmeSpatial selectedSpatial;
+    private Node nonSpatialMarkersNode;
+    private HashMap<AbstractSceneExplorerNode, Spatial> nonSpatialMarkers;
+
     private boolean snapToGrid = false;
     private boolean snapToScene = false;
     private boolean selectTerrain = false;
     private boolean selectGeometries = false;
     private TransformationType transformationType = TransformationType.local;
-          
+
     public enum TransformationType {
         local, global, camera
     }
-    
+
     public SceneComposerToolController(final Node toolsNode, AssetManager manager, JmeNode rootNode) {
         super(toolsNode, manager);
         this.rootNode = rootNode;
         nonSpatialMarkersNode = new Node("lightMarkersNode");
+        nonSpatialMarkers = new HashMap<AbstractSceneExplorerNode, Spatial>();
         SceneApplication.getApplication().enqueue(new Callable<Object>() {
 
             public Object call() throws Exception {
@@ -132,7 +122,8 @@ public class SceneComposerToolController extends SceneToolController {
 
     /**
      * If the current tool overrides camera zoom/pan controls
-     * @return 
+     *
+     * @return
      */
     public boolean isOverrideCameraControl() {
         if (editTool != null) {
@@ -144,8 +135,8 @@ public class SceneComposerToolController extends SceneToolController {
 
     /**
      * Scene composer edit tool activated. Pass in null to remove tools.
-     * 
-     * @param sceneEditTool pass in null to hide any existing tool markers 
+     *
+     * @param sceneEditTool pass in null to hide any existing tool markers
      */
     public void showEditTool(final SceneEditTool sceneEditTool) {
         SceneApplication.getApplication().enqueue(new Callable<Object>() {
@@ -180,15 +171,16 @@ public class SceneComposerToolController extends SceneToolController {
     }
 
     /**
-     * Primary button activated, send command to the tool
-     * for appropriate action.
+     * Primary button activated, send command to the tool for appropriate
+     * action.
+     *
      * @param mouseLoc
      * @param pressed
      * @param camera
      */
     public void doEditToolActivatedPrimary(Vector2f mouseLoc, boolean pressed, Camera camera) {
         ShortcutManager scm = Lookup.getDefault().lookup(ShortcutManager.class);
-        
+
         if (scm.isActive()) {
             scm.getActiveShortcut().setCamera(camera);
             scm.getActiveShortcut().actionPrimary(mouseLoc, pressed, rootNode, editorController.getCurrentDataObject());
@@ -199,15 +191,16 @@ public class SceneComposerToolController extends SceneToolController {
     }
 
     /**
-     * Secondary button activated, send command to the tool
-     * for appropriate action.
+     * Secondary button activated, send command to the tool for appropriate
+     * action.
+     *
      * @param mouseLoc
      * @param pressed
      * @param camera
      */
     public void doEditToolActivatedSecondary(Vector2f mouseLoc, boolean pressed, Camera camera) {
         ShortcutManager scm = Lookup.getDefault().lookup(ShortcutManager.class);
-        
+
         if (scm.isActive()) {
             scm.getActiveShortcut().setCamera(camera);
             scm.getActiveShortcut().actionSecondary(mouseLoc, pressed, rootNode, editorController.getCurrentDataObject());
@@ -219,19 +212,19 @@ public class SceneComposerToolController extends SceneToolController {
 
     public void doEditToolMoved(Vector2f mouseLoc, Camera camera) {
         ShortcutManager scm = Lookup.getDefault().lookup(ShortcutManager.class);
-        
+
         if (scm.isActive()) {
             scm.getActiveShortcut().setCamera(camera);
-            scm.getActiveShortcut().mouseMoved(mouseLoc, rootNode, editorController.getCurrentDataObject(), selectedSpatial);
+            scm.getActiveShortcut().mouseMoved(mouseLoc, rootNode, editorController.getCurrentDataObject());
         } else if (editTool != null) {
             editTool.setCamera(camera);
-            editTool.mouseMoved(mouseLoc, rootNode, editorController.getCurrentDataObject(), selectedSpatial);
+            editTool.mouseMoved(mouseLoc, rootNode, editorController.getCurrentDataObject());
         }
     }
 
     public void doEditToolDraggedPrimary(Vector2f mouseLoc, boolean pressed, Camera camera) {
         ShortcutManager scm = Lookup.getDefault().lookup(ShortcutManager.class);
-        
+
         if (scm.isActive()) {
             scm.getActiveShortcut().setCamera(camera);
             scm.getActiveShortcut().draggedPrimary(mouseLoc, pressed, rootNode, editorController.getCurrentDataObject());
@@ -243,7 +236,7 @@ public class SceneComposerToolController extends SceneToolController {
 
     public void doEditToolDraggedSecondary(Vector2f mouseLoc, boolean pressed, Camera camera) {
         ShortcutManager scm = Lookup.getDefault().lookup(ShortcutManager.class);
-        
+
         if (scm.isActive()) {
             scm.getActiveShortcut().setCamera(null);
             scm.getActiveShortcut().draggedSecondary(mouseLoc, pressed, rootNode, editorController.getCurrentDataObject());
@@ -252,101 +245,76 @@ public class SceneComposerToolController extends SceneToolController {
             editTool.draggedSecondary(mouseLoc, pressed, rootNode, editorController.getCurrentDataObject());
         }
     }
-    
+
     public void doKeyPressed(KeyInputEvent kie) {
         ShortcutManager scm = Lookup.getDefault().lookup(ShortcutManager.class);
 
         if (scm.isActive()) {
             scm.doKeyPressed(kie);
-        } else {
-            if (scm.activateShortcut(kie)) {
-                scm.getActiveShortcut().activate(manager, toolsNode, onTopToolsNode, selected, this);
-            } else {
-                if (editTool != null) {
-                    editTool.keyPressed(kie);
-                }
-            }
+        } else if (scm.activateShortcut(kie)) {
+            scm.getActiveShortcut().activate(manager, toolsNode, onTopToolsNode, selected, this);
+        } else if (editTool != null) {
+            editTool.keyPressed(kie);
         }
-    }
-    
-    /**
-     * Adds a marker for the light to the scene if it does not exist yet
-     * @param light
-     */
-    public void addLightMarker(Light light) {
-        if (!(light instanceof PointLight) && !(light instanceof SpotLight) && !(light instanceof LightProbe))
-            return; // only handle point and spot lights
-        
-        Spatial s = nonSpatialMarkersNode.getChild(light.getName());
-        if (s != null) {
-            // update location maybe? Remove old and replace with new?
-            return;
-        }
-        
-        nonSpatialMarkersNode.attachChild(LightGizmoFactory.createGizmo(manager, light));
-    }
-    
-    public void addAudioMarker(AudioNode audio) {
-        
-        Spatial s = nonSpatialMarkersNode.getChild(audio.getName());
-        if (s != null) {
-            // update location maybe? Remove old and replace with new?
-            return;
-        }
-        
-        AudioMarker am = new AudioMarker(audio);
-        nonSpatialMarkersNode.attachChild(am);
-    }
-    
-    /**
-     * Removes a light marker from the scene's tool node
-     * @param light
-     */
-    public void removeLightMarker(Light light) {
-        Spatial s = nonSpatialMarkersNode.getChild(light.getName());
-        s.removeFromParent();
-    }
-
-    
-    private Material getAudioMarkerMaterial() {
-        if (audioMarkerMaterial == null) {
-            Material mat = new Material(manager, "Common/MatDefs/Misc/Unshaded.j3md");
-            Texture tex = manager.loadTexture("com/jme3/gde/scenecomposer/audionode.gif");
-            mat.setTexture("ColorMap", tex);
-            mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-            audioMarkerMaterial = mat;
-        }
-        return audioMarkerMaterial;
     }
 
     protected void refreshNonSpatialMarkers() {
-        SceneApplication.getApplication().enqueue(new Callable<Void>() {
+        addMarkers();
+    }
 
+    private void getNodes(org.openide.nodes.Node node, List<AbstractSceneExplorerNode> list) {
+        if (node instanceof AbstractSceneExplorerNode) {
+            list.add((AbstractSceneExplorerNode) node);
+        }
+        if (!node.isLeaf()) {
+            for (org.openide.nodes.Node n : node.getChildren().getNodes(true)) {
+                getNodes(n, list);
+            }
+        }
+    }
+
+    private void addMarkers() {
+        final List<AbstractSceneExplorerNode> nodes = new ArrayList<AbstractSceneExplorerNode>();
+        // gather nodes, have to be in an other thread than the sceneApplication
+        getNodes(rootNode, nodes);
+        
+        // then update markers
+        SceneApplication.getApplication().enqueue(new Callable<Void>() {
+            @Override
             public Void call() throws Exception {
-                   nonSpatialMarkersNode.detachAllChildren();
-                   addMarkers(rootNode.getLookup().lookup(Node.class));
-                   return null;
+                
+                Iterator<AbstractSceneExplorerNode> it = nonSpatialMarkers.keySet().iterator();
+                while (it.hasNext()) {
+                    AbstractSceneExplorerNode n = it.next();
+                    if (nodes.contains(n)) {
+                        // a node is already added
+                        nodes.remove(n);
+                    } else {
+                        // a node is no more needed
+                        nonSpatialMarkers.get(n).removeFromParent();
+                        it.remove();
+                        //nonSpatialMarkers.remove(n);
+                    }
+                }
+
+                it = nodes.iterator();
+                while (it.hasNext()) {
+                    AbstractSceneExplorerNode n = it.next();
+                    if (!nonSpatialMarkers.containsKey(n)) {
+                        Spatial s = GizmoFactory.createGizmo(manager, n);
+                        if (s != null) {
+                            nonSpatialMarkers.put(n, s);
+                            nonSpatialMarkersNode.attachChild(s);
+                        }
+                    }
+                }
+                return null;
             }
         });
-        
     }
-    
-    private void addMarkers(Node parent) {
-        
-        for (Light light : parent.getLocalLightList())
-            addLightMarker(light);
-        
-        if (parent instanceof AudioNode) {
-            addAudioMarker((AudioNode)parent);
-        }
-        
-        for (Spatial s : parent.getChildren()) {
-            if (s instanceof Node)
-                addMarkers((Node)s);
-            else {
-                //TODO later if we include other types of non-spatial markers
-            }
-        }
+
+    public Spatial getMarker(AbstractSceneExplorerNode node) {
+        return nonSpatialMarkers.get(node);
     }
 
     public boolean isSnapToGrid() {
@@ -365,7 +333,7 @@ public class SceneComposerToolController extends SceneToolController {
         return snapToScene;
     }
 
-    public boolean selectTerrain() {
+    public boolean isSelectTerrain() {
         return selectTerrain;
     }
 
@@ -382,12 +350,12 @@ public class SceneComposerToolController extends SceneToolController {
     }
 
     public void setTransformationType(String type) {
-        if(type != null){
-            if(type.equals("Local")){
+        if (type != null) {
+            if (type.equals("Local")) {
                 setTransformationType(TransformationType.local);
-            } else if(type.equals("Global")){
+            } else if (type.equals("Global")) {
                 setTransformationType(TransformationType.global);
-            } else if(type.equals("Camera")){
+            } else if (type.equals("Camera")) {
                 setTransformationType(TransformationType.camera);
             }
         }
@@ -397,95 +365,24 @@ public class SceneComposerToolController extends SceneToolController {
      * @param type the transformationType to set
      */
     public void setTransformationType(TransformationType type) {
-        if(type != this.transformationType){
+        if (type != this.transformationType) {
             this.transformationType = type;
-            if(editTool != null){
+            if (editTool != null) {
                 //update the transform type of the tool
                 editTool.setTransformType(transformationType);
             }
         }
     }
-    
+
     /**
      * @return the transformationType
      */
     public TransformationType getTransformationType() {
         return transformationType;
     }
-   
-    /**
-     * A marker on the screen that shows where an audio node is. 
-     * This marker is not part of the scene, but is part of the tools node.
-     */
-    protected class AudioMarker extends Geometry {
-        private AudioNode audio;
-        
-        protected AudioMarker() {}
-    
-        protected AudioMarker(AudioNode audio) {
-            this.audio = audio;
-            Quad q = new Quad(0.5f, 0.5f);
-            this.setMesh(q);
-            this.setMaterial(getAudioMarkerMaterial());
-            this.addControl(new AudioMarkerControl());
-            this.setQueueBucket(Bucket.Transparent);
-        }
-        
-        protected AudioNode getAudioNode() {
-            return audio;
-        }
-        
-        @Override
-        public void setLocalTranslation(Vector3f location) {
-            super.setLocalTranslation(location);
-        }
-        
-        @Override
-        public void setLocalTranslation(float x, float y, float z) {
-            super.setLocalTranslation(x, y, z);
-        }
-    }
-    
-    /**
-     * Updates the marker's position whenever the audio node has moved.
-     * It is also a BillboardControl, so this marker always faces
-     * the camera
-     */
-    protected class AudioMarkerControl extends BillboardControl {
-
-        AudioMarkerControl(){
-            super();
-        }
-        
-        @Override
-        protected void controlUpdate(float f) {
-            super.controlUpdate(f);
-            AudioMarker marker = (AudioMarker) getSpatial();
-            if (marker != null) {
-                marker.setLocalTranslation(marker.getAudioNode().getWorldTranslation());
-            }
-        }
-
-        @Override
-        protected void controlRender(RenderManager rm, ViewPort vp) {
-            super.controlRender(rm, vp);
-        }
-
-        @Override
-        public Control cloneForSpatial(Spatial sptl) {
-            AudioMarkerControl c = new AudioMarkerControl();
-            c.setSpatial(sptl);
-            //TODO this isn't correct, none of BillboardControl is copied over
-            return c;
-        }
-        
-    }
-
+     
     public JmeNode getRootNode() {
         return rootNode;
     }
-    
-    public void setSelectedSpatial(JmeSpatial selectedSpatial) {
-        this.selectedSpatial = selectedSpatial;
-    }
+
 }

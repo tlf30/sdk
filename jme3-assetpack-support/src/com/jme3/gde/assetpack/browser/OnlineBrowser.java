@@ -22,7 +22,6 @@ import java.util.zip.ZipInputStream;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.NotifyDescriptor.Confirmation;
@@ -56,7 +55,7 @@ public class OnlineBrowser extends javax.swing.JPanel implements HyperlinkListen
             new Thread(new Runnable() {
 
                 public void run() {
-                    ProgressHandle handle = ProgressHandleFactory.createHandle("Downloading AssetPack..");
+                    ProgressHandle handle = ProgressHandle.createHandle("Downloading AssetPack..");
                     handle.start();
                     String name = event.getURL().toString();
                     name = name.substring(name.lastIndexOf("/") + 1, name.length());

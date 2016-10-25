@@ -76,9 +76,7 @@ import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import jme3tools.converters.ImageToAwt;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -92,8 +90,6 @@ import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.Lookup.Result;
 import org.openide.util.*;
-import org.openide.util.lookup.AbstractLookup;
-import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
@@ -163,7 +159,7 @@ public final class TerrainEditorTopComponent extends TopComponent implements Sce
         public void setMonitorMax(float f) {
             max = f;
             if (progressHandle == null) {
-                progressHandle = ProgressHandleFactory.createHandle("Calculating terrain entropies...");
+                progressHandle = ProgressHandle.createHandle("Calculating terrain entropies...");
                 progressHandle.start((int) max);
             }
         }
@@ -1332,7 +1328,7 @@ public final class TerrainEditorTopComponent extends TopComponent implements Sce
                 toolController.cleanup();
             }
 
-            toolController = new TerrainToolController(currentRequest.getToolNode(), currentRequest.getManager().getManager(), request.getJmeNode());
+            toolController = new TerrainToolController(currentRequest.getToolNode(), currentRequest.getManager(), request.getJmeNode());
             camController = new TerrainCameraController(SceneApplication.getApplication().getCamera());
             camController.setMaster(this);
             camController.enable();

@@ -2,12 +2,16 @@
 import groovy.xml.MarkupBuilder
 import java.util.zip.ZipFile
 
+apply from: 'gradle/libs/digest.gradle'
+apply from: file('version.gradle')
+
 
 if (!hasProperty('mainClass')) {
     ext.mainClass = ''
 }
 
 repositories {
+    mavenLocal()
     jcenter {
         url "http://jcenter.bintray.com/"
     }
@@ -18,11 +22,18 @@ repositories {
         url 'http://nifty-gui.sourceforge.net/nifty-maven-repo/'
     }
     maven { url "https://jitpack.io" }
+
 }
 
-ext.jmeFullVersion = "PBRisComing-SNAPSHOT"
-ext.jmeNbmRevision = 0
-
+if (System.getenv('TRAVIS') != null) {
+    if (ext.jmeGitTag != "") {
+        ext.jmeEngineVersion = "3.2.0-" + ext.jmeGitTag + "-SNAPSHOT"
+    } else {
+        ext.jmeEngineVersion = "3.2.0-master-SNAPSHOT"
+    }
+} else {
+    ext.jmeEngineVersion = "3.2.0-SNAPSHOT"
+}
 
 configurations {
     corelibs
@@ -33,30 +44,33 @@ configurations {
 
 dependencies {
 
-    corelibs dep("org.jmonkeyengine:jme3-core:$jmeFullVersion",true,true)
-    corelibs dep("org.jmonkeyengine:jme3-desktop:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-lwjgl:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-effects:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-blender:$jmeFullVersion", true, true)
+    corelibs dep("com.github.xbuf:jme3_xbuf:0.9.1", false, false)
 
-    corelibs dep("org.jmonkeyengine:jme3-jbullet:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-jogg:$jmeFullVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-core:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-desktop:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-lwjgl:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-effects:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-blender:$jmeEngineVersion", true, true)
 
-    corelibs dep("org.jmonkeyengine:jme3-networking:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-niftygui:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-plugins:$jmeFullVersion", true, true)
-    corelibs dep("org.jmonkeyengine:jme3-terrain:$jmeFullVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-bullet:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-bullet-native:$jmeEngineVersion", true, true)
+    corelibs dep(fileTree("lib"), false, false)
+    corelibs dep("org.jmonkeyengine:jme3-jogg:$jmeEngineVersion", true, true)
 
-    optlibs dep("org.jmonkeyengine:jme3-bullet:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-jogl:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-android:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-ios:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-android-native:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-bullet-native:$jmeFullVersion", true, true)
-    optlibs dep("org.jmonkeyengine:jme3-bullet-native-android:$jmeFullVersion", true, true)
-    testdatalibs dep("org.jmonkeyengine:jme3-testdata:$jmeFullVersion", false, false)
+    corelibs dep("org.jmonkeyengine:jme3-networking:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-niftygui:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-plugins:$jmeEngineVersion", true, true)
+    corelibs dep("org.jmonkeyengine:jme3-terrain:$jmeEngineVersion", true, true)
 
-    examplelibs dep("org.jmonkeyengine:jme3-examples:$jmeFullVersion", false, true)
+    optlibs dep("org.jmonkeyengine:jme3-jbullet:$jmeEngineVersion", true, true)
+    optlibs dep("org.jmonkeyengine:jme3-jogl:$jmeEngineVersion", true, true)
+    optlibs dep("org.jmonkeyengine:jme3-android:$jmeEngineVersion", true, true)
+    optlibs dep("org.jmonkeyengine:jme3-ios:$jmeEngineVersion", true, true)
+    optlibs dep("org.jmonkeyengine:jme3-android-native:$jmeEngineVersion", true, true)
+    optlibs dep("org.jmonkeyengine:jme3-bullet-native-android:$jmeEngineVersion", true, true)
+    testdatalibs dep("org.jmonkeyengine:jme3-testdata:$jmeEngineVersion", false, false)
+
+    examplelibs dep("org.jmonkeyengine:jme3-examples:$jmeEngineVersion", false, true)
 
 }
 
@@ -82,14 +96,14 @@ task checkPlatformConfig {
     description = "Downloads the NetBeans platform base and registers it in the SDK project if needed"
     def platformFile = file("nbproject/private/platform-private.properties")
     if(!platformFile.exists()){
-        def netbeansFolder = file("../netbeans")
+        def netbeansFolder = file("netbeans")
         if(!netbeansFolder.exists() || netbeansFolder.list().length == 0){
             println "Downloading NetBeans Platform base, this only has to be done once.."
             def f = file("netbeans.zip")
             new URL(netbeansUrl).withInputStream{ i -> f.withOutputStream{ it << i }}
             copy{
                 from zipTree(f)
-                into "../"
+                into "."
             }
             f.delete()
         }
@@ -110,7 +124,7 @@ task copyBaseLibs(dependsOn:configurations.corelibs) <<{
    
     project.configurations.corelibs.collect {file ->
         // copy built jme3 jar files to jme3-core-baselibs
-        if (file.name.startsWith("jme3-") && !isSourceOrJavadoc(file.name)){
+        if (file.name.startsWith("jme3") && !isSourceOrJavadoc(file.name)){
             copy {
                 from file
                 into "jme3-core-baselibs/release/modules/ext/"
@@ -141,7 +155,7 @@ def isJavadoc(dep){
     return dep.endsWith("-javadoc.jar")
 }
 def isJmeDep(dep) {
-    return dep.startsWith("jme3-")
+    return dep.startsWith("jme3")
 }
 
 task createBaseXml(dependsOn: configurations.corelibs) <<{
@@ -153,7 +167,7 @@ task createBaseXml(dependsOn: configurations.corelibs) <<{
     // collect jar files
     project.configurations.corelibs.collect {file ->
         // copy built jme3 jar files to jme3-core-baselibs
-        if (file.name.startsWith("jme3-") && !isSourceOrJavadoc(file.name)){
+        if (file.name.startsWith("jme3") && !isSourceOrJavadoc(file.name)){
         
             //collect jme jars
             if(!jmeJarFiles.contains(file)){
@@ -474,13 +488,65 @@ copyTestSources.outputs.dir "JME3TestsTemplate/src/"
 copyTestSources.outputs.dir "JME3TestsTemplateAndroid/src/"
 
 ant.properties['plugins.version'] = jmeVersion
-ant.properties['app.version']= jmeFullVersion
+ant.properties['app.version']= jmePomVersion
 ant.properties['nbm.revision']= jmeNbmRevision
 
-task buildSdk(dependsOn: [copyBaseLibs, copyProjectLibs, createProjectXml, createBaseXml, copyTestSources]) <<{
+task overrideHarness(dependsOn: checkPlatformConfig) << {
+    def props = new Properties()
+    props.load(new FileInputStream("harness-override/override.properties"))
+
+    def patch_file = { f ->
+        def g = file("harness-override/" + f.getName())
+        if (!f.exists()) {
+            throw new GradleException('Cannot find targetFile: ' +  f.getAbsolutePath());
+        }
+
+        if (!g.exists()) {
+            throw new GradleException('Cannot find sourceFile: ' +  g.getAbsolutePath());
+        }
+
+        if (getSHA256Hash(f) == props[f.getName() + ".hashAfter"]) {
+            println "> Harness file \"" + f.getName() + "\" is already patched!"
+            return; /* Already patched */
+        }
+        if (getSHA256Hash(f) == props[f.getName() + ".hashBefore"]) {
+            println "> Will patch harness file \"" + f.getName() + "\"!"
+
+            if (getSHA256Hash(g) != props[g.getName() + ".hashAfter"]) {
+                throw new GradleException("Dangerous Checksum Mismatch: sourceFile \"" + g.getName() + "\" doesn't equal to its hashAfter hash. This probably means someone changed this file but forgot to update said hash or someone tried to invade the SDK by spreading his exe.")
+            }
+
+            copy {
+                from g
+                into f.getParent()
+            }
+
+        } else {
+            throw new GradleException('Checksum Mismatch: targetFile ' + f.getName() + ' has invalid hash ' + getSHA256Hash(f) +  '. Did you update Netbeans without changing harness-override/override.properties?');
+        }
+    }
+
+    patch_file(file("netbeans/harness/launchers/app.exe"));
+    patch_file(file("netbeans/harness/launchers/app64.exe"));
+    patch_file(file("netbeans/harness/launchers/pre7_app.exe"));
+
+}
+overrideHarness.outputs.files([ 'netbeans/harness/launchers/app.exe', 'netbeans/harness/launchers/app64.exe', 'netbeans/harness/launchers/pre7_app.exe'])
+overrideHarness.inputs.files([ 'netbeans/harness/launchers/app.exe', 'netbeans/harness/launchers/app64.exe', 'netbeans/harness/launchers/pre7_app.exe', 'harness-override/override.properties'])
+
+task downloadAvian() << {
+    def avianFile = file("jme3-ios/src/com/jme3/gde/ios/avian-openjdk-mac.zip")
+    
+    if (!avianFile.exists())
+    {
+        new URL('https://bintray.com/mefisto94/jme-sdk-storage/download_file?file_path=avian-openjdk-mac.zip').withInputStream{ i -> avianFile.withOutputStream{ it << i }}
+    }
+}
+
+task buildSdk(dependsOn: [copyBaseLibs, copyProjectLibs, createProjectXml, createBaseXml, copyTestSources, overrideHarness, downloadAvian]) <<{
     ant.propertyfile(file: "nbproject/project.properties") {
         entry( key: "plugins.version", value: "${jmeVersion}")
-        entry( key: "app.version", value: "${jmeFullVersion}")
+        entry( key: "app.version", value: "${jmePomVersion}")
         entry( key: "nbm.revision", value: "${jmeNbmRevision}")
     }
     ant.ant(dir: ".", antfile: "build.xml", target: "build")
@@ -494,10 +560,16 @@ file('.').eachDir{
 }
 buildSdk.outputs.dir "build"
 
+task run(dependsOn: buildSdk) << {
+    ant.ant(dir: ".", antfile: "build.xml", target: "run")
+}
+
 task cleanSdk() <<{
     ant.ant(dir: ".", antfile: "build.xml", target: "clean")
     file("jme3-core-baselibs/release/").deleteDir()
     file("jme3-core-libraries/release/").deleteDir()
+    file("jme3-core-baselibs/nbproject/project.xml").delete()
+    file("jme3-core-libraries/nbproject/project.xml").delete()
     file("jme3-project-baselibs/release/").deleteDir()
     file("jme3-project-libraries/release/").deleteDir()
     file("jme3-project-testdata/release/").deleteDir()
@@ -505,6 +577,30 @@ task cleanSdk() <<{
     file("JME3TestsTemplateAndroid/src/jme3test/").deleteDir()
 }
 
+task patchPlatformIndependent(type: Copy) {
+    from zipTree('dist/jmonkeyplatform.zip')
+    into "dist/temp/"
+
+    filter { String line ->
+        line.startsWith('jdkhome=') ? '#jdkhome="/path/to/jdk"': line
+    }
+
+    doLast {
+        delete(file('dist/jmonkeyplatform.zip'))
+    }
+}
+
+task fixPlatformIndependent(dependsOn: patchPlatformIndependent, type: Zip) {
+    description = "We compile our installers with the bundled jdk, but the platform independent zip doesn't have the jdk. For this we need to change the jmonkeyplatform.zip after building the installers to not have a jdk bundled"
+
+    from 'dist/temp'
+    archiveName = 'jmonkeyplatform.zip'
+    destinationDir = file('dist')
+
+    doLast {
+        delete("dist/temp")
+    }
+}
 
 //jar.dependsOn(buildSdk)
 //clean.dependsOn(cleanSdk)

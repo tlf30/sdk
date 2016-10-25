@@ -25,10 +25,18 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.debug.Arrow;
+import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
+import com.jme3.scene.shape.Torus;
+import com.jme3.util.BufferUtils;
+import com.jme3.util.TempVars;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
 import org.openide.loaders.DataObject;
@@ -57,18 +65,27 @@ public abstract class SceneEditTool {
     protected Node axisMarker;
     protected Material redMat, blueMat, greenMat, yellowMat, cyanMat, magentaMat, orangeMat;
     protected Geometry quadXY, quadXZ, quadYZ;
+    protected Geometry arrowX, arrowY, arrowZ;
+    protected Geometry coneX, coneY, coneZ;
+    protected Geometry boxX, boxY, boxZ;
+    protected Geometry circleXY, circleXZ, circleYZ;
+
     protected SceneComposerToolController.TransformationType transformType;
 
     protected enum AxisMarkerPickType {
-
         axisOnly, planeOnly, axisAndPlane
     };
+
     protected AxisMarkerPickType axisPickType;
 
     /**
      * The tool was selected, start showing the marker.
-     * @param manager
-     * @param toolNode: parent node that the marker will attach to
+     *
+     * @param manager asset manager
+     * @param toolNode parent node that the marker will attach to
+     * @param onTopToolNode the node displayed on top of the scene
+     * @param selectedSpatial the selected spatial
+     * @param toolController the toolController {@link SceneComposerToolController }
      */
     public void activate(AssetManager manager, Node toolNode, Node onTopToolNode, Spatial selectedSpatial, SceneComposerToolController toolController) {
         this.manager = manager;
@@ -89,10 +106,7 @@ public abstract class SceneEditTool {
         this.onTopToolNode.attachChild(axisMarker);
         setDefaultAxisMarkerColors();
 
-
-        if (toolController.getSelectionShape() != null) {
-            axisMarker.setLocalTranslation(toolController.getSelectedSpatial().getWorldTranslation());
-        }
+        doUpdateToolsTransformation();
 
     }
 
@@ -114,14 +128,14 @@ public abstract class SceneEditTool {
     }
 
     /**
-     * Called when the selected spatial has been modified
-     * outside of the tool.
+     * Called when the selected spatial has been modified outside of the tool.
      * TODO: why? just move the tool where the object is each frame?
      */
     public void updateToolsTransformation() {
 
         SceneApplication.getApplication().enqueue(new Callable<Object>() {
 
+            @Override
             public Object call() throws Exception {
                 doUpdateToolsTransformation();
                 return null;
@@ -134,13 +148,13 @@ public abstract class SceneEditTool {
             axisMarker.setLocalTranslation(toolController.getSelectedSpatial().getWorldTranslation());
             switch (transformType) {
                 case local:
-                    axisMarker.setLocalRotation(toolController.getSelectedSpatial().getLocalRotation());
+                    axisMarker.setLocalRotation(toolController.getSelectedSpatial().getWorldRotation());
                     break;
                 case global:
                     axisMarker.setLocalRotation(Quaternion.IDENTITY);
                     break;
                 case camera:
-                    if(camera != null){
+                    if (camera != null) {
                         axisMarker.setLocalRotation(camera.getRotation());
                     }
                     break;
@@ -154,7 +168,7 @@ public abstract class SceneEditTool {
 
     /**
      * Adjust the scale of the marker so it is relative to the size of the
-     * selected spatial. It will have a minimum scale of 2.
+     * selected spatial. It will have a minimum scale of 1.
      */
     private void setAxisMarkerScale(Spatial selected) {
         if (selected != null) {
@@ -162,35 +176,60 @@ public abstract class SceneEditTool {
                 BoundingBox bbox = (BoundingBox) selected.getWorldBound();
                 float smallest = Math.min(Math.min(bbox.getXExtent(), bbox.getYExtent()), bbox.getZExtent());
                 float scale = Math.max(1, smallest / 2f);
-                axisMarker.setLocalScale(new Vector3f(scale, scale, scale));
+                axisMarker.setLocalScale(scale);
             }
         } else {
-            axisMarker.setLocalScale(new Vector3f(2, 2, 2));
+            axisMarker.setLocalScale(1);
         }
     }
 
     /**
      * The primary action for the tool gets activated
+     *
+     * @param screenCoord the position of the mouse
+     * @param pressed true if the primary button is pressed, false if released
+     * @param rootNode the root of sceneExplorer nodes
+     * @param dataObject see {@link DataObject}
      */
     public abstract void actionPrimary(Vector2f screenCoord, boolean pressed, JmeNode rootNode, DataObject dataObject);
 
     /**
      * The secondary action for the tool gets activated
+     *
+     * @param screenCoord the position of the mouse
+     * @param pressed true if the secondary button is pressed, false if released
+     * @param rootNode the root of sceneExplorer nodes
+     * @param dataObject see {@link DataObject}
      */
     public abstract void actionSecondary(Vector2f screenCoord, boolean pressed, JmeNode rootNode, DataObject dataObject);
 
     /**
-     * Called when the mouse is moved but not dragged (ie no buttons are pressed)
+     * Called when the mouse is moved but not dragged (ie no buttons are
+     * pressed)
+     *
+     * @param screenCoord the position of the mouse
+     * @param rootNode the root of sceneExplorer nodes
+     * @param dataObject see {@link DataObject}
      */
-    public abstract void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject dataObject, JmeSpatial selectedSpatial);
+    public abstract void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject dataObject);
 
     /**
      * Called when the mouse is moved while the primary button is down
+     *
+     * @param screenCoord the position of the mouse
+     * @param pressed true if the primary button is pressed, false if released
+     * @param rootNode the root of sceneExplorer nodes
+     * @param currentDataObject see {@link DataObject}
      */
     public abstract void draggedPrimary(Vector2f screenCoord, boolean pressed, JmeNode rootNode, DataObject currentDataObject);
 
     /**
      * Called when the mouse is moved while the secondary button is down
+     *
+     * @param screenCoord the position of the mouse
+     * @param pressed true if the secondary button is pressed, false if released
+     * @param currentDataObject see {@link DataObject}
+     * @param rootNode the root of sceneExplorer nodes
      */
     public abstract void draggedSecondary(Vector2f screenCoord, boolean pressed, JmeNode rootNode, DataObject currentDataObject);
 
@@ -198,9 +237,11 @@ public abstract class SceneEditTool {
     }
 
     /**
-     * Call when an action is performed that requires the scene to be saved
-     * and an undo can be performed
-     * @param undoer your implementation, probably with a begin and end state for undoing
+     * Call when an action is performed that requires the scene to be saved and
+     * an undo can be performed
+     *
+     * @param undoer your implementation, probably with a begin and end state
+     * for undoing
      */
     protected void actionPerformed(AbstractUndoableSceneEdit undoer) {
         Lookup.getDefault().lookup(SceneUndoRedoManager.class).addEdit(this, undoer);
@@ -208,7 +249,11 @@ public abstract class SceneEditTool {
     }
 
     /**
-     * Given the mouse coordinates, pick the geometry that is closest to the camera.
+     * Given the mouse coordinates, pick the geometry that is closest to the
+     * camera.
+     *
+     * @param cam the Camera
+     * @param mouseLoc the position of the mouse
      * @param jmeRootNode to pick from
      * @return the selected spatial, or null if nothing
      */
@@ -223,10 +268,14 @@ public abstract class SceneEditTool {
     }
 
     /**
-     * Given the mouse coordinate, pick the world location where the mouse intersects
-     * a geometry.
+     * Given the mouse coordinate, pick the world location where the mouse
+     * intersects a geometry.
+     *
+     * @param cam the Camera
+     * @param mouseLoc the position of the mouse
      * @param jmeRootNode to pick from
-     * @return the location of the pick, or null if nothing collided with the mouse
+     * @return the location of the pick, or null if nothing collided with the
+     * mouse
      */
     public static Vector3f pickWorldLocation(Camera cam, Vector2f mouseLoc, JmeNode jmeRootNode) {
         Node rootNode = jmeRootNode.getLookup().lookup(Node.class);
@@ -235,7 +284,13 @@ public abstract class SceneEditTool {
 
     /**
      * Pick anything except the excluded spatial
+     *
+     * @param cam the Camera
+     * @param mouseLoc the position of the mouse
+     * @param jmeRootNode to pick from
      * @param excludeSpat to not pick
+     * @return the location of the pick, or null if nothing collided with the
+     * mouse
      */
     public static Vector3f pickWorldLocation(Camera cam, Vector2f mouseLoc, JmeNode jmeRootNode, JmeSpatial excludeSpat) {
         Node rootNode = jmeRootNode.getLookup().lookup(Node.class);
@@ -296,10 +351,13 @@ public abstract class SceneEditTool {
 
     /**
      * Pick a part of the axis marker. The result is a Vector3f that represents
-     * what part of the axis was selected.
-     * For example if  (1,0,0) is returned, then the X-axis pole was selected.
-     * If (0,1,1) is returned, then the Y-Z plane was selected.
+     * what part of the axis was selected. For example if (1,0,0) is returned,
+     * then the X-axis pole was selected. If (0,1,1) is returned, then the Y-Z
+     * plane was selected.
      *
+     * @param cam the Camera
+     * @param mouseLoc the position of the mouse
+     * @param pickType the type of markers to select
      * @return null if it did not intersect the marker
      */
     protected Vector3f pickAxisMarker(Camera cam, Vector2f mouseLoc, AxisMarkerPickType pickType) {
@@ -312,35 +370,26 @@ public abstract class SceneEditTool {
             return null;
         }
 
-        if (pickType == AxisMarkerPickType.planeOnly) {
-            if ("quadXY".equals(cr.getGeometry().getName())) {
-                return QUAD_XY;
-            } else if ("quadXZ".equals(cr.getGeometry().getName())) {
-                return QUAD_XZ;
-            } else if ("quadYZ".equals(cr.getGeometry().getName())) {
-                return QUAD_YZ;
+        String collisionName = cr.getGeometry().getName();
+
+        if (pickType != null) {
+            if (pickType == AxisMarkerPickType.planeOnly || pickType == AxisMarkerPickType.axisAndPlane) {
+                if ("quadXY".equals(collisionName) || "circleXY".equals(collisionName)) {
+                    return QUAD_XY;
+                } else if ("quadXZ".equals(collisionName) || "circleXZ".equals(collisionName)) {
+                    return QUAD_XZ;
+                } else if ("quadYZ".equals(collisionName) || "circleYZ".equals(collisionName)) {
+                    return QUAD_YZ;
+                }
             }
-        } else if (pickType == AxisMarkerPickType.axisOnly) {
-            if ("arrowX".equals(cr.getGeometry().getName())) {
-                return ARROW_X;
-            } else if ("arrowY".equals(cr.getGeometry().getName())) {
-                return ARROW_Y;
-            } else if ("arrowZ".equals(cr.getGeometry().getName())) {
-                return ARROW_Z;
-            }
-        } else if (pickType == AxisMarkerPickType.axisAndPlane) {
-            if ("arrowX".equals(cr.getGeometry().getName())) {
-                return ARROW_X;
-            } else if ("arrowY".equals(cr.getGeometry().getName())) {
-                return ARROW_Y;
-            } else if ("arrowZ".equals(cr.getGeometry().getName())) {
-                return ARROW_Z;
-            } else if ("quadXY".equals(cr.getGeometry().getName())) {
-                return QUAD_XY;
-            } else if ("quadXZ".equals(cr.getGeometry().getName())) {
-                return QUAD_XZ;
-            } else if ("quadYZ".equals(cr.getGeometry().getName())) {
-                return QUAD_YZ;
+            if (pickType == AxisMarkerPickType.axisOnly || pickType == AxisMarkerPickType.axisAndPlane) {
+                if ("arrowX".equals(collisionName) || "coneX".equals(collisionName) || "boxX".equals(collisionName)) {
+                    return ARROW_X;
+                } else if ("arrowY".equals(collisionName) || "coneY".equals(collisionName) || "boxY".equals(collisionName)) {
+                    return ARROW_Y;
+                } else if ("arrowZ".equals(collisionName) || "coneZ".equals(collisionName) || "boxZ".equals(collisionName)) {
+                    return ARROW_Z;
+                }
             }
         }
         return null;
@@ -361,7 +410,10 @@ public abstract class SceneEditTool {
 
     /**
      * Show what axis or plane the mouse is currently over and will affect.
-     * @param axisMarkerPickType
+     *
+     * @param camera the Camera
+     * @param screenCoord the position of the mouse
+     * @param axisMarkerPickType the type of markers to select
      */
     protected void highlightAxisMarker(Camera camera, Vector2f screenCoord, AxisMarkerPickType axisMarkerPickType) {
         highlightAxisMarker(camera, screenCoord, axisMarkerPickType, false);
@@ -369,8 +421,12 @@ public abstract class SceneEditTool {
 
     /**
      * Show what axis or plane the mouse is currently over and will affect.
-     * @param axisMarkerPickType
-     * @param colorAll highlight all parts of the marker when only one is selected
+     *
+     * @param camera the Camera
+     * @param screenCoord the position of the mouse
+     * @param axisMarkerPickType the type of markers to select
+     * @param colorAll highlight all parts of the marker when only one is
+     * selected
      */
     protected void highlightAxisMarker(Camera camera, Vector2f screenCoord, AxisMarkerPickType axisMarkerPickType, boolean colorAll) {
         setDefaultAxisMarkerColors();
@@ -380,82 +436,99 @@ public abstract class SceneEditTool {
         }
 
         if (picked == ARROW_X) {
-            axisMarker.getChild("arrowX").setMaterial(orangeMat);
+            arrowX.setMaterial(orangeMat);
+            coneX.setMaterial(orangeMat);
+            boxX.setMaterial(orangeMat);
         } else if (picked == ARROW_Y) {
-            axisMarker.getChild("arrowY").setMaterial(orangeMat);
+            arrowY.setMaterial(orangeMat);
+            coneY.setMaterial(orangeMat);
+            boxY.setMaterial(orangeMat);
         } else if (picked == ARROW_Z) {
-            axisMarker.getChild("arrowZ").setMaterial(orangeMat);
+            arrowZ.setMaterial(orangeMat);
+            coneZ.setMaterial(orangeMat);
+            boxZ.setMaterial(orangeMat);
         } else {
-
             if (picked == QUAD_XY || colorAll) {
-                axisMarker.getChild("quadXY").setMaterial(orangeMat);
+                quadXY.setMaterial(orangeMat);
+                circleXY.setMaterial(orangeMat);
             }
             if (picked == QUAD_XZ || colorAll) {
-                axisMarker.getChild("quadXZ").setMaterial(orangeMat);
+                quadXZ.setMaterial(orangeMat);
+                circleXZ.setMaterial(orangeMat);
             }
             if (picked == QUAD_YZ || colorAll) {
-                axisMarker.getChild("quadYZ").setMaterial(orangeMat);
+                quadYZ.setMaterial(orangeMat);
+                circleYZ.setMaterial(orangeMat);
             }
         }
     }
 
     /**
      * Create the axis marker that is selectable
+     *
+     * @return the axis node
      */
     protected Node createAxisMarker() {
         float size = 2;
         float arrowSize = size;
-        float planeSize = size * 0.7f;
+        float planeSize = size * 0.5f;
 
+        Quaternion ROLL090 = new Quaternion().fromAngleAxis(-FastMath.PI / 2, new Vector3f(0, 0, 1));
         Quaternion YAW090 = new Quaternion().fromAngleAxis(-FastMath.PI / 2, new Vector3f(0, 1, 0));
         Quaternion PITCH090 = new Quaternion().fromAngleAxis(FastMath.PI / 2, new Vector3f(1, 0, 0));
 
         redMat = new Material(manager, "Common/MatDefs/Misc/Unshaded.j3md");
-        redMat.getAdditionalRenderState().setWireframe(true);
+        redMat.getAdditionalRenderState().setWireframe(false);
         redMat.setColor("Color", ColorRGBA.Red);
-        //redMat.getAdditionalRenderState().setDepthTest(false);
+        redMat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
+        redMat.getAdditionalRenderState().setLineWidth(2f);
+        
         greenMat = new Material(manager, "Common/MatDefs/Misc/Unshaded.j3md");
-        greenMat.getAdditionalRenderState().setWireframe(true);
+        greenMat.getAdditionalRenderState().setWireframe(false);
         greenMat.setColor("Color", ColorRGBA.Green);
-        //greenMat.getAdditionalRenderState().setDepthTest(false);
+        greenMat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
+        greenMat.getAdditionalRenderState().setLineWidth(2f);
+
         blueMat = new Material(manager, "Common/MatDefs/Misc/Unshaded.j3md");
-        blueMat.getAdditionalRenderState().setWireframe(true);
+        blueMat.getAdditionalRenderState().setWireframe(false);
         blueMat.setColor("Color", ColorRGBA.Blue);
-        //blueMat.getAdditionalRenderState().setDepthTest(false);
+        blueMat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
+        blueMat.getAdditionalRenderState().setLineWidth(2f);
+
         yellowMat = new Material(manager, "Common/MatDefs/Misc/Unshaded.j3md");
         yellowMat.getAdditionalRenderState().setWireframe(false);
         yellowMat.setColor("Color", new ColorRGBA(1f, 1f, 0f, 0.25f));
         yellowMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         yellowMat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
-        //yellowMat.getAdditionalRenderState().setDepthTest(false);
+        yellowMat.getAdditionalRenderState().setLineWidth(2f);
+
         cyanMat = new Material(manager, "Common/MatDefs/Misc/Unshaded.j3md");
         cyanMat.getAdditionalRenderState().setWireframe(false);
         cyanMat.setColor("Color", new ColorRGBA(0f, 1f, 1f, 0.25f));
         cyanMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         cyanMat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
-        //cyanMat.getAdditionalRenderState().setDepthTest(false);
+        cyanMat.getAdditionalRenderState().setLineWidth(2f);
+
         magentaMat = new Material(manager, "Common/MatDefs/Misc/Unshaded.j3md");
         magentaMat.getAdditionalRenderState().setWireframe(false);
         magentaMat.setColor("Color", new ColorRGBA(1f, 0f, 1f, 0.25f));
         magentaMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         magentaMat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
-        //magentaMat.getAdditionalRenderState().setDepthTest(false);
+        magentaMat.getAdditionalRenderState().setLineWidth(2f);
 
         orangeMat = new Material(manager, "Common/MatDefs/Misc/Unshaded.j3md");
         orangeMat.getAdditionalRenderState().setWireframe(false);
         orangeMat.setColor("Color", new ColorRGBA(251f / 255f, 130f / 255f, 0f, 0.4f));
         orangeMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         orangeMat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
-
+        orangeMat.getAdditionalRenderState().setLineWidth(2f);
+        
         Node axis = new Node();
 
         // create arrows
-        Geometry arrowX = new Geometry("arrowX", new Arrow(new Vector3f(arrowSize, 0, 0)));
-        Geometry arrowY = new Geometry("arrowY", new Arrow(new Vector3f(0, arrowSize, 0)));
-        Geometry arrowZ = new Geometry("arrowZ", new Arrow(new Vector3f(0, 0, arrowSize)));
-        arrowX.getMesh().setLineWidth(2f);
-        arrowY.getMesh().setLineWidth(2f);
-        arrowZ.getMesh().setLineWidth(2f);   
+        arrowX = new Geometry("arrowX", new Arrow(new Vector3f(arrowSize, 0, 0)));
+        arrowY = new Geometry("arrowY", new Arrow(new Vector3f(0, arrowSize, 0)));
+        arrowZ = new Geometry("arrowZ", new Arrow(new Vector3f(0, 0, arrowSize)));
         axis.attachChild(arrowX);
         axis.attachChild(arrowY);
         axis.attachChild(arrowZ);
@@ -466,9 +539,50 @@ public abstract class SceneEditTool {
         quadXZ.setLocalRotation(PITCH090);
         quadYZ = new Geometry("quadYZ", new Quad(planeSize, planeSize));
         quadYZ.setLocalRotation(YAW090);
-//        axis.attachChild(quadXY);
-//        axis.attachChild(quadXZ);
-//        axis.attachChild(quadYZ);
+
+        // create circles
+        float s = arrowSize / 80f; // s = 2/80 = 0.025
+        Mesh circle = new Torus(64, 4, s, arrowSize);
+        circleXY = new Geometry("circleXY", circle);
+        circleXZ = new Geometry("circleXZ", circle);
+        circleXZ.setLocalRotation(PITCH090);
+        circleYZ = new Geometry("circleYZ", circle);
+        circleYZ.setLocalRotation(YAW090);
+
+        // create cones
+        float h = arrowSize / 8f;
+        float r = arrowSize / 16f;
+        Mesh cone = createCone(16, r, h);
+
+        coneX = new Geometry("coneX", cone);
+        coneX.move(-h, 0, 0);
+        coneX.rotate(ROLL090);
+
+        coneY = new Geometry("coneY", cone);
+        coneY.move(0, -h, 0);
+        coneY.setLocalRotation(YAW090);
+
+        coneZ = new Geometry("coneZ", cone);
+        coneZ.move(0, 0, -h);
+        coneZ.setLocalRotation(PITCH090);
+
+        coneX.move(ARROW_X.mult(arrowSize));
+        coneY.move(ARROW_Y.mult(arrowSize));
+        coneZ.move(ARROW_Z.mult(arrowSize));
+
+        //create boxes
+        float ext = arrowSize / 16f;
+        Mesh box = new Box(ext, ext, ext);
+        boxX = new Geometry("boxX", box);
+        boxX.move(-ext, 0, 0);
+        boxY = new Geometry("boxY", box);
+        boxY.move(0, -ext, 0);
+        boxZ = new Geometry("boxZ", box);
+        boxZ.move(0, 0, -ext);
+
+        boxX.move(ARROW_X.mult(arrowSize));
+        boxY.move(ARROW_Y.mult(arrowSize));
+        boxZ.move(ARROW_Z.mult(arrowSize));
 
         axis.setModelBound(new BoundingBox());
         axis.updateModelBound();
@@ -488,13 +602,74 @@ public abstract class SceneEditTool {
 
     }
 
+    protected void displayArrows() {
+        axisMarker.attachChild(arrowX);
+        axisMarker.attachChild(arrowY);
+        axisMarker.attachChild(arrowZ);
+    }
+
+    protected void hideArrows() {
+        arrowX.removeFromParent();
+        arrowY.removeFromParent();
+        arrowZ.removeFromParent();
+    }
+
+    protected void displayCones() {
+        axisMarker.attachChild(coneX);
+        axisMarker.attachChild(coneY);
+        axisMarker.attachChild(coneZ);
+    }
+
+    protected void hideCones() {
+        coneX.removeFromParent();
+        coneY.removeFromParent();
+        coneZ.removeFromParent();
+    }
+
+    protected void displayBoxes() {
+        axisMarker.attachChild(boxX);
+        axisMarker.attachChild(boxY);
+        axisMarker.attachChild(boxZ);
+    }
+
+    protected void hideBoxes() {
+        boxX.removeFromParent();
+        boxY.removeFromParent();
+        boxZ.removeFromParent();
+    }
+
+    protected void displayCircles() {
+        axisMarker.attachChild(circleXY);
+        axisMarker.attachChild(circleXZ);
+        axisMarker.attachChild(circleYZ);
+    }
+
+    protected void hideCircles() {
+        circleXY.removeFromParent();
+        circleXZ.removeFromParent();
+        circleYZ.removeFromParent();
+    }
+
     protected void setDefaultAxisMarkerColors() {
-        axisMarker.getChild("arrowX").setMaterial(redMat);
-        axisMarker.getChild("arrowY").setMaterial(greenMat);
-        axisMarker.getChild("arrowZ").setMaterial(blueMat);
+        arrowX.setMaterial(redMat);
+        arrowY.setMaterial(greenMat);
+        arrowZ.setMaterial(blueMat);
+
+        coneX.setMaterial(redMat);
+        coneY.setMaterial(greenMat);
+        coneZ.setMaterial(blueMat);
+
+        boxX.setMaterial(redMat);
+        boxY.setMaterial(greenMat);
+        boxZ.setMaterial(blueMat);
+
         quadXY.setMaterial(yellowMat);
         quadXZ.setMaterial(magentaMat);
         quadYZ.setMaterial(cyanMat);
+
+        circleXY.setMaterial(blueMat);
+        circleXZ.setMaterial(greenMat);
+        circleYZ.setMaterial(redMat);
     }
 
     public Camera getCamera() {
@@ -511,5 +686,64 @@ public abstract class SceneEditTool {
 
     public void setTransformType(SceneComposerToolController.TransformationType transformType) {
         this.transformType = transformType;
+    }
+
+    private static Mesh createCone(int radialSamples, float radius, float height) {
+        Mesh cone = new Mesh();
+
+        float fInvRS = 1.0f / radialSamples;
+
+        // Generate points on the unit circle to be used in computing the mesh
+        // points on a dome slice.
+        float[] afSin = new float[radialSamples];
+        float[] afCos = new float[radialSamples];
+        for (int i = 0; i < radialSamples; i++) {
+            float fAngle = FastMath.TWO_PI * fInvRS * i;
+            afCos[i] = FastMath.cos(fAngle);
+            afSin[i] = FastMath.sin(fAngle);
+        }
+
+        FloatBuffer vb = BufferUtils.createVector3Buffer(radialSamples + 2);
+        cone.setBuffer(Type.Position, 3, vb);
+
+        TempVars vars = TempVars.get();
+        Vector3f tempVa = vars.vect1;
+
+        for (int i = 0; i < radialSamples; i++) {
+            Vector3f kRadial = tempVa.set(afCos[i], 0, afSin[i]);
+            kRadial.mult(radius, tempVa);
+            vb.put(tempVa.x).put(tempVa.y).put(tempVa.z);
+
+            BufferUtils.populateFromBuffer(tempVa, vb, i);
+
+        }
+        vars.release();
+
+        // top of the cone
+        vb.put(0).put(height).put(0);
+        // base of the cone
+        vb.put(0).put(0).put(0);
+
+        ShortBuffer ib = BufferUtils.createShortBuffer(3 * (radialSamples) * 2);
+        cone.setBuffer(Type.Index, 3, ib);
+
+        short top = (short) radialSamples;
+        short bot = (short) (radialSamples + 1);
+
+        for (int i = 0; i < radialSamples; i++) {
+            short a = (short) i;
+            short b = (short) ((i + 1) % radialSamples);
+            ib.put(top);
+            ib.put(b);
+            ib.put(a);
+
+            ib.put(a);
+            ib.put(b);
+            ib.put(bot);
+        }
+
+        cone.updateBound();
+
+        return cone;
     }
 }

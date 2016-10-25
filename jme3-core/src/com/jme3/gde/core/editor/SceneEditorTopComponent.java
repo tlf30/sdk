@@ -32,8 +32,8 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 preferredID = "SceneEditorTopComponent")
 @Messages({
     "CTL_SceneEditorAction=SceneEditor",
-    "CTL_SceneEditorTopComponent=SceneEditor Window",
-    "HINT_SceneEditorTopComponent=This is a SceneEditor window"
+    "CTL_SceneEditorTopComponent=SceneEditor",
+    "HINT_SceneEditorTopComponent=Provides Tools to edit your Scene"
 })
 public final class SceneEditorTopComponent extends CloneableTopComponent {
 

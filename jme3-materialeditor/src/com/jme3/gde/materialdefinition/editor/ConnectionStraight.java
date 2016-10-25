@@ -125,6 +125,7 @@ public class ConnectionStraight extends JPanel implements ComponentListener, Mou
 //        g.drawLine(0, getHeight() - 1, 0, 0);
     }
 
+    @Override
     public String getKey() {
         return key;
     }
@@ -423,7 +424,7 @@ public class ConnectionStraight extends JPanel implements ComponentListener, Mou
     }
 
     private Diagram getDiagram() {
-        return (Diagram) start.getDiagram();
+        return start.getDiagram();
     }
 
     @Override
@@ -432,7 +433,7 @@ public class ConnectionStraight extends JPanel implements ComponentListener, Mou
     }
 
     private void dispatchEventToDiagram(MouseEvent e) {
-        MouseEvent me = null;
+        MouseEvent me;
         me = convertEvent(e);
         getDiagram().dispatchEvent(me);
     }

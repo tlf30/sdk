@@ -77,6 +77,8 @@ public class RoughTerrainToolAction extends AbstractTerrainToolAction {
         Terrain terrain = getTerrain(rootNode.getLookup().lookup(Node.class));
         if (terrain == null)
             return null;
+        Node terrainNode = getTerrainNode(rootNode.getLookup().lookup(Node.class));
+        worldLoc.subtractLocal(terrainNode.getWorldTranslation());
         roughen(terrain, radius, weight, params);
         return terrain;
     }

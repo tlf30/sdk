@@ -1089,12 +1089,12 @@ public class TerrainEditorController implements NodeListener {
 
             if (enabled) {
                 for (int i=0; i<getNumUsedTextures(); i++) {
-                    float scale = 1f/(float)(size/getTextureScale(i));
+                    float scale = 1f/(size/getTextureScale(i));
                     setTextureScale(i, scale);
                 }
             } else {
                 for (int i=0; i<getNumUsedTextures(); i++) {
-                    float scale = (float)(size*getTextureScale(i));
+                    float scale = (size*getTextureScale(i));
                     setTextureScale(i, scale);
                 }
             }

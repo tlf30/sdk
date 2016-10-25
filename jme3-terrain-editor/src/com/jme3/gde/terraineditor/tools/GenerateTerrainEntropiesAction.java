@@ -12,7 +12,6 @@ import com.jme3.scene.Node;
 import com.jme3.terrain.ProgressMonitor;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 
 /**
  *
@@ -28,7 +27,7 @@ public class GenerateTerrainEntropiesAction extends AbstractToolAction {
     @Override
     protected Object doApplyTool(AbstractSceneExplorerNode rootNode) {
         Node terrain = rootNode.getLookup().lookup(Node.class);
-        final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Generating Terrain Entropies");
+        final ProgressHandle progressHandle = ProgressHandle.createHandle("Generating Terrain Entropies");
         progressHandle.start();
         try {
             if (terrain instanceof TerrainQuad) { // it should be terrain anyways

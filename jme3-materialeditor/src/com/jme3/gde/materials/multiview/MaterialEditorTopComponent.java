@@ -40,7 +40,6 @@ import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
-import org.openide.util.Lookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.CloneableTopComponent;
 
@@ -56,7 +55,7 @@ public final class MaterialEditorTopComponent extends CloneableTopComponent impl
     /** path to the icon used by the component and its open action */
 //    static final String ICON_PATH = "SET/PATH/TO/ICON/HERE";
     private static final String PREFERRED_ID = "MaterialEditorTopComponent";
-    private Lookup lookup;
+    //private Lookup lookup;
     private final InstanceContent lookupContents = new InstanceContent();
 //    private SaveNode saveNode;
     private DataObject dataObject;
@@ -100,8 +99,6 @@ public final class MaterialEditorTopComponent extends CloneableTopComponent impl
         materialPreviewWidget1.showMaterial(manager, materialFileName);
 
         relativeMaterialFileName = manager.getRelativeAssetPath(materialFileName);
-
-
     }
 
     /** This method is called from within the constructor to
@@ -438,23 +435,28 @@ public final class MaterialEditorTopComponent extends CloneableTopComponent impl
         return PREFERRED_ID;
     }
 
+    @Override
     public String getKey() {
         return relativeMaterialFileName;
     }
 
+    @Override
     public void addMaterialChangeListener(MaterialChangeListener listener) {
         materialListeners.add(listener);
     }
 
+    @Override
     public void removeMaterialChangeListener(MaterialChangeListener listener) {
         materialListeners.remove(listener);
     }
 
+    @Override
     public void clearMaterialChangeListeners() {
         materialListeners.clear();
 
     }
 
+    @Override
     public void addAllMaterialChangeListener(List<MaterialChangeListener> listeners) {
         materialListeners.addAll(listeners);
     }
@@ -463,14 +465,17 @@ public final class MaterialEditorTopComponent extends CloneableTopComponent impl
 
         String newline = "\n";
 
+        @Override
         public void insertUpdate(DocumentEvent e) {
             checkSave();
         }
 
+        @Override
         public void removeUpdate(DocumentEvent e) {
             checkSave();
         }
 
+        @Override
         public void changedUpdate(DocumentEvent e) {
             checkSave();
         }
@@ -497,6 +502,7 @@ public final class MaterialEditorTopComponent extends CloneableTopComponent impl
 
     private class SaveCookieImpl implements SaveCookie {
 
+        @Override
         public void save() throws IOException {
             String text = jTextArea1.getText();
             materialFile.setAsText(text);
@@ -605,13 +611,14 @@ public final class MaterialEditorTopComponent extends CloneableTopComponent impl
         }
     }
 
+    @Override
     public void propertyChanged(MaterialProperty property) {
         String string = materialFile.getUpdatedContent();
         jTextArea1.setText(string);
         try {
             MaterialKey key = new MaterialKey(manager.getRelativeAssetPath(materialFileName));
             manager.deleteFromCache(key);
-            Material material = (Material) manager.loadAsset(key);
+            Material material = manager.loadAsset(key);
             if (material != null) {
                 for (MaterialChangeListener listener : materialListeners) {
                     listener.setMaterial(material);

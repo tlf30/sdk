@@ -32,6 +32,7 @@
 package com.jme3.gde.core.assets;
 
 import com.jme3.gde.core.j2seproject.ProjectExtensionManager;
+import com.jme3.gde.core.j2seproject.actions.UpgradeProjectWizardAction;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,6 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectManager;
+import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.modules.java.j2seproject.J2SEProject;
 import org.netbeans.modules.java.j2seproject.api.J2SEPropertyEvaluator;
 import org.netbeans.spi.project.LookupProvider;
@@ -65,6 +67,7 @@ public class AssetsLookupProvider implements LookupProvider {
 
     private static final Logger logger = Logger.getLogger(AssetsLookupProvider.class.getName());
     private Project project;
+    private ProjectOpenedHook openedHook;
     public static final String[] keyList = new String[]{
         "assets.jar.name",
         "assets.folder.name",
@@ -104,6 +107,7 @@ public class AssetsLookupProvider implements LookupProvider {
                 String assetsFolderName = properties.getProperty("assets.folder.name", "assets");
                 if (prj.getProjectDirectory().getFileObject(assetsFolderName) != null) {
                     logger.log(Level.FINE, "Valid jMP project, extending with ProjectAssetManager");
+                    openedHook = genOpenedHook(project);
                     return Lookups.fixed(new ProjectAssetManager(prj, assetsFolderName), openedHook);
                 }
             } catch (Exception ex) {
@@ -117,25 +121,58 @@ public class AssetsLookupProvider implements LookupProvider {
 
         return Lookups.fixed();
     }
-    private ProjectOpenedHook openedHook = new ProjectOpenedHook() {
-        @Override
-        protected void projectClosed() {
-        }
+    
+    private ProjectOpenedHook genOpenedHook(final Project context) {
+        return new ProjectOpenedHook() {
+            @Override
+            protected void projectClosed() {
+            }
 
-        @Override
-        protected void projectOpened() {
-            if (project instanceof J2SEProject) {
-                EditableProperties properties = getProperties(project);
-                if (properties.getProperty("assets.folder.name") != null) {
-                    manager.checkExtension(project);
-//                    String version = properties.getProperty("jme.project.version");
-//                    if(version == null){
-//                        DialogDisplayer.getDefault().notifyLater(new NotifyDescriptor.Message("This project is not compatible with the current SDK.",Message.ERROR_MESSAGE));
-//                    }
+            @Override
+            protected void projectOpened() {
+                if (context instanceof J2SEProject) {
+                    EditableProperties properties = getProperties(context);
+                    if (properties.getProperty("assets.folder.name") != null) {
+                        manager.checkExtension(context);
+
+                        String version = properties.getProperty("jme.project.version");
+                        String projectName = ProjectUtils.getInformation(context).getDisplayName();
+                        if (version == null) {
+                            if (UpgradeProjectWizardAction.isJME31(context)) { /* Upgrade project.properties */
+
+                                logger.log(Level.WARNING, "[" + projectName + "] Found 3.1 project, upgrading project.properties");
+
+                                FileObject prProp = context.getProjectDirectory().getFileObject("nbproject/project.properties");
+                                if (prProp != null && prProp.isValid()) {
+                                    FileLock lock = null;
+                                    try {
+                                        lock = prProp.lock();
+                                        InputStream in = prProp.getInputStream();
+                                        EditableProperties edProps = new EditableProperties(true);
+                                        edProps.load(in);
+                                        in.close();
+
+                                        edProps.setProperty("jme.project.version", "3.1"); // Silently accept them.
+                                        OutputStream out = prProp.getOutputStream(lock);
+                                        edProps.store(out);
+                                        out.close();
+                                    } catch (Exception e) {
+                                        logger.log(Level.WARNING, "Error when trying to write project.properties. Exception: {0}", e.getMessage());
+                                    } finally {
+                                        if (lock != null) {
+                                            lock.releaseLock();
+                                        }
+                                    }
+                                }
+                            } else {
+                                DialogDisplayer.getDefault().notifyLater(new NotifyDescriptor.Message("The project \"" + projectName + "\" is not compatible with the current SDK.\nIt has to be updated before you can use it.\nRight Click on the Project and select \"Upgrade Project\" (You can choose to keep 3.0 compatibility!)", Message.ERROR_MESSAGE));
+                            }
+                        }
+                    }
                 }
             }
-        }
-    };
+        };
+    }
 
     public static EditableProperties getProperties(Project project) {
         EditableProperties props = new EditableProperties(true);

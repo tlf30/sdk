@@ -20,7 +20,7 @@ import org.openide.util.Lookup;
 
 /**
  *
- * @author sploreg
+ * @author sploreg, dokthar
  */
 public class ScaleTool extends SceneEditTool {
 
@@ -41,6 +41,7 @@ public class ScaleTool extends SceneEditTool {
         super.activate(manager, toolNode, onTopToolNode, selectedSpatial, toolController);
         pickManager = Lookup.getDefault().lookup(PickManager.class);
         displayPlanes();
+        displayBoxes();
     }
 
     @Override
@@ -91,7 +92,7 @@ public class ScaleTool extends SceneEditTool {
     }
 
     @Override
-    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject currentDataObject, JmeSpatial selectedSpatial) {
+    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject currentDataObject) {
         if (pickedMarker == null) {
             highlightAxisMarker(camera, screenCoord, axisPickType, true);
         } else {
@@ -117,15 +118,15 @@ public class ScaleTool extends SceneEditTool {
             }
             if (pickedMarker.equals(QUAD_XY) || pickedMarker.equals(QUAD_XZ) || pickedMarker.equals(QUAD_YZ)) {
                 constraintAxis = pickManager.getStartOffset().normalize();
-                float diff = pickManager.getTranslation(constraintAxis).dot(constraintAxis);
-                diff *= 0.5f;
-                Vector3f scale = startScale.add(new Vector3f(diff, diff, diff));
+                float diff = pickManager.getLocalTranslation(constraintAxis).dot(constraintAxis);
+                diff += 1f;
+                Vector3f scale = startScale.mult(diff);
                 lastScale = scale;
                 toolController.getSelectedSpatial().setLocalScale(scale);
             } else if (pickedMarker.equals(ARROW_X) || pickedMarker.equals(ARROW_Y) || pickedMarker.equals(ARROW_Z)) {
                 // Get the translation in the spatial Space
                 Quaternion worldToSpatial = toolController.getSelectedSpatial().getWorldRotation().inverse();
-                Vector3f diff = pickManager.getTranslation(worldToSpatial.mult(constraintAxis));
+                Vector3f diff = worldToSpatial.mult(pickManager.getTranslation(constraintAxis));
                 diff.multLocal(0.5f);
                 Vector3f scale = startScale.add(diff);
                 lastScale = scale;

@@ -38,7 +38,8 @@ public class ScaleShortcut extends ShortcutTool {
     @Override
 
     public boolean isActivableBy(KeyInputEvent kie) {
-        return kie.getKeyCode() == KeyInput.KEY_S;
+        ShortcutManager scm = Lookup.getDefault().lookup(ShortcutManager.class);
+        return kie.getKeyCode() == KeyInput.KEY_S && !scm.isCtrlDown();
     }
 
     @Override
@@ -75,7 +76,7 @@ public class ScaleShortcut extends ShortcutTool {
     @Override
     public void keyPressed(KeyInputEvent kie) {
         if (kie.isPressed()) {
-            Lookup.getDefault().lookup(ShortcutManager.class).activateShortcut(kie);
+            Lookup.getDefault().lookup(ShortcutManager.class).setActiveShortcut(this);
 
             boolean axisChanged = ShortcutManager.isAxisKey(kie);
             if (axisChanged) {
@@ -121,7 +122,7 @@ public class ScaleShortcut extends ShortcutTool {
     }
 
     @Override
-    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject dataObject, JmeSpatial selectedSpatial) {
+    public void mouseMoved(Vector2f screenCoord, JmeNode rootNode, DataObject dataObject) {
 
         if (!pickEnabled) {
             if (currentAxis.equals(Vector3f.UNIT_XYZ)) {
@@ -145,9 +146,9 @@ public class ScaleShortcut extends ShortcutTool {
             Vector3f scale = startScale;
             if (currentAxis.equals(Vector3f.UNIT_XYZ)) {
                 Vector3f constraintAxis = pickManager.getStartOffset().normalize();
-                float diff = pickManager.getTranslation(constraintAxis).dot(constraintAxis);
-                diff *= 0.5f;
-                scale = startScale.add(new Vector3f(diff, diff, diff));
+                float diff = pickManager.getLocalTranslation(constraintAxis).dot(constraintAxis);
+                diff += 1f;
+                scale = startScale.mult(diff);
             } else {
                 // Get the translation in the spatial Space
                 Quaternion worldToSpatial = toolController.getSelectedSpatial().getWorldRotation().inverse();

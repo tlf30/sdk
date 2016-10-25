@@ -277,10 +277,12 @@ public class JmeAnimation extends AbstractSceneExplorerNode {
         channel.setLoopMode(animLoopMode);
         if (animLoopMode == LoopMode.DontLoop) {
             control.addListener(new AnimEventListener() {
+                @Override
                 public void onAnimCycleDone(AnimControl ac, AnimChannel ac1, String animName) {
                     if (animName.equals(animation.getName())) {
                         if (playing) {
-                            control.clearChannels();
+                            ac.removeListener(this);
+                            control.clearChannels(); /* This will call onAnimCycleDone on control, thus we're first removing the Listener*/
                             channel = null;
                             jmeControl.setAnim(null);
                             java.awt.EventQueue.invokeLater(new Runnable() {
@@ -288,9 +290,9 @@ public class JmeAnimation extends AbstractSceneExplorerNode {
                                     stop();
                                 }
                             });
+                        } else {
+                            ac.removeListener(this);
                         }
-
-                        ac.removeListener(this);
                     }
                 }
 

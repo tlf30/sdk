@@ -41,7 +41,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileAttributeEvent;
@@ -124,7 +123,7 @@ public class ExternalChangeScanner implements AssetDataPropertyChangeListener, F
     }
 
     private void applyExternalData() {
-        ProgressHandle handle = ProgressHandleFactory.createHandle("Updating file data");
+        ProgressHandle handle = ProgressHandle.createHandle("Updating file data");
         handle.start();
         try {
             Spatial original = loadOriginalSpatial();

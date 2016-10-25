@@ -34,3 +34,4 @@ Tips for learners:
     <layer in context> from layer.xml and see how the various FAC .xml files 
     work their way through to support the system.)
 -   There is a video on the DarkMonkey Dev Blog over at the jMonkeyEngine Forums
+-   The RGB-ColorScheme is in ARGB Format, so always start with ff. (Alpha actually works :))

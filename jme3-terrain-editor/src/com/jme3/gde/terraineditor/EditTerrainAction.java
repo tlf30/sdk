@@ -31,14 +31,12 @@
  */
 package com.jme3.gde.terraineditor;
 
-import com.jme3.asset.DesktopAssetManager;
 import com.jme3.gde.core.assets.BinaryModelDataObject;
 import com.jme3.gde.core.assets.ProjectAssetManager;
 import com.jme3.scene.Spatial;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.NotifyDescriptor.Confirmation;
@@ -59,7 +57,7 @@ public final class EditTerrainAction implements ActionListener {
         Runnable call = new Runnable() {
 
             public void run() {
-                ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Opening in Terrain Editor");
+                ProgressHandle progressHandle = ProgressHandle.createHandle("Opening in Terrain Editor");
                 progressHandle.start();
 
                 
@@ -69,7 +67,7 @@ public final class EditTerrainAction implements ActionListener {
                     java.awt.EventQueue.invokeLater(new Runnable() {
 
                         public void run() {
-                            manager.getManager().clearCache();
+                            manager.clearCache();
                             TerrainEditorTopComponent composer = TerrainEditorTopComponent.findInstance();
                             composer.openScene(asset, context, manager);
                         }

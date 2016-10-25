@@ -36,7 +36,7 @@ public class IOModule {
 
     public BufferedImage load(FileObject file) throws IOException, URISyntaxException {
         if (file.getExt().equalsIgnoreCase("tga")) {
-            ImageInputStream in = new FileImageInputStream(new File(file.getURL().toURI()));
+            ImageInputStream in = new FileImageInputStream(new File(file.toURI()));
             TGAImageReaderSpi spi = new TGAImageReaderSpi();
             TGAImageReader rea = new TGAImageReader(spi);
             rea.setInput(in);

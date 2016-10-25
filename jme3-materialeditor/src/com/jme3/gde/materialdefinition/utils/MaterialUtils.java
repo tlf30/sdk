@@ -10,7 +10,6 @@ import com.jme3.gde.materialdefinition.fileStructure.ShaderNodeBlock;
 import com.jme3.gde.materialdefinition.fileStructure.leaves.InputMappingBlock;
 import com.jme3.gde.materialdefinition.fileStructure.leaves.MappingBlock;
 import com.jme3.gde.materialdefinition.fileStructure.leaves.MatParamBlock;
-import com.jme3.gde.materialdefinition.fileStructure.leaves.WorldParamBlock;
 import com.jme3.shader.ShaderNodeDefinition;
 import com.jme3.shader.ShaderNodeVariable;
 import com.jme3.shader.ShaderUtils;
@@ -76,7 +75,7 @@ public class MaterialUtils {
     public static ShaderNodeDefinition loadShaderNodeDefinition(String path, String name, ProjectAssetManager manager) {
         ShaderNodeDefinitionKey k = new ShaderNodeDefinitionKey(path);
         k.setLoadDocumentation(true);
-        List<ShaderNodeDefinition> defs = (List<ShaderNodeDefinition>) manager.loadAsset(k);
+        List<ShaderNodeDefinition> defs = manager.loadAsset(k);
         for (ShaderNodeDefinition shaderNodeDefinition : defs) {
             if (shaderNodeDefinition.getName().equals(name)) {
                 return shaderNodeDefinition;

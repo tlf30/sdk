@@ -153,14 +153,14 @@
         </folder>
         <!--folder name="SceneComposer-Tools_hidden"-->
     </folder>
-    <folder name="Templates">
+    <!-- <folder name="Templates">
         <folder name="Scene">
             <file name="Scene.j3o" url="Scene.j3o">
                 <attr name="displayName" bundlevalue="com.jme3.gde.scenecomposer.Bundle#Templates/JME3/Scene.j3o"/>
                 <attr name="template" boolvalue="true"/>
             </file>
         </folder>
-    </folder>
+    </folder>-->
     <folder name="Windows2">
         <folder name="Components">
             <file name="SceneComposerTopComponent.settings" url="SceneComposerTopComponentSettings.xml"/>

@@ -8,8 +8,6 @@ import com.jme3.asset.ShaderNodeDefinitionKey;
 import com.jme3.gde.core.assets.ProjectAssetManager;
 import com.jme3.gde.core.util.TreeUtil;
 import com.jme3.gde.materialdefinition.editor.Diagram;
-import com.jme3.gde.materialdefinition.editor.NodePanel;
-import com.jme3.gde.materialdefinition.fileStructure.ShaderNodeBlock;
 import com.jme3.gde.materialdefinition.icons.Icons;
 import com.jme3.gde.materialdefinition.utils.DocFormatter;
 import com.jme3.shader.Shader;
@@ -226,6 +224,7 @@ public class AddNodeDialog extends javax.swing.JDialog {
         TreeUtil.expandTree(jTree1, (TreeNode) jTree1.getModel().getRoot(), 10);
         jTree1.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         jTree1.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
             public void valueChanged(TreeSelectionEvent e) {
 
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
@@ -241,7 +240,7 @@ public class AddNodeDialog extends javax.swing.JDialog {
                     path = path.substring(0, path.lastIndexOf("/"));
                     ShaderNodeDefinitionKey k = new ShaderNodeDefinitionKey(path);
                     k.setLoadDocumentation(true);
-                    defList = (List<ShaderNodeDefinition>) mgr.loadAsset(k);
+                    defList = mgr.loadAsset(k);
 
                     for (ShaderNodeDefinition def : defList) {
                         createDoc(def);

@@ -37,16 +37,13 @@ import com.jme3.gde.core.scene.SceneApplication;
 import com.jme3.gde.core.scene.SceneRequest;
 import com.jme3.gde.core.sceneexplorer.nodes.JmeNode;
 import com.jme3.gde.core.sceneexplorer.nodes.NodeUtility;
-import com.jme3.gde.core.util.notify.NotifyUtil;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.NotifyDescriptor.Confirmation;
 
 public final class OpenModel implements ActionListener {
 
@@ -64,7 +61,7 @@ public final class OpenModel implements ActionListener {
         Runnable call = new Runnable() {
 
             public void run() {
-                ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Opening Model");
+                ProgressHandle progressHandle = ProgressHandle.createHandle("Opening Model");
                 progressHandle.start();
                 try {
                     manager.clearCache();

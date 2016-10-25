@@ -114,7 +114,10 @@ public abstract class AbstractSceneExplorerNode extends AbstractNode implements 
     }
 
     /**
-     * @param saveCookie the saveCookie to set
+     * Set this Node as read-only which means it cannot be deleted, cutted or copied.
+     * These are the actions you will see in the Context Menu of this Node.
+     * @param readOnly true/false
+     * @return Returns this Node for conveniance
      */
     public AbstractSceneExplorerNode setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
@@ -132,6 +135,16 @@ public abstract class AbstractSceneExplorerNode extends AbstractNode implements 
         setSheet(createSheet());
     }
 
+    /**
+     * Create a Property to be used in the Properties Sheet. This is actually a helper method for you
+     * See {@link #makeProperty(java.lang.Object, java.lang.Class, java.lang.String, java.lang.String, java.lang.String) } to specify the getter/setter name
+     * 
+     * @param obj The object of which you want to edit the Properties
+     * @param returntype The Type (Class) of the getter/setter
+     * @param method The Name of the Getter/setter Methods (guesses for getValue() and setValue(value))
+     * @param name The Name of this Property.
+     * @return The created Property to use for set.put()
+     */
     protected Property<?> makeProperty(Object obj, Class<?> returntype, String method, String name) {
         Property<?> prop = null;
         try {
@@ -143,6 +156,18 @@ public abstract class AbstractSceneExplorerNode extends AbstractNode implements 
         return prop;
     }
 
+    /**
+     * Create a Property to be used in the Properties Sheet. This is actually a helper method for you
+     * See {@link #makeEmbedProperty(java.lang.Object, java.lang.Class, java.lang.Class, java.lang.String, java.lang.String, java.lang.String) } if you get a ClassCastException.
+     * This happens when the getter/setter isn't part of obj but rather of a sub variable
+     * 
+     * @param obj The object of which you want to edit the Properties
+     * @param returntype The Type (Class) of the getter/setter
+     * @param method The name of the getter method
+     * @param setter The name of the setter method
+     * @param name The name for this Property. 
+     * @return The created Property to use for set.put()
+     */
     protected Property<?> makeProperty(Object obj, Class<?> returntype, String method, String setter, String name) {
         Property<?> prop = null;
         try {
@@ -159,10 +184,23 @@ public abstract class AbstractSceneExplorerNode extends AbstractNode implements 
         return prop;
     }
 
+    /**
+     * Create a Property to be used in the Properties Sheet. This is actually a helper method for you
+     * See {@link #makeProperty(java.lang.Object, java.lang.Class, java.lang.String, java.lang.String, java.lang.String)  }
+     * Note: Embed is, when the Property isn't directly derived from obj but a getter.
+     * 
+     * @param obj The Object which contains this Property
+     * @param objectClass The Class of obj (when not "embed", we take the Nodes' Type here. So this is for "multi-level" properties)
+     * @param returntype The Type (Class) of the Property
+     * @param method The Getter Method
+     * @param setter The Setter Method (or null, if read only)
+     * @param name The Name to be displayed under Properties
+     * @return The created Property
+     */
     protected Property<?> makeEmbedProperty(Object obj, Class objectClass, Class returntype, String method, String setter, String name) {
         Property<?> prop = null;
         try {
-            if (readOnly) {
+            if (readOnly || setter == null) {
                 prop = new SceneExplorerProperty(objectClass.cast(obj), returntype, method, null);
             } else {
                 prop = new SceneExplorerProperty(objectClass.cast(obj), returntype, method, setter, this);
@@ -175,11 +213,41 @@ public abstract class AbstractSceneExplorerNode extends AbstractNode implements 
         return prop;
     }
 
+    /**
+     * Simply adds all of c's fields as a property to the Set set.
+     * This is like the Sledge Hammer method for Properties.
+     * It will however fail when getters/setters are missing or not following the Convention.
+     * It will just skip those fields then.
+     * 
+     * @param c The Class of obj
+     * @param set The Properties Sheet-Set you want to add things to
+     * @param obj The Object for the properties
+     * @throws SecurityException 
+     */
     protected void createFields(Class<?> c, Sheet.Set set, Object obj) throws SecurityException {
         for (Field field : c.getDeclaredFields()) {
             PropertyDescriptor prop = PropertyUtils.getPropertyDescriptor(c, field);
             if (prop != null) {
                 set.put(makeProperty(obj, prop.getPropertyType(), prop.getReadMethod().getName(), prop.getWriteMethod().getName(), prop.getDisplayName()));
+            }
+        }
+    }
+    
+    /**
+     * Adds all of c's fields as a property to the Set.
+     * See {@link #createFields(java.lang.Class, org.openide.nodes.Sheet.Set, java.lang.Object) }.
+     * Embed additionally takes the object's type over this Nodes. (Compare makeEmbedProperty and makeProperty)
+     * 
+     * @param c The Class to create Properties for
+     * @param set The Properties Sheet-Set you want to add things to
+     * @param obj The Object to take the Properties from
+     * @throws SecurityException 
+     */
+    protected void createEmbedFields(Class<?> c, Sheet.Set set, Object obj) throws SecurityException {
+        for (Field field : c.getDeclaredFields()) {
+            PropertyDescriptor prop = PropertyUtils.getPropertyDescriptor(c, field);
+            if (prop != null) {
+                set.put(makeEmbedProperty(obj, c, prop.getPropertyType(), prop.getReadMethod().getName(), prop.getWriteMethod().getName(), prop.getDisplayName()));
             }
         }
     }
@@ -189,6 +257,7 @@ public abstract class AbstractSceneExplorerNode extends AbstractNode implements 
         return Sheet.createDefault();
     }
     
+    @Override
     public void syncSceneData(float tpf) {
         //TODO: precache structure to avoid locks? Do it backwards, sending the actual bean value?
         for (PropertySet propertySet : getPropertySets()) {
@@ -201,6 +270,7 @@ public abstract class AbstractSceneExplorerNode extends AbstractNode implements 
         }
     }
 
+    @Override
     public void propertyChange(final String type, final String name, final Object before, final Object after) {
         if (SceneExplorerProperty.PROP_USER_CHANGE.equals(type)) {
             fireSave(true);
@@ -212,12 +282,15 @@ public abstract class AbstractSceneExplorerNode extends AbstractNode implements 
         }
     }
 
+    @Override
     public Class<?> getExplorerNodeClass() {
         return this.getClass();
     }
 
+    @Override
     public abstract Class getExplorerObjectClass();
 
+    @Override
     public Node[] createNodes(Object key, DataObject dataObject, boolean readOnly) {
         return new Node[]{Node.EMPTY};
     }

@@ -70,9 +70,11 @@ public class NewSpatialPopup extends AbstractAction implements Presenter.Popup {
         this.dataObject = node.getLookup().lookup(DataObject.class);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
     }
 
+    @Override
     public JMenuItem getPopupPresenter() {
         JMenu result = new JMenu("Add Spatial..");
         result.add(new JMenuItem(new AddNodeAction()));
@@ -110,7 +112,7 @@ public class NewSpatialPopup extends AbstractAction implements Presenter.Popup {
             });
         }
     }
-
+  
     private class AddEmitterAction extends AbstractAction {
 
         public AddEmitterAction() {
@@ -160,6 +162,11 @@ public class NewSpatialPopup extends AbstractAction implements Presenter.Popup {
         }
     }
 
+    /**
+     * AddSpatialUndo automatically handles the removal of the Spatial from the its parent (depending on undo/redo)
+     * @param undoParent The Parental Node
+     * @param undoSpatial  The Spatial to handle
+     */
     private void addSpatialUndo(final Node undoParent, final Spatial undoSpatial) {
         //add undo
         if (undoParent != null && undoSpatial != null) {
@@ -190,6 +197,9 @@ public class NewSpatialPopup extends AbstractAction implements Presenter.Popup {
         }
     }
 
+    /**
+     * Sets this (parent) node as modified/dirty/to be saved.
+     */
     private void setModified() {
         java.awt.EventQueue.invokeLater(new Runnable() {
 

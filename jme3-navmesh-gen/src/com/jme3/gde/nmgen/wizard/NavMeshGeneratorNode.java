@@ -23,7 +23,7 @@ import org.openide.util.Exceptions;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class NavMeshGeneratorNode extends AbstractNode {
 
-    private NavMeshGenerator key;
+    private final NavMeshGenerator key;
 
     public NavMeshGeneratorNode(NavMeshGenerator key) {
         super(Children.LEAF);
@@ -33,7 +33,7 @@ public class NavMeshGeneratorNode extends AbstractNode {
     @Override
     protected Sheet createSheet() {
         Sheet sheet = super.createSheet();
-        Sheet.Set set = sheet.createPropertiesSet();
+        Sheet.Set set = Sheet.createPropertiesSet();
         set.setName("NavMeshGenerator");
         set.setDisplayName("Settings");
         for (Field field : key.getClass().getDeclaredFields()) {

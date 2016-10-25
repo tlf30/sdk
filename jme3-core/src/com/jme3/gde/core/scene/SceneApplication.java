@@ -24,7 +24,7 @@
  */
 package com.jme3.gde.core.scene;
 
-import com.jme3.app.Application;
+import com.jme3.app.LegacyApplication;
 import com.jme3.app.StatsView;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
@@ -88,7 +88,7 @@ import org.openide.util.lookup.Lookups;
  * @author normenhansen
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class SceneApplication extends Application implements LookupProvider {
+public class SceneApplication extends LegacyApplication implements LookupProvider {
 
     private static final Logger logger = Logger.getLogger(SceneApplication.class.getName());
     private static boolean failMessageShown = false;
@@ -663,6 +663,17 @@ public class SceneApplication extends Application implements LookupProvider {
 
     public Node getGuiNode() {
         return guiNode;
+    }
+    
+    /**
+     * Gets the RootNode of this Application.
+     * Warning: With great Power comes great responsibility ;)
+     * You shouldn't use this unless you exactly know about it's implications.
+     * Adding Spatials here won't make them Serialize into the .j3o file...
+     * @return 
+     */
+    public Node getRootNode() {
+        return rootNode;
     }
 
     public AbstractCameraController getActiveCameraController() {
