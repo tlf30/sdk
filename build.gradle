@@ -29,10 +29,10 @@ if (System.getenv('TRAVIS') != null) {
     if (ext.jmeGitTag != "") {
         ext.jmeEngineVersion = "3.1.0-" + ext.jmeGitTag + "-SNAPSHOT"
     } else {
-        ext.jmeEngineVersion = "3.1.0-beta2" # Use Beta 2 instead of 3.1.0-master-SNAPSHOT
+        ext.jmeEngineVersion = "3.1.0-beta2" // Use Beta 2 instead of 3.1.0-master-SNAPSHOT
     }
 } else {
-    ext.jmeEngineVersion = "3.1.0-SNAPSHOT" # Might also need a change to 3.1.0-beta2, if you get "could not find dependency" errors.
+    ext.jmeEngineVersion = "3.1.0-SNAPSHOT" // Might also need a change to 3.1.0-beta2, if you get "could not find dependency" errors.
 }
 
 configurations {
