@@ -3,7 +3,8 @@
 # Also if you want to revert to releases and bintray builds, you need to uninstall them from your local maven repo...
 echo "Downloading the Engine, this may take some time"
 git clone -b v3.1 --single-branch --depth 1 http://github.com/jMonkeyEngine/jMonkeyEngine/ engine # single-branch requires git > 1.7.10, if you see an error, just leave it out.
-git checkout tag/v3.1.0-beta2
+git checkout v3.1.0-beta2
+# tags/v3.1.0-beta2
 
 cd engine
 #echo "Patching the Engine...."
