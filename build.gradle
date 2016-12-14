@@ -577,9 +577,18 @@ task cleanSdk() <<{
     file("JME3TestsTemplateAndroid/src/jme3test/").deleteDir()
 }
 
-task patchPlatformIndependent(type: Copy) {
+task extractPlatformIndependent(type: Copy) {
     from zipTree('dist/jmonkeyplatform.zip')
     into "dist/temp/"
+    
+    exclude("jmonkeyplatform/etc/jmonkeyplatform.conf")
+}
+
+task patchPlatformIndependent(type: Copy, dependsOn: extractPlatformIndependent) {
+    from zipTree('dist/jmonkeyplatform.zip')
+    into "dist/temp/"
+    
+    include("jmonkeyplatform/etc/jmonkeyplatform.conf")
 
     filter { String line ->
         line.startsWith('jdkhome=') ? '#jdkhome="/path/to/jdk"': line
