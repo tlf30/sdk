@@ -7,7 +7,7 @@ You'll need several things to have the SDK build and run:
 - java, if you don't know what it is or how to install it... you'd better run from here.
 - [gradle](http://gradle.org/gradle-download/) to build the project. (Included in the repo)
 - [NetBeans](https://netbeans.org/downloads/) to edit and run the project (First build will download it to ```netbeans/```).
-- Then you need to read this [documentation](http://wiki.jmonkeyengine.org/doku.php/sdk:development) thoroughly.
+- Then you need to read this [documentation](https://jmonkeyengine.github.io/wiki/sdk/development.html) thoroughly.
 
 Before hopping into Netbeans plugin development you'll need to build the project using gradle command:
 ```
