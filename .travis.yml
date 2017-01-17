@@ -16,6 +16,7 @@ addons:
   apt:
     packages:
     - p7zip-full
+    - cabextract
 
 # branches:
 #   only:
