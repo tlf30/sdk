@@ -203,7 +203,7 @@ public class ExternalChangeScanner implements AssetDataPropertyChangeListener, F
                 logger.log(Level.FINE, "Ignoring old reference to self for {0}", assetDataObject.getName());
             }
         } else {
-            logger.log(Level.INFO, "Could not get FileObject for {0} when trying to opdate original data for {1}. Possibly deleted.", new Object[]{assetName, assetDataObject.getName()});
+            logger.log(Level.INFO, "Could not get FileObject for {0} when trying to update original data for {1}. Possibly deleted.", new Object[]{assetName, assetDataObject.getName()});
             //TODO: add folder listener for when recreated
         }
     }
