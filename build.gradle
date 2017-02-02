@@ -26,9 +26,9 @@ repositories {
 }
 
 if (System.getenv('TRAVIS') != null) {
-    if (System.env.TRAVIS_TAG != "") {
+    /*if (System.env.TRAVIS_TAG != "") {
         ext.jmeEngineVersion = "3.1.0-" + System.env.TRAVIS_TAG + "-SNAPSHOT"
-    } else {
+    } else {*/
         ext.jmeEngineVersion = "3.1.0-beta3" // Use Beta 2 instead of 3.1.0-master-SNAPSHOT
     }
 } else {
