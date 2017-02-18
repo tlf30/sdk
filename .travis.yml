@@ -22,6 +22,10 @@ addons:
 #   only:
 #   - master
 
+env:
+  - BUILD_X64=true
+  - BUILD_X86=true
+
 notifications:
   slack:
     on_success: change
