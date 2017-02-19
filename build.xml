@@ -211,10 +211,13 @@
         <if>
             <and>
                 <not>
-                    <isset property="env.BUILD_X64" />
+                    <isset property="env.BUILD_X64"/>
                 </not>
                 <not>
-                    <isset property="env.BUILD_X86" />
+                    <isset property="env.BUILD_X86"/>
+                </not>
+                <not>
+                    <isset property="env.BUILD_OTHER"/>
                 </not>
             </and>
             <then>
@@ -225,7 +228,7 @@
                 <if>
                     <equals arg1="${env.BUILD_X64}" arg2="true"/>
                     <then>
-                        <property name="temp.platform1" value="windows-x64 linux-x64 macosx "/>
+                        <property name="temp.platform1" value="windows-x64 linux-x64 "/>
                         <echo message="Building for the X64 architecture"/>
                     </then>
                     <else>
@@ -235,14 +238,25 @@
                 <if>
                     <equals arg1="${env.BUILD_X86}" arg2="true"/>
                     <then>
-                        <property name="temp.platform2" value="windows-x86 linux-x86" />
+                        <property name="temp.platform2" value="windows-x86 linux-x86 " />
                         <echo message="Building for the X86 architecture "/>
                     </then>
                     <else>
                         <property name="temp.platform2" value="" /> <!-- So it isn't undefined -->
                     </else>
                 </if>
-                <property name="generate.installer.for.platforms" value="${temp.platform1}${temp.platform2}"/>
+                <if>
+                    <equals arg1="${env.BUILD_OTHER}" arg2="true"/>
+                    <then>
+                        <property name="temp.platform3" value="macosx"/>
+                        <echo message="Building for Mac OS X"/>
+                    </then>
+                    <else>
+                        <property name="temp.platform3" value="" /> <!-- So it isn't undefined -->
+                    </else>
+                </if>
+                <!-- Since properties are immutable we needed temporary values -->
+                <property name="generate.installer.for.platforms" value="${temp.platform1}${temp.platform2}${temp.platform3}"/>
             </else>
         </if>
         

@@ -25,6 +25,7 @@ addons:
 env:
   - BUILD_X64=true
   - BUILD_X86=true
+  - BUILD_OTHER=true
 
 notifications:
   slack:
@@ -57,8 +58,8 @@ before_deploy:
   
   # Has to be done before deploy (due to the rm command)
   #- scp -rp -i nbproject/private/www-updater.key build/updates/* www-updater@updates.jmonkeyengine.org:/var/www/updates/stable/3.1/plugins
-  - "[ $BUILD_X64 == 'true' ] && rm -rf dist/jmonkeyplatform.zip || :"
-  - "[ $BUILD_X86 == 'true' ] && ./gradlew fixPlatformIndependent || :"
+  - "[ $BUILD_OTHER != 'true' ] && rm -rf dist/jmonkeyplatform.zip || :"
+  - "[ $BUILD_OTHER == 'true' ] && ./gradlew fixPlatformIndependent || :"
   - rm -rf build/
 
 deploy:
