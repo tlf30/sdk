@@ -61,8 +61,8 @@ Other than that, we are more than happy to help, even if your addition is incomp
 Before you open an issue, make sure that it is not an engine bug, but a real sdk bug. If you are uncertain whether it is a real bug or misuse, you can either open an issue or ask [on the hub](https://hub.jmonkeyengine.org) using the `Troubleshooting | jmonkeyplatform` category.
 
 ## Issues when building
-__ Could not find `jme3.1.0-stable`__:
+__Could not find `jme3.1.0-stable`__ :
     When you occur this issue, you have to go back to the engine build step and see how the engine is called. Technically the engine version is collected out from git tags, or called SNAPSHOT. Then there are cases where this recognition fails. For example when the SDK has a tag but the engine is snapshot. Then take a look at `build.gradle` in the sdk repo. It contains a field called `ext.jmeVersion` or something, where you can specify the version.
     
-__ Could not find `jme3-jbullet`__:
+__Could not find `jme3-jbullet`__ :
     jBullet is not part of jCenter, which means you forgot to build the engine first. See above.
