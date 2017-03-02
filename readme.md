@@ -24,6 +24,7 @@ You can take the platform agnostic `jmonkeyplatform.zip` which contains the full
 Thus the prefered download is `jmonkeyplatform-windows-x64.exe` which essentially __is__ `jmonkeyplatform.zip` and the correct version of the JDK and Blender (hence the ~250MiB size increase).  
 If you don't know whether your system is 64 bits (x64) or 32 bits (x86), you can type `uname -i` on Linux or look into the system informations (right click on Computer->Properties) on Windows.
 
+__Note:__ The Tag `stable` is refering to 3.0-stable, which is an ancient version. You should not start any new projects based of 3.0 but use 3.1 instead. Also the tag is pointing to the wrong commit since we had to re-upload those files but the repo doesn't really contain any 3.0 commits anymore.
 
 ## Building the SDK
 Building the SDK is an easy process basically, but it depends on what kind of distribution you want to build.
