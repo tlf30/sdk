@@ -5,8 +5,9 @@
         <font style="bold"/>
     </fontcolor>
     <fontcolor default="error" name="error"/>
-    <fontcolor foreColor="ff009900" name="added"/>
-    <fontcolor foreColor="ffff3300" name="removed"/>
+    <fontcolor foreColor="ff196019" name="added"/>
+    <fontcolor foreColor="ffaf1919" name="removed"/>
+    <fontcolor foreColor="ff191977" name="changed"/>
     <fontcolor bgColor="darkGray" name="filename">
         <font style="bold+italic"/>
     </fontcolor>
