@@ -43,9 +43,6 @@ configurations {
 }
 
 dependencies {
-
-    corelibs dep("com.github.xbuf:jme3_xbuf:0.9.1", false, false)
-
     corelibs dep("org.jmonkeyengine:jme3-core:$jmeEngineVersion", true, true)
     corelibs dep("org.jmonkeyengine:jme3-desktop:$jmeEngineVersion", true, true)
     corelibs dep("org.jmonkeyengine:jme3-lwjgl:$jmeEngineVersion", true, true)
@@ -68,6 +65,8 @@ dependencies {
     optlibs dep("org.jmonkeyengine:jme3-ios:$jmeEngineVersion", true, true)
     optlibs dep("org.jmonkeyengine:jme3-android-native:$jmeEngineVersion", true, true)
     optlibs dep("org.jmonkeyengine:jme3-bullet-native-android:$jmeEngineVersion", true, true)
+    optlibs dep("com.github.xbuf:jme3_xbuf:0.9.1", false, false)
+    
     testdatalibs dep("org.jmonkeyengine:jme3-testdata:$jmeEngineVersion", false, false)
 
     examplelibs dep("org.jmonkeyengine:jme3-examples:$jmeEngineVersion", false, true)
