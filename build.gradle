@@ -169,11 +169,11 @@ task createBaseXml(dependsOn: configurations.corelibs) <<{
         if (file.name.startsWith("jme3") && !isSourceOrJavadoc(file.name)){
         
             //collect jme jars
-            if(!jmeJarFiles.contains(file)){
-                    jmeJarFiles.add(file)
+            if(!jmeJarFiles.contains(file)) {
+                jmeJarFiles.add(file)
             }
             
-        }else if( !isSourceOrJavadoc(file.name)){
+        } else if(!isSourceOrJavadoc(file.name)) {
             //collect external jars
             externalJarFiles.add(file)
             
@@ -309,7 +309,7 @@ task copyProjectLibs(dependsOn: [configurations.corelibs, configurations.testdat
                 from dep
                 into "jme3-project-baselibs/release/libs/"
             }
-        }else{
+        } else{
             copy {
                 from dep
                 into "jme3-project-libraries/release/libs/"
@@ -375,7 +375,7 @@ task createProjectXml(dependsOn: configurations.corelibs) <<{
                 if(!jmeJarFiles.contains(file.name)){
                     jmeJarFiles.add(file.name)
                 }
-            }else{
+            } else{
                 if(!externalJarFiles.contains(file.name)){
                     externalJarFiles.add(file.name)
                 }
@@ -396,11 +396,17 @@ task createProjectXml(dependsOn: configurations.corelibs) <<{
                 if(!jmeJarFiles.contains(file.name)){
                     jmeJarFiles.add(file.name)
                 }
-            }else{
+            } else {
                 if(!externalJarFiles.contains(file.name)){
                     externalJarFiles.add(file.name)
                 }
             }
+        }
+        
+        // Workarounds where the automatic dependency detection did not work. This is mainly when there are runtime dependencies which are not available as artifacts
+        if (dep.name.equals("jme3-jbullet")) {
+            externalJarFiles.add("jbullet.jar")
+            externalJarFiles.add("stack-alloc.jar")
         }
 
         
