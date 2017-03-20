@@ -37,3 +37,9 @@ This leads to:
 ```
 
 Here you unfortunately see that the `files()` dependency could not be picked up, the reason seems to be from within gradle, at least it does not appear in `jme3-jbullet`'s dependency list. That is why there was a needed workaround in the xml generation...
+
+## Flaws / TODOs
+Apart from the automatic generation failing sometimes we have another flaw which is related to the design:  
+Many libraries depend on eachother like nearly all libraries depend on core.
+Now to not have 10 versions of `jme3-core` inside the libraries which might even cause the build to fail, we simply discard those inner-jme dependencies and force the user to manage them appropriately.  
+The Question here is if that is the right approach? For `jme3_xbuf` it lead to problems because things like `jme3_xbuf_loader` and `jme3_xbuf_physics_loader` aren't seperate artifacts and will be bundled into one library. Thats why there is a workaround for Xbuf.  
