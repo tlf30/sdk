@@ -3,8 +3,8 @@
 #Author MeFisto94
 set -e # Quit on Error
 
-jdk_version="8u77"
-jdk_build_version="b03"
+jdk_version="8u111"
+jdk_build_version="b14"
 platforms=( "linux-x64.tar.gz" "linux-i586.tar.gz" "windows-i586.exe" "windows-x64.exe" "macosx-x64.dmg" )
 
 function install_xar {
@@ -90,6 +90,7 @@ function unpack_mac_jdk {
         hdiutil detach /Volumes/JDK*
     else # Linux
         7z x ../downloads/jdk-macosx-x64.dmg > /dev/null
+        # The following seems dependent of the 7zip version. If not they also changed their MacOSX Installer
         7z x 4.hfs > /dev/null
         install_xar
         ./xar-1.5.2/src/xar -xf JDK*/JDK*.pkg
@@ -125,7 +126,7 @@ function build_mac_jdk {
     echo "< OK!"
 }
 
-# PARAMS arch_oracle
+# PARAMS windows-arch_oracle arch_other
 function unpack_windows {
     echo ">> Extracting the JDK for $1"
     #cd local/$jdk_version-$jdk_build_version/
@@ -141,6 +142,13 @@ function unpack_windows {
 
     mkdir -p $1
     7z x -o$1 "downloads/jdk-$1.exe" > /dev/null
+    
+    if [ $2 == "x64" ]; then
+        cabextract $1/.rsrc/1033/JAVA_CAB*/* -d $1
+        rm $1/src.zip
+        rm $1/jre.exe # This is the JRE installer, however the jre is already in jre/ ?? 
+    fi
+    
     unzip -qq $1/tools.zip -d $1/
     rm $1/tools.zip
 
@@ -208,7 +216,7 @@ function compile_other {
 
     # Depends on UNPACK and thus DOWNLOAD
     if [ $1 == "windows" ]; then
-        unpack_windows windows-$3
+        unpack_windows windows-$3 $2
     elif [ $1 == "linux" ]; then
         unpack_linux linux-$3
     fi

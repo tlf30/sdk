@@ -9,17 +9,23 @@ cache:
    - $HOME/.gradle/caches/
    - $HOME/.gradle/wrapper/
    - netbeans
-   - jdks/local/8u77-b03/compiled
+   - jdks/local/8u111-b14/compiled
 
 addons:
   ssh_known_hosts: updates.jmonkeyengine.org
   apt:
     packages:
     - p7zip-full
+    - cabextract
 
 # branches:
 #   only:
 #   - master
+
+env:
+  - BUILD_X64=true
+  - BUILD_X86=true
+  - BUILD_OTHER=true
 
 notifications:
   slack:
@@ -52,7 +58,8 @@ before_deploy:
   
   # Has to be done before deploy (due to the rm command)
   #- scp -rp -i nbproject/private/www-updater.key build/updates/* www-updater@updates.jmonkeyengine.org:/var/www/updates/stable/3.1/plugins
-  - ./gradlew fixPlatformIndependent
+  - '[ "$BUILD_OTHER" != "true" ] && rm -rf dist/jmonkeyplatform.zip || :'
+  - '[ "$BUILD_OTHER" == "true" ] && ./gradlew fixPlatformIndependent || :'
   - rm -rf build/
 
 deploy:
@@ -60,14 +67,14 @@ deploy:
   api_key:
     secure: IoGNk8dOmBIB/lXqgd7we7UjyFULww6y43F/Dwx2KZZ6NqC4tvDfBpqEyYhhLC0Ltgpm6vO/+0EepnqmBO5CkDYBECcwpIQX+ndgIOZQLMonXQ3glcjM5yoNtoUbFEn7xvI2ntAKbUkKmWnjNVquHF7t7jT8QfUPymUdV+f1eHapQFtcx2VuDoGF4/1fZuygS5pNPgkw7bduQo8foxlDdzSicNJ8smV0QBUZE/dVlbK1ycitZZrGkkRW/uKvsN/FX+lkl6ANb4y8AE2kcn0EarY6FH5NrQgGp5QNbGdQw1/4voFsR8Bji2UHUYuhjCuV14cgenfSQXrW4rVV/YMGaxxR/BbFB5XfZPCBfIsqfVAGH+Rkvy8/ZTBot+v9L1Pp99RZSCCtJoGPYBQagjzEOOAJplnqNHJ1D8bQo+1XElcuki/qxlO3XvXGQwTs2HMyqrnmlfdRjD5JClxx06Wke4y+KjLWtiQfjihCaQK68ixkCF4U8B2lg8nsuFNmUxUMfPCkKir4XfjuZ27y9ZNBnZQNTKOjW1cjU2GhvGyDWfK5xgfSMP/uKpAopSkWYOMaQVeUlFvMI2NtKdkb7lko6bRizEj/EWlUjhTP7TzvVGE76PJh+XeUkcNQmoFBRYOY2L+TYVs9LlKl+DQbcAHOeMYlxfq/zN7OIAh7T5AsgZk=
     # Use travis setup releases --force (gem install travis) and then anyone with push access can create the token
-  # file_glob: true
-  file:
-   - dist/jmonkeyplatform-linux-x64.sh
-   - dist/jmonkeyplatform-linux-x86.sh
-   - dist/jmonkeyplatform-windows-x64.exe
-   - dist/jmonkeyplatform-windows-x86.exe
-   - dist/jmonkeyplatform.zip
-   - dist/jmonkeyplatform-macosx.tgz
+  file_glob: true
+  file: "dist/jmonkeyplatform*.*"
+  # - dist/jmonkeyplatform-linux-x64.sh
+  # - dist/jmonkeyplatform-linux-x86.sh
+  # - dist/jmonkeyplatform-windows-x64.exe
+  # - dist/jmonkeyplatform-windows-x86.exe
+  # - dist/jmonkeyplatform.zip
+  # - dist/jmonkeyplatform-macosx.tgz
   skip_cleanup: true
   on:
     repo: jMonkeyEngine/sdk
